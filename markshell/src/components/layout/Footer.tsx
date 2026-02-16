@@ -13,7 +13,7 @@ const Footer = () => {
                             <div className="bg-green-600 p-1.5 rounded-full text-white">
                                 <Leaf size={20} fill="currentColor" />
                             </div>
-                            <span className="text-xl font-bold">ECOFOOD</span>
+                            <span className="text-xl font-bold">MarkShell</span>
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed">
                             We are committed to providing the freshest, organic produce directly from our sustainable farms to your table. Join the revolution.

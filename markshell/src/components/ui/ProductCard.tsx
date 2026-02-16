@@ -17,7 +17,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     onQuoteClick,
 }) => {
     return (
-        <div className="group bg-white rounded-2xl p-4 transition-all duration-300 hover:shadow-xl border border-gray-100 h-full flex flex-col">
+        <div className="group bg-white rounded-2xl transition-all duration-300 hover:shadow-xl border border-gray-100 h-full flex flex-col">
             <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gray-100 mb-4">
                 {/* Product Image */}
                 <img
@@ -30,7 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </span>
             </div>
 
-            <div className="space-y-3 flex-grow flex flex-col">
+            <div className="space-y-3 px-8 pb-8 pt-2 flex-grow flex flex-col">
                 <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">
                     {title}
                 </h3>

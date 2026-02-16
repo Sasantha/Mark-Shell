@@ -39,7 +39,7 @@ const Navbar = () => {
                         <Leaf size={20} fill="currentColor" />
                     </div>
                     <span className={cn("text-xl font-bold tracking-tight", isScrolled ? "text-green-900" : "text-white")}>
-                        ECOFOOD
+                        MarkShell
                     </span>
                 </Link>
 
@@ -65,7 +65,7 @@ const Navbar = () => {
                         className="rounded-full px-6"
                         variant={isScrolled ? "default" : "white"}
                     >
-                        Get Started →
+                        Get Quote / contact →
                     </Button>
                 </div>
 

@@ -32,19 +32,25 @@ const Stats = () => {
                 </div>
 
                 {/* Image Content */}
-                <div className="relative h-[500px] w-full rounded-3xl overflow-hidden shadow-2xl">
-                    {/* Using a placeholder image of someone playing sax or similar artistic vibe as requested/designed */}
-                    <img
-                        src="https://images.unsplash.com/photo-1573871666457-7c7329118cf9?q=80&w=2670&auto=format&fit=crop"
-                        alt="Artistic Lifestyle"
-                        className="w-full h-full object-cover"
-                    />
-
-                    {/* Floating badge */}
-                    <div className="absolute bottom-10 right-10 bg-green-800 text-white p-6 rounded-2xl shadow-xl max-w-[150px] text-center">
-                        <span className="text-3xl font-bold block">100%</span>
-                        <span className="text-xs uppercase tracking-wider opacity-80">Organic & Pure</span>
+                {/* Image Content */}
+                <div className="relative h-[500px] w-full">
+                    {/* Main Image with rotation and rounded corners */}
+                    <div className="absolute inset-0 bg-gray-200 rounded-[2.5rem] overflow-hidden rotate-3 shadow-2xl">
+                        <img
+                            src="https://images.unsplash.com/photo-1573871666457-7c7329118cf9?q=80&w=2670&auto=format&fit=crop"
+                            alt="Artistic Lifestyle"
+                            className="w-full h-full object-cover"
+                        />
                     </div>
+
+                    {/* Floating badge - Overlapping */}
+                    <div className="absolute -bottom-6 -right-6 bg-green-700 text-white p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center rotate-3 z-10">
+                        <span className="text-4xl font-bold leading-none">100%</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest mt-1">Plastic Free</span>
+                    </div>
+
+                    {/* Decorative Elements (Optional based on "exact" request) */}
+                    {/* <div className="absolute top-1/2 left-0 -translate-x-1/2 w-12 h-24 bg-white/80 backdrop-blur-sm rounded-r-xl border border-gray-100 shadow-lg hidden lg:block"></div> */}
                 </div>
             </div>
         </Section>

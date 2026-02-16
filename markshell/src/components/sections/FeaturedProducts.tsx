@@ -14,31 +14,31 @@ const products = [
     {
         name: "Reusable Forks",
         description: "Premium bamboo forks designed for daily use, lightweight and sturdy.",
-        image: "https://th.bing.com/th/id/OIP.cReDVrYrRmr1FfSbtumvcAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        image: "https://th.bing.com/th/id/OIP.XQ7WPWYl6bz8Dw5DyAMvJAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
         tag: "Dining"
     },
     {
         name: "Wooden Combs",
         description: "Gentle neem wood combs that reduce static and promote scalp health.",
-        image: "https://th.bing.com/th/id/OIP.cReDVrYrRmr1FfSbtumvcAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        image: "https://th.bing.com/th/id/OIP.wz-ZU1-IXcsJpctkI4atBQHaE8?w=290&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
         tag: "Personal Care"
     },
     {
         name: "Bamboo Skewers",
         description: "Biodegradable skewers perfect for grilling, appetizers, or crafts.",
-        image: "https://th.bing.com/th/id/OIP.cReDVrYrRmr1FfSbtumvcAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        image: "https://th.bing.com/th/id/OIP.Ov4txxrkn6_B24NO2WflOgHaHY?w=179&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
         tag: "Cooking"
     },
     {
         name: "Biodegradable Cup",
         description: "Classic design meets sustainability in these fully compostable cups.",
-        image: "https://th.bing.com/th/id/OIP.cReDVrYrRmr1FfSbtumvcAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        image: "https://th.bing.com/th/id/OIP.2W2pL0A0NsL6vtKPqvGlGQHaGy?w=211&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
         tag: "Travel"
     },
     {
         name: "Thermal Tumbler",
         description: "Double-walled insulation keeps your beverages at the perfect temperature.",
-        image: "https://th.bing.com/th/id/OIP.cReDVrYrRmr1FfSbtumvcAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        image: "https://th.bing.com/th/id/OIP.a1z8KVG-jQ5kU1v6htuZ-AHaE7?w=290&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
         tag: "Lifestyle"
     },
 ];
