@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import Section from "../ui/section";
 import { Button } from "../ui/button";
 import { CheckCircle } from "lucide-react";
@@ -28,9 +29,11 @@ const About = () => {
                         ))}
                     </div>
 
-                    <Button size="lg" className="rounded-full px-8 mt-4">
-                        Read More
-                    </Button>
+                    <Link href="/about">
+                        <Button size="lg" className="rounded-full px-8 mt-4">
+                            Read More
+                        </Button>
+                    </Link>
                 </div>
 
                 {/* Image Placeholder */}

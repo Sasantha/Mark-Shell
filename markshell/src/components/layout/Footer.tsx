@@ -32,7 +32,7 @@ const Footer = () => {
                         <h4 className="font-semibold text-lg mb-6">Quick Links</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
                             {['About Us', 'Our Farms', 'Products', 'Sustainability', 'Contact'].map(item => (
-                                <li key={item}><a href="#" className="hover:text-green-500 transition-colors">{item}</a></li>
+                                <li key={item}><a href={item === 'About Us' ? '/about' : '#'} className="hover:text-green-500 transition-colors">{item}</a></li>
                             ))}
                         </ul>
                     </div>
