@@ -176,8 +176,8 @@ const ProductsPage = () => {
                                     <label key={cat} className="flex items-center gap-3 cursor-pointer group select-none">
                                         <div
                                             className={`w-5 h-5 rounded flex items-center justify-center border transition-all duration-200 ${selectedCategories.includes(cat)
-                                                    ? "bg-green-600 border-green-600 shadow-sm"
-                                                    : "border-gray-200 bg-gray-50 group-hover:border-green-400"
+                                                ? "bg-green-600 border-green-600 shadow-sm"
+                                                : "border-gray-200 bg-gray-50 group-hover:border-green-400"
                                                 }`}
                                             onClick={(e) => { e.preventDefault(); handleCategoryChange(cat); }}
                                         >
@@ -197,8 +197,8 @@ const ProductsPage = () => {
                                     <label key={mat} className="flex items-center gap-3 cursor-pointer group select-none">
                                         <div
                                             className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 ${selectedMaterials.includes(mat)
-                                                    ? "border-green-600 bg-white"
-                                                    : "border-gray-300 bg-gray-50 group-hover:border-green-400"
+                                                ? "border-green-600 bg-white"
+                                                : "border-gray-300 bg-gray-50 group-hover:border-green-400"
                                                 }`}
                                             onClick={(e) => { e.preventDefault(); handleMaterialChange(mat); }}
                                         >
@@ -246,6 +246,7 @@ const ProductsPage = () => {
                                 {currentProducts.map((product) => (
                                     <ProductCard
                                         key={product.id}
+                                        id={product.id} // Added id
                                         variant="catalog"
                                         image={product.image}
                                         title={product.name}
@@ -286,8 +287,8 @@ const ProductsPage = () => {
                                         key={page}
                                         onClick={() => handlePageChange(page)}
                                         className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-all duration-200 ${currentPage === page
-                                                ? "bg-green-700 text-white shadow-lg shadow-green-900/20 font-bold scale-105"
-                                                : "border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-green-200"
+                                            ? "bg-green-700 text-white shadow-lg shadow-green-900/20 font-bold scale-105"
+                                            : "border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-green-200"
                                             }`}
                                     >
                                         {page}

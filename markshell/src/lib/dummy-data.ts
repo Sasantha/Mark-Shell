@@ -5,7 +5,7 @@ export interface Product {
     category: string;
     material: string;
     image: string;
-    price: number; // Added price
+    price: number;
     badge?: "Best Seller" | "Eco Kit" | "Coming Soon" | "New Arrival" | "Bulk Deal";
     specs: {
         length?: string;
@@ -17,6 +17,11 @@ export interface Product {
         sharpEdge?: boolean;
     };
     isAvailable: boolean;
+    // New fields for Single Product Page
+    images?: string[];
+    longDescription?: string;
+    weight?: string;
+    cartonQuantity?: string;
 }
 
 export const products: Product[] = [
@@ -31,6 +36,15 @@ export const products: Product[] = [
         badge: "Best Seller",
         specs: { length: "160mm", pack: "100/bag", case: "2000 pcs", grade: "A+", waxFree: true },
         isAvailable: true,
+        images: [
+            "https://th.bing.com/th/id/OIP.a1z8KVG-jQ5kU1v6htuZ-AHaE7?w=290&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+            "https://th.bing.com/th/id/OIP.Qj7g8h9i0j1k2l3m4n5o?w=200&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7", // Placeholder
+            "https://th.bing.com/th/id/OIP.Rk8l9m0n1o2p3q4r5s?w=200&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7", // Placeholder
+            "https://th.bing.com/th/id/OIP.Sm0n1o2p3q4r5s6t7u?w=200&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7"  // Placeholder
+        ],
+        longDescription: "Our 160mm Heavy-Duty Birchwood Spoon is engineered for strength and sustainability. Crafted from 100% renewable white birch, these spoons feature a reinforced handle and a deep bowl design, making them perfect for hot soups, heavy stews, and ice cream. The wax-free, splinter-free finish ensures a smooth mouthfeel without any woody aftertaste.",
+        weight: "3.2g / unit",
+        cartonQuantity: "2,000 pcs / ctn"
     },
     {
         id: "2",
@@ -42,6 +56,9 @@ export const products: Product[] = [
         price: 45.00,
         specs: { length: "160mm", pack: "100/bag", case: "2000 pcs", grade: "A+", splinterFree: true },
         isAvailable: true,
+        longDescription: "Designed to tackle tough foods, our Reinforced Birchwood Fork features sharp, sturdy tines that won't snap under pressure. Ideal for salads, meats, and pasta.",
+        weight: "2.8g / unit",
+        cartonQuantity: "2,000 pcs / ctn"
     },
     {
         id: "3",
@@ -53,6 +70,9 @@ export const products: Product[] = [
         price: 42.50,
         specs: { length: "165mm", pack: "100/bag", case: "2000 pcs", grade: "A+", sharpEdge: true },
         isAvailable: true,
+        longDescription: "A fully functional wooden knife with a serrated edge capable of cutting through steak and chicken. A sustainable alternative to single-use plastics.",
+        weight: "2.5g / unit",
+        cartonQuantity: "2,000 pcs / ctn"
     },
     {
         id: "4",
@@ -65,6 +85,9 @@ export const products: Product[] = [
         badge: "Eco Kit",
         specs: { pack: "500 kits", case: "500 kits", grade: "A" },
         isAvailable: true,
+        longDescription: "The ultimate hygienic solution for takeout and delivery. Each kit contains a heavy-duty spoon, fork, and napkin, sealed in an unbleached kraft paper wrapper.",
+        weight: "12g / kit",
+        cartonQuantity: "500 kits / ctn"
     },
     {
         id: "5",
@@ -88,6 +111,8 @@ export const products: Product[] = [
         price: 32.00,
         specs: { length: "110mm", pack: "500/bag", case: "5000 pcs", grade: "A" },
         isAvailable: true,
+        weight: "1.2g / unit",
+        cartonQuantity: "5,000 pcs / ctn"
     },
     {
         id: "7",
