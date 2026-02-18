@@ -13,6 +13,23 @@ const ProductsPage = () => {
     // Fake state for visuals
     const [selectedCategory, setSelectedCategory] = useState<string[]>(["Spoons", "Forks", "Knives"]);
     const [selectedMaterial, setSelectedMaterial] = useState("All Materials");
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const ITEMS_PER_PAGE = 6;
+    const totalItems = products.length;
+    const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+    const currentProducts = products.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    );
+
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+            window.scrollTo({ top: 300, behavior: 'smooth' }); // Scroll to top of grid
+        }
+    };
 
     return (
         <main className="min-h-screen font-sans bg-[#f9fafb]">
@@ -20,6 +37,7 @@ const ProductsPage = () => {
 
             {/* Hero Section */}
             <div className="relative h-[300px] flex items-center px-4 overflow-hidden">
+                {/* ... (Hero content remains same) ... */}
                 <div className="absolute inset-0 bg-[#1a4a1a] z-0">
                     <img
                         src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2613&auto=format&fit=crop"
@@ -90,7 +108,9 @@ const ProductsPage = () => {
                     <div className="lg:col-span-9">
                         {/* Top Bar */}
                         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-                            <span className="text-gray-400 text-sm">Showing 6 of 48 products</span>
+                            <span className="text-gray-400 text-sm">
+                                Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalItems)} of {totalItems} products
+                            </span>
                             <div className="flex items-center gap-2">
                                 <span className="text-gray-500 text-sm">Sort by:</span>
                                 <div className="relative group">
@@ -103,14 +123,14 @@ const ProductsPage = () => {
 
                         {/* Grid */}
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
-                            {products.map((product) => (
+                            {currentProducts.map((product) => (
                                 <ProductCard
                                     key={product.id}
                                     variant="catalog"
                                     image={product.image}
                                     title={product.name}
                                     description={product.subname || product.category}
-                                    tag={product.category} // Fallback, hidden in catalog mode
+                                    tag={product.category}
                                     badge={product.badge}
                                     specs={product.specs}
                                     isAvailable={product.isAvailable}
@@ -121,15 +141,33 @@ const ProductsPage = () => {
 
                         {/* Pagination */}
                         <div className="flex justify-center items-center gap-2">
-                            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50">
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                                className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <ChevronLeft size={16} />
                             </button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-lg bg-green-700 text-white font-bold shadow-lg shadow-green-900/20">1</button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium">2</button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium">3</button>
-                            <span className="text-gray-400 px-2">...</span>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 font-medium">8</button>
-                            <button className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-green-600">
+
+                            {/* Page Numbers */}
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                <button
+                                    key={page}
+                                    onClick={() => handlePageChange(page)}
+                                    className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-colors ${currentPage === page
+                                            ? "bg-green-700 text-white shadow-lg shadow-green-900/20 font-bold"
+                                            : "border border-gray-200 text-gray-600 hover:bg-gray-50"
+                                        }`}
+                                >
+                                    {page}
+                                </button>
+                            ))}
+
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                                className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-600"
+                            >
                                 <ChevronRight size={16} />
                             </button>
                         </div>
