@@ -15,7 +15,7 @@ const Section = ({
     return (
         <section className={cn("py-16 md:py-24", className)} {...props}>
             {container ? (
-                <div className="container mx-auto px-4">{children}</div>
+                <div className="w-[90%] md:w-[80%] mx-auto">{children}</div>
             ) : (
                 children
             )}

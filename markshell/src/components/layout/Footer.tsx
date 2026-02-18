@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 const Footer = () => {
     return (
         <footer className="bg-[#0f172a] text-white pt-20 pb-10">
-            <div className="container mx-auto px-4">
+            <div className="w-[90%] md:w-[80%] mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
                     {/* Brand */}
                     <div className="space-y-6">

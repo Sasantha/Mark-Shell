@@ -32,7 +32,7 @@ const Navbar = () => {
                 isScrolled ? "bg-white/90 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
             )}
         >
-            <div className="container mx-auto px-4 flex items-center justify-between">
+            <div className="w-[90%] md:w-[80%] mx-auto flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group">
                     <div className="bg-green-600 p-1.5 rounded-full text-white group-hover:scale-110 transition-transform">

@@ -205,9 +205,8 @@ const AboutPage = () => {
                 </div>
             </Section>
 
-            {/* Certifications Bar */}
             <div className="bg-white border-y border-gray-100 py-12">
-                <div className="container mx-auto px-4">
+                <div className="w-[90%] md:w-[80%] mx-auto">
                     <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Trusted by Industry Leaders & Certifications</p>
                     <div className="flex flex-wrap justify-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
                         {/* Mock Logos using Lucide + Text for now as placeholders */}
