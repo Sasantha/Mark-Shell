@@ -22,7 +22,7 @@ const Navbar = () => {
         { name: "Home", href: "#" },
         { name: "About", href: "/about" },
         { name: "Products", href: "#products" },
-        { name: "Contact", href: "#contact" },
+        { name: "Contact", href: "/contact" },
     ];
 
     return (
@@ -61,12 +61,14 @@ const Navbar = () => {
 
                 {/* CTA Button */}
                 <div className="hidden md:block">
-                    <Button
-                        className="rounded-full px-6"
-                        variant={isScrolled ? "default" : "white"}
-                    >
-                        Get Quote / contact →
-                    </Button>
+                    <Link href="/contact">
+                        <Button
+                            className="rounded-full px-6"
+                            variant={isScrolled ? "default" : "white"}
+                        >
+                            Get Quote / contact →
+                        </Button>
+                    </Link>
                 </div>
 
                 {/* Mobile Menu Toggle */}
