@@ -285,3 +285,55 @@ export const products: Product[] = [
         isAvailable: true,
     }
 ];
+
+export interface Category {
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+    itemCount: number;
+    slug: string; // Used for URL filtering
+}
+
+export const categories: Category[] = [
+    {
+        id: "cat-1",
+        name: "Spoons",
+        description: "Heavy-duty birchwood and bamboo spoons for all occasions.",
+        image: "https://th.bing.com/th/id/OIP.a1z8KVG-jQ5kU1v6htuZ-AHaE7?w=290&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        itemCount: 8, // Manually counted from products array for now
+        slug: "Spoons"
+    },
+    {
+        id: "cat-2",
+        name: "Forks",
+        description: "Reinforced forks designed to handle tough foods without snapping.",
+        image: "https://th.bing.com/th/id/OIP.XQ7WPWYl6bz8Dw5DyAMvJAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        itemCount: 4,
+        slug: "Forks"
+    },
+    {
+        id: "cat-3",
+        name: "Knives",
+        description: "Sharp, serrated wooden knives that actually cut.",
+        image: "https://th.bing.com/th/id/OIP.wz-ZU1-IXcsJpctkI4atBQHaE8?w=290&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        itemCount: 3,
+        slug: "Knives"
+    },
+    {
+        id: "cat-4",
+        name: "Stirrers",
+        description: "Smooth, splinter-free stirrers for coffee and cocktails.",
+        image: "https://th.bing.com/th/id/OIP.8v3Z4Y6b5X7c9Q8e1f2g3h?w=200&h=200&c=7&r=0&o=7&dpr=1.3&pid=1.7",
+        itemCount: 2,
+        slug: "Stirrers"
+    },
+    {
+        id: "cat-5",
+        name: "Kits (Set of 3)",
+        description: "Convenient, hygienic cutlery kits for takeout and delivery.",
+        image: "https://th.bing.com/th/id/OIP.cReDVrYrRmr1FfSbtumvcAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+        itemCount: 4,
+        slug: "Kits (Set of 3)"
+    }
+];

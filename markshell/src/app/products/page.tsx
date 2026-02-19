@@ -1,23 +1,23 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
 import ProductCard from "@/components/ui/ProductCard";
 import { Button } from "@/components/ui/button";
 import { products } from "@/lib/dummy-data";
-import { ChevronDown, ChevronLeft, ChevronRight, FileText, MessageSquare, Download } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Download } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 /**
- * ProductsPage Component
- * Supports:
- * - Filtering by Category (Checkbox)
- * - Filtering by Material (Checkbox/Multi-select)
- * - Sorting: Recommended, Price Low/High, Name A-Z/Z-A
- * - Pagination
+ * ProductsContent Component (Inner component to handle Suspense)
  */
-const ProductsPage = () => {
+const ProductsContent = () => {
+    const searchParams = useSearchParams();
+    const categoryParam = searchParams.get("category");
+
     // -------------------------------------------------------------------------
     // STATE
     // -------------------------------------------------------------------------
@@ -25,6 +25,13 @@ const ProductsPage = () => {
     // Filters
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+
+    // Initialize/Update filters from URL
+    useEffect(() => {
+        if (categoryParam) {
+            setSelectedCategories([categoryParam]);
+        }
+    }, [categoryParam]);
 
     // Sorting: 'recommended' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc'
     const [sortBy, setSortBy] = useState<string>("recommended");
@@ -78,10 +85,9 @@ const ProductsPage = () => {
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
     // Handle Page Reset on Filter/Sort Change
-    // We use a useEffect or just check bounds. 
-    // Effect is better but for visual purposes, forcing page 1 on filter change is good UX.
-    // Note: useMemo doesn't let us reset state inside it. 
-    // We'll reset page in the handlers.
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedCategories, selectedMaterials, sortBy]);
 
     const currentProducts = sortedProducts.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
@@ -98,7 +104,6 @@ const ProductsPage = () => {
                 ? prev.filter(c => c !== cat)
                 : [...prev, cat]
         );
-        setCurrentPage(1); // Reset to page 1
     };
 
     const handleMaterialChange = (mat: string) => {
@@ -107,7 +112,6 @@ const ProductsPage = () => {
                 ? prev.filter(m => m !== mat)
                 : [...prev, mat]
         );
-        setCurrentPage(1); // Reset to page 1
     };
 
     const handleReset = () => {
@@ -329,6 +333,14 @@ const ProductsPage = () => {
 
             <Footer />
         </main>
+    );
+};
+
+const ProductsPage = () => {
+    return (
+        <Suspense fallback={<div>Loading chemicals...</div>}>
+            <ProductsContent />
+        </Suspense>
     );
 };
 
