@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "./button";
+import { useQuote } from "@/contexts/QuoteContext";
 
 interface ProductCardProps {
     id?: string; // Added ID to link
@@ -32,6 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
     variant = "default",
 }) => {
     const isCatalog = variant === "catalog";
+    const { openQuote } = useQuote();
 
     // If ID is provided, wrap in Link, otherwise div
     const Wrapper = id ? Link : "div";
@@ -57,8 +61,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
                     )}
                     {badge && (
                         <span className={`absolute top-3 left-3 text-xs font-bold px-3 py-1 rounded-md uppercase tracking-wide ${badge === "Best Seller" ? "bg-green-500 text-white" : // Updated to match single page design
-                                badge === "Eco Kit" ? "bg-gray-800 text-white" :
-                                    "bg-black/50 text-white backdrop-blur-sm"
+                            badge === "Eco Kit" ? "bg-gray-800 text-white" :
+                                "bg-black/50 text-white backdrop-blur-sm"
                             }`}>
                             {badge}
                         </span>
@@ -115,11 +119,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
                                 onClick={(e) => {
                                     e.preventDefault(); // Prevent navigation when clicking button
                                     e.stopPropagation();
+                                    openQuote('product', title);
                                     onQuoteClick && onQuoteClick();
                                 }}
                                 className={`w-full font-bold transition-all duration-300 rounded-lg ${isCatalog
-                                        ? "bg-green-700 hover:bg-green-800 text-white py-2 text-xs uppercase tracking-wide"
-                                        : "bg-gray-50 text-green-700 hover:bg-green-600 hover:text-white py-6"
+                                    ? "bg-green-700 hover:bg-green-800 text-white py-2 text-xs uppercase tracking-wide"
+                                    : "bg-gray-50 text-green-700 hover:bg-green-600 hover:text-white py-6"
                                     }`}
                             >
                                 {isCatalog ? "Request Quote" : "Get Quote"}

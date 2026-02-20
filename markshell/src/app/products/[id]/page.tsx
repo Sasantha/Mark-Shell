@@ -9,8 +9,10 @@ import { Button } from "@/components/ui/button";
 import { products } from "@/lib/dummy-data";
 import { Check, Info, Leaf, MessageSquare, ShieldCheck, ArrowRight } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
+import { useQuote } from "@/contexts/QuoteContext";
 
 const SingleProductPage = () => {
+    const { openQuote } = useQuote();
     const params = useParams();
     const id = params.id as string;
     const product = products.find((p) => p.id === id);
@@ -173,10 +175,10 @@ const SingleProductPage = () => {
                                 </select>
                             </div>
                             <Button
-                                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-lg shadow-lg hover:shadow-green-500/25 transition-all flex items-center justify-center gap-2"
-                                onClick={() => window.open(`https://wa.me/1234567890?text=Hi, I'm interested in ${product.name}`, '_blank')}
+                                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg hover:shadow-green-500/25 transition-all flex items-center justify-center gap-2"
+                                onClick={() => openQuote('product', product.name)}
                             >
-                                <MessageSquare className="fill-current" /> Request Quote via WhatsApp
+                                <MessageSquare className="fill-current" /> Request Quote
                             </Button>
                             <p className="text-center text-xs text-gray-400">
                                 Typically responds within 15 minutes during business hours.

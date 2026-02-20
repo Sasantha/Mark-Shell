@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageSquare } from "lucide-react";
+import { useQuote } from "@/contexts/QuoteContext";
 
 interface CategoryCardProps {
     name: string;
@@ -17,6 +20,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     itemCount,
     slug,
 }) => {
+    const { openQuote } = useQuote();
+
     return (
         <Link href={`/products?category=${encodeURIComponent(slug)}`} className="group block h-full">
             <div className="relative h-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
@@ -38,11 +43,24 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                 </div>
 
                 {/* Content Section */}
-                <div className="flex flex-col p-6">
+                <div className="flex-grow flex flex-col p-6">
                     <p className="mb-6 line-clamp-2 text-sm text-gray-500">{description}</p>
 
-                    <div className="mt-auto flex items-center gap-2 text-sm font-bold text-green-700 transition-colors group-hover:text-green-800">
-                        View Products <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                    <div className="mt-auto flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm font-bold text-green-700 transition-colors group-hover:text-green-800">
+                            View Products <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                        </div>
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                openQuote('category', name);
+                            }}
+                            className="bg-green-50 hover:bg-green-600 text-green-700 hover:text-white transition-colors p-2 rounded-full cursor-pointer z-10 relative"
+                            title="Request Quote"
+                        >
+                            <MessageSquare size={18} />
+                        </button>
                     </div>
                 </div>
             </div>
