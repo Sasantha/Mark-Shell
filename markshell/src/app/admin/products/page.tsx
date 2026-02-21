@@ -290,9 +290,9 @@ const AdminProductsPage = () => {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex justify-end gap-2">
-                                            <button className="rounded p-2 text-gray-400 hover:bg-gray-100 hover:text-blue-600">
+                                            <Link href={`/admin/products/edit/${product.id}`} className="rounded p-2 text-gray-400 hover:bg-gray-100 hover:text-blue-600">
                                                 <Edit size={16} />
-                                            </button>
+                                            </Link>
                                             <button
                                                 onClick={() => handleDelete(product.id)}
                                                 className="rounded p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600"
