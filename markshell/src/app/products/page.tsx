@@ -17,6 +17,7 @@ import { Suspense } from "react";
 const ProductsContent = () => {
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get("category");
+    const searchQueryParam = searchParams.get("search");
 
     // -------------------------------------------------------------------------
     // STATE
@@ -33,8 +34,12 @@ const ProductsContent = () => {
 
     useEffect(() => {
         const fetchProducts = async () => {
+            setIsLoading(true);
             try {
-                const response = await fetch('/api/products');
+                const url = searchQueryParam
+                    ? `/api/products?q=${encodeURIComponent(searchQueryParam)}`
+                    : '/api/products';
+                const response = await fetch(url);
                 if (!response.ok) {
                     throw new Error('Failed to fetch products');
                 }
@@ -49,7 +54,7 @@ const ProductsContent = () => {
         };
 
         fetchProducts();
-    }, []);
+    }, [searchQueryParam]);
 
     // Initialize/Update filters from URL
     useEffect(() => {
@@ -173,10 +178,12 @@ const ProductsContent = () => {
                 </div>
                 <div className="relative z-10 w-[90%] md:w-[80%] mx-auto pt-16">
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-                        Corporate Catalog
+                        {searchQueryParam ? `Search Results for "${searchQueryParam}"` : "Corporate Catalog"}
                     </h1>
                     <p className="text-green-100 max-w-2xl text-lg leading-relaxed opacity-90">
-                        Browse our extensive range of FSC-certified wooden cutlery. Designed for bulk manufacturing, perfect for hospitality chains, catering services, and wholesale distributors.
+                        {searchQueryParam
+                            ? "Explore the products matching your search query across our entire catalog."
+                            : "Browse our extensive range of FSC-certified wooden cutlery. Designed for bulk manufacturing, perfect for hospitality chains, catering services, and wholesale distributors."}
                     </p>
                 </div>
             </div>

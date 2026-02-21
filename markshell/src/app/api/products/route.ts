@@ -8,10 +8,18 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const category = searchParams.get('category');
         const limitStr = searchParams.get('limit');
+        const q = searchParams.get('q');
 
         let query: any = {};
         if (category) {
             query.category = category;
+        }
+        if (q) {
+            query.$or = [
+                { name: { $regex: q, $options: 'i' } },
+                { longDescription: { $regex: q, $options: 'i' } },
+                { subname: { $regex: q, $options: 'i' } }
+            ];
         }
 
         let productsQuery = Product.find(query);
