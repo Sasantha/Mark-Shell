@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { products } from "@/lib/dummy-data";
-import { Check, Info, Leaf, MessageSquare, ShieldCheck, ArrowRight } from "lucide-react";
+import { Check, Info, Leaf, MessageSquare, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { useQuote } from "@/contexts/QuoteContext";
 
@@ -15,27 +14,83 @@ const SingleProductPage = () => {
     const { openQuote } = useQuote();
     const params = useParams();
     const id = params.id as string;
-    const product = products.find((p) => p.id === id);
-    const [mainImage, setMainImage] = useState(product?.image);
 
-    // Fallback if product not found (should handle 404 properly in real app)
-    if (!product) {
+    const [product, setProduct] = useState<any>(null);
+    const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [mainImage, setMainImage] = useState<string | undefined>();
+
+    useEffect(() => {
+        const fetchProductData = async () => {
+            if (!id) return;
+            setIsLoading(true);
+            try {
+                // Fetch main product
+                const res = await fetch(`/api/products/${id}`);
+                if (!res.ok) throw new Error('Product not found');
+                const productData = await res.json();
+
+                // Convert MongoDB _id to id if necessary
+                const formattedProduct = {
+                    ...productData,
+                    id: productData._id || productData.id
+                };
+
+                setProduct(formattedProduct);
+                setMainImage(formattedProduct.image);
+
+                // Fetch related products (same category)
+                if (formattedProduct.category) {
+                    const relRes = await fetch(`/api/products?category=${encodeURIComponent(formattedProduct.category)}`);
+                    if (relRes.ok) {
+                        const relData = await relRes.json();
+                        // Filter out current product and take up to 4
+                        const filtered = relData
+                            .filter((p: any) => (p._id || p.id) !== formattedProduct.id)
+                            .map((p: any) => ({ ...p, id: p._id || p.id }))
+                            .slice(0, 4);
+                        setRelatedProducts(filtered);
+                    }
+                }
+            } catch (err: any) {
+                console.error("Error fetching product:", err);
+                setError(err.message);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProductData();
+    }, [id]);
+
+    if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p>Product not found.</p>
-            </div>
+            <main className="min-h-screen font-sans bg-[#f9fafb] flex flex-col">
+                <Navbar />
+                <div className="flex-grow flex items-center justify-center">
+                    <Loader2 className="h-10 w-10 animate-spin text-green-600" />
+                </div>
+                <Footer />
+            </main>
+        );
+    }
+
+    if (error || !product) {
+        return (
+            <main className="min-h-screen font-sans bg-[#f9fafb] flex flex-col">
+                <Navbar />
+                <div className="flex-grow flex items-center justify-center">
+                    <p className="text-xl text-gray-700">{error || "Product not found."}</p>
+                </div>
+                <Footer />
+            </main>
         );
     }
 
     // Default Images if extended field is missing
-    const galleryImages = product.images || [product.image, product.image, product.image];
-    // Ensure main image syncs if product changes or state is initially empty
+    const galleryImages = product.images?.length ? product.images : [product.image];
     const displayImage = mainImage || product.image;
-
-    // Filter related products (same category or material, excluding self)
-    const relatedProducts = products
-        .filter((p) => p.category === product.category && p.id !== product.id)
-        .slice(0, 4);
 
     return (
         <main className="min-h-screen font-sans bg-[#f9fafb]">
@@ -83,30 +138,34 @@ const SingleProductPage = () => {
                                     {product.badge}
                                 </span>
                             )}
-                            <img
-                                src={displayImage}
-                                alt={product.name}
-                                className="max-w-full max-h-full object-contain transition-transform duration-500 hover:scale-105"
-                            />
+                            {displayImage && (
+                                <img
+                                    src={displayImage}
+                                    alt={product.name}
+                                    className="max-w-full max-h-full object-contain transition-transform duration-500 hover:scale-105"
+                                />
+                            )}
                         </div>
-                        <div className="grid grid-cols-4 gap-4">
-                            {galleryImages.map((img, idx) => (
-                                <div
-                                    key={idx}
-                                    className={`bg-white rounded-xl p-2 cursor-pointer border-2 transition-all ${displayImage === img ? "border-green-500" : "border-transparent hover:border-gray-200"
-                                        }`}
-                                    onClick={() => setMainImage(img)}
-                                >
-                                    <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover rounded-lg" />
-                                </div>
-                            ))}
-                        </div>
+                        {galleryImages.length > 1 && (
+                            <div className="grid grid-cols-4 gap-4">
+                                {galleryImages.map((img: string, idx: number) => (
+                                    <div
+                                        key={idx}
+                                        className={`bg-white rounded-xl p-2 cursor-pointer border-2 transition-all ${displayImage === img ? "border-green-500" : "border-transparent hover:border-gray-200"
+                                            }`}
+                                        onClick={() => setMainImage(img)}
+                                    >
+                                        <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover rounded-lg" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Right: Product Details */}
                     <div>
                         <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
-                            Variant 1 • Standard Finish
+                            {product.material}
                         </div>
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
                             {product.name}
@@ -117,7 +176,9 @@ const SingleProductPage = () => {
                             <div className="bg-green-100 p-1 rounded-full">
                                 <Check size={12} className="text-green-600" />
                             </div>
-                            <span className="text-sm font-medium text-gray-700">In Stock & Ready to Ship</span>
+                            <span className="text-sm font-medium text-gray-700">
+                                {product.isAvailable ? "In Stock & Ready to Ship" : "Currently Unavailable"}
+                            </span>
                         </div>
 
                         {/* Features */}
@@ -134,7 +195,7 @@ const SingleProductPage = () => {
                         </div>
 
                         {/* Description */}
-                        <p className="text-gray-600 leading-relaxed mb-8">
+                        <p className="text-gray-600 leading-relaxed mb-8 whitespace-pre-line">
                             {product.longDescription || product.subname || product.name}
                         </p>
 
@@ -146,19 +207,19 @@ const SingleProductPage = () => {
                             <div className="grid grid-cols-2 gap-y-6 gap-x-8">
                                 <div>
                                     <span className="text-xs text-gray-400 block mb-1">Length</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.specs.length || "N/A"}</span>
+                                    <span className="text-sm font-bold text-gray-900">{product.specs?.length || "N/A"}</span>
                                 </div>
                                 <div>
                                     <span className="text-xs text-gray-400 block mb-1">Material</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.material === "Birchwood" ? "100% White Birch" : "Natural Bamboo"}</span>
+                                    <span className="text-sm font-bold text-gray-900">{product.material === "Birchwood" ? "100% White Birch" : (product.material || "Natural Material")}</span>
                                 </div>
                                 <div>
                                     <span className="text-xs text-gray-400 block mb-1">Carton Quantity</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.cartonQuantity || product.specs.case}</span>
+                                    <span className="text-sm font-bold text-gray-900">{product.cartonQuantity || product.specs?.case || "N/A"}</span>
                                 </div>
                                 <div>
                                     <span className="text-xs text-gray-400 block mb-1">Weight</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.weight || "N/A"}</span>
+                                    <span className="text-sm font-bold text-gray-900">{product.weight || product.specs?.weight || "N/A"}</span>
                                 </div>
                             </div>
                         </div>
@@ -188,28 +249,31 @@ const SingleProductPage = () => {
                 </div>
 
                 {/* Complete the Set */}
-                <div className="border-t border-gray-100 pt-16">
-                    <div className="flex items-center justify-between mb-8">
-                        <h2 className="text-2xl font-bold text-gray-900">Complete the Set</h2>
-                        <a href="/products" className="text-green-600 font-bold text-sm flex items-center gap-1 hover:underline">
-                            View All <ArrowRight size={16} />
-                        </a>
+                {relatedProducts.length > 0 && (
+                    <div className="border-t border-gray-100 pt-16">
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-2xl font-bold text-gray-900">Complete the Set</h2>
+                            <a href={`/products?category=${encodeURIComponent(product.category)}`} className="text-green-600 font-bold text-sm flex items-center gap-1 hover:underline">
+                                View All <ArrowRight size={16} />
+                            </a>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {relatedProducts.map((p) => (
+                                <ProductCard
+                                    key={p.id}
+                                    id={p.id}
+                                    variant="default"
+                                    image={p.image}
+                                    title={p.name}
+                                    description={p.category}
+                                    tag={p.category}
+                                    badge={p.badge}
+                                    onQuoteClick={() => openQuote('product', p.name)}
+                                />
+                            ))}
+                        </div>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {relatedProducts.map((p) => (
-                            <ProductCard
-                                key={p.id}
-                                variant="default" // Use default variant for related products as per design image
-                                image={p.image}
-                                title={p.name}
-                                description={p.category} // Simplified description
-                                tag={p.category}
-                                badge={p.badge}
-                                onQuoteClick={() => console.log("Quote clicked")}
-                            />
-                        ))}
-                    </div>
-                </div>
+                )}
             </Section>
 
             <Footer />

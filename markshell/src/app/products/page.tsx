@@ -6,8 +6,7 @@ import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
 import ProductCard from "@/components/ui/ProductCard";
 import { Button } from "@/components/ui/button";
-import { products } from "@/lib/dummy-data";
-import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Download } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Download, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -22,9 +21,34 @@ const ProductsContent = () => {
     // STATE
     // -------------------------------------------------------------------------
 
+    // Data State
+    const [products, setProducts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     // Filters
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('/api/products');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                const data = await response.json();
+                setProducts(data);
+            } catch (err: any) {
+                setError(err.message);
+                console.error("Error fetching products:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     // Initialize/Update filters from URL
     useEffect(() => {
@@ -197,7 +221,7 @@ const ProductsContent = () => {
                             {/* Material Filter */}
                             <div className="space-y-3 pt-6 mt-6 border-t border-gray-100">
                                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Material</h4>
-                                {["Birchwood", "Bamboo"].map((mat) => (
+                                {["Birchwood", "Bamboo", "Bagasse"].map((mat) => (
                                     <label key={mat} className="flex items-center gap-3 cursor-pointer group select-none">
                                         <div
                                             className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 ${selectedMaterials.includes(mat)
@@ -219,94 +243,106 @@ const ProductsContent = () => {
 
                     {/* Product Grid Area */}
                     <div className="lg:col-span-9">
-                        {/* Top Bar */}
-                        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                            <span className="text-gray-500 text-sm font-medium">
-                                Showing <span className="text-gray-900 font-bold">{totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalItems)}</span> of <span className="text-gray-900 font-bold">{totalItems}</span> products
-                            </span>
-
-                            <div className="flex items-center gap-3">
-                                <span className="text-gray-400 text-sm hidden sm:inline">Sort by:</span>
-                                <div className="relative">
-                                    <select
-                                        className="appearance-none bg-gray-50 border border-gray-200 pl-4 pr-10 py-2 rounded-lg text-sm font-medium text-gray-700 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors cursor-pointer"
-                                        value={sortBy}
-                                        onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
-                                    >
-                                        <option value="recommended">Recommended</option>
-                                        <option value="price-asc">Price: Low to High</option>
-                                        <option value="price-desc">Price: High to Low</option>
-                                        <option value="alpha-asc">Name: A - Z</option>
-                                        <option value="alpha-desc">Name: Z - A</option>
-                                    </select>
-                                    <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                                </div>
+                        {isLoading ? (
+                            <div className="flex h-[40vh] items-center justify-center">
+                                <Loader2 className="h-10 w-10 animate-spin text-green-600" />
                             </div>
-                        </div>
-
-                        {/* Grid */}
-                        {currentProducts.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
-                                {currentProducts.map((product) => (
-                                    <ProductCard
-                                        key={product.id}
-                                        id={product.id} // Added id
-                                        variant="catalog"
-                                        image={product.image}
-                                        title={product.name}
-                                        description={product.subname || product.category}
-                                        tag={product.category}
-                                        badge={product.badge}
-                                        specs={product.specs}
-                                        isAvailable={product.isAvailable}
-                                        onQuoteClick={() => console.log(`Quote for ${product.name}`)}
-                                    />
-                                ))}
+                        ) : error ? (
+                            <div className="flex h-[40vh] items-center justify-center">
+                                <p className="text-red-500 text-lg">Error loading products: {error}</p>
                             </div>
                         ) : (
-                            <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mb-12">
-                                <p className="text-gray-500 font-medium">No products match your filters.</p>
-                                <button
-                                    onClick={handleReset}
-                                    className="text-green-600 text-sm font-bold mt-2 hover:underline"
-                                >
-                                    Clear all filters
-                                </button>
-                            </div>
-                        )}
+                            <>
+                                {/* Top Bar */}
+                                <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                                    <span className="text-gray-500 text-sm font-medium">
+                                        Showing <span className="text-gray-900 font-bold">{totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalItems)}</span> of <span className="text-gray-900 font-bold">{totalItems}</span> products
+                                    </span>
 
-                        {/* Pagination */}
-                        {totalItems > 0 && (
-                            <div className="flex justify-center items-center gap-2">
-                                <button
-                                    onClick={() => handlePageChange(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed hover:text-gray-600 transition-colors"
-                                >
-                                    <ChevronLeft size={16} />
-                                </button>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-gray-400 text-sm hidden sm:inline">Sort by:</span>
+                                        <div className="relative">
+                                            <select
+                                                className="appearance-none bg-gray-50 border border-gray-200 pl-4 pr-10 py-2 rounded-lg text-sm font-medium text-gray-700 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors cursor-pointer"
+                                                value={sortBy}
+                                                onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                                            >
+                                                <option value="recommended">Recommended</option>
+                                                <option value="price-asc">Price: Low to High</option>
+                                                <option value="price-desc">Price: High to Low</option>
+                                                <option value="alpha-asc">Name: A - Z</option>
+                                                <option value="alpha-desc">Name: Z - A</option>
+                                            </select>
+                                            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                        </div>
+                                    </div>
+                                </div>
 
-                                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                    <button
-                                        key={page}
-                                        onClick={() => handlePageChange(page)}
-                                        className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-all duration-200 ${currentPage === page
-                                            ? "bg-green-700 text-white shadow-lg shadow-green-900/20 font-bold scale-105"
-                                            : "border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-green-200"
-                                            }`}
-                                    >
-                                        {page}
-                                    </button>
-                                ))}
+                                {/* Grid */}
+                                {currentProducts.length > 0 ? (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+                                        {currentProducts.map((product) => (
+                                            <ProductCard
+                                                key={product.id}
+                                                id={product.id} // Added id
+                                                variant="catalog"
+                                                image={product.image}
+                                                title={product.name}
+                                                description={product.subname || product.category}
+                                                tag={product.category}
+                                                badge={product.badge}
+                                                specs={product.specs}
+                                                isAvailable={product.isAvailable}
+                                                onQuoteClick={() => console.log(`Quote for ${product.name}`)}
+                                            />
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mb-12">
+                                        <p className="text-gray-500 font-medium">No products match your filters.</p>
+                                        <button
+                                            onClick={handleReset}
+                                            className="text-green-600 text-sm font-bold mt-2 hover:underline"
+                                        >
+                                            Clear all filters
+                                        </button>
+                                    </div>
+                                )}
 
-                                <button
-                                    onClick={() => handlePageChange(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                    className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-600 transition-colors"
-                                >
-                                    <ChevronRight size={16} />
-                                </button>
-                            </div>
+                                {/* Pagination */}
+                                {totalItems > 0 && (
+                                    <div className="flex justify-center items-center gap-2">
+                                        <button
+                                            onClick={() => handlePageChange(currentPage - 1)}
+                                            disabled={currentPage === 1}
+                                            className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed hover:text-gray-600 transition-colors"
+                                        >
+                                            <ChevronLeft size={16} />
+                                        </button>
+
+                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                                            <button
+                                                key={page}
+                                                onClick={() => handlePageChange(page)}
+                                                className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-all duration-200 ${currentPage === page
+                                                    ? "bg-green-700 text-white shadow-lg shadow-green-900/20 font-bold scale-105"
+                                                    : "border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-green-200"
+                                                    }`}
+                                            >
+                                                {page}
+                                            </button>
+                                        ))}
+
+                                        <button
+                                            onClick={() => handlePageChange(currentPage + 1)}
+                                            disabled={currentPage === totalPages}
+                                            className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-600 transition-colors"
+                                        >
+                                            <ChevronRight size={16} />
+                                        </button>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>

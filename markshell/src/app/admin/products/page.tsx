@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { products as initialProducts } from "@/lib/dummy-data"; // Mock data
-import { Plus, Search, Edit, Trash2, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { Plus, Search, Edit, Trash2, ChevronLeft, ChevronRight, ArrowUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AdminProductsPage = () => {
-    const [products, setProducts] = useState(initialProducts);
+    const [products, setProducts] = useState<any[]>([]);
     const [search, setSearch] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Pagination & Sorting State
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +17,26 @@ const AdminProductsPage = () => {
     const [showAll, setShowAll] = useState(false);
 
     const ITEMS_PER_PAGE = 5;
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch('/api/products');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch products');
+                }
+                const data = await response.json();
+                setProducts(data);
+            } catch (err: any) {
+                setError(err.message);
+                console.error("Error fetching products:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     // 1. Filter
     const filteredProducts = products.filter((p) =>
@@ -40,9 +61,22 @@ const AdminProductsPage = () => {
         );
 
     // Handlers
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (confirm("Are you sure you want to delete this product?")) {
-            setProducts(products.filter((p) => p.id !== id));
+            try {
+                const response = await fetch(`/api/products/${id}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete product');
+                }
+
+                setProducts(products.filter((p) => p._id !== id && p.id !== id));
+            } catch (error) {
+                console.error("Error deleting:", error);
+                alert("Failed to delete product.");
+            }
         }
     };
 
@@ -55,6 +89,22 @@ const AdminProductsPage = () => {
             setCurrentPage(page);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <p className="text-red-500">Error: {error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -148,8 +198,8 @@ const AdminProductsPage = () => {
                                     <td className="px-6 py-4">
                                         <span
                                             className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${product.isAvailable
-                                                    ? "bg-green-100 text-green-800"
-                                                    : "bg-red-100 text-red-800"
+                                                ? "bg-green-100 text-green-800"
+                                                : "bg-red-100 text-red-800"
                                                 }`}
                                         >
                                             {product.isAvailable ? "Active" : "Inactive"}
@@ -202,8 +252,8 @@ const AdminProductsPage = () => {
                                     key={page}
                                     onClick={() => handlePageChange(page)}
                                     className={`h-8 w-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${currentPage === page
-                                            ? "bg-green-600 text-white shadow-sm"
-                                            : "text-gray-600 hover:bg-white hover:text-green-600"
+                                        ? "bg-green-600 text-white shadow-sm"
+                                        : "text-gray-600 hover:bg-white hover:text-green-600"
                                         }`}
                                 >
                                     {page}

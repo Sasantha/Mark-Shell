@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { categories as initialCategories } from "@/lib/dummy-data"; // Mock data
-import { Plus, Search, Edit, Trash2, ChevronLeft, ChevronRight, ArrowUpDown } from "lucide-react";
+import { Plus, Search, Edit, Trash2, ChevronLeft, ChevronRight, ArrowUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AdminCategoriesPage = () => {
-    const [categories, setCategories] = useState(initialCategories);
+    const [categories, setCategories] = useState<any[]>([]);
     const [search, setSearch] = useState("");
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     // Pagination & Sorting State
     const [currentPage, setCurrentPage] = useState(1);
@@ -16,6 +17,26 @@ const AdminCategoriesPage = () => {
     const [showAll, setShowAll] = useState(false);
 
     const ITEMS_PER_PAGE = 5;
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch categories');
+                }
+                const data = await response.json();
+                setCategories(data);
+            } catch (err: any) {
+                setError(err.message);
+                console.error("Error fetching categories:", err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     // 1. Filter
     const filteredCategories = categories.filter((c) =>
@@ -40,9 +61,22 @@ const AdminCategoriesPage = () => {
         );
 
     // Handlers
-    const handleDelete = (id: string) => {
+    const handleDelete = async (id: string) => {
         if (confirm("Are you sure you want to delete this category?")) {
-            setCategories(categories.filter((c) => c.id !== id));
+            try {
+                const response = await fetch(`/api/categories/${id}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete category');
+                }
+
+                setCategories(categories.filter((c) => c._id !== id && c.id !== id));
+            } catch (error) {
+                console.error("Error deleting:", error);
+                alert("Failed to delete category.");
+            }
         }
     };
 
@@ -55,6 +89,22 @@ const AdminCategoriesPage = () => {
             setCurrentPage(page);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-green-600" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex h-[60vh] items-center justify-center">
+                <p className="text-red-500">Error: {error}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
@@ -192,8 +242,8 @@ const AdminCategoriesPage = () => {
                                     key={page}
                                     onClick={() => handlePageChange(page)}
                                     className={`h-8 w-8 flex items-center justify-center rounded-md text-sm font-medium transition-colors ${currentPage === page
-                                            ? "bg-green-600 text-white shadow-sm"
-                                            : "text-gray-600 hover:bg-white hover:text-green-600"
+                                        ? "bg-green-600 text-white shadow-sm"
+                                        : "text-gray-600 hover:bg-white hover:text-green-600"
                                         }`}
                                 >
                                     {page}
