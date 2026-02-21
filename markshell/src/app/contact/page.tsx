@@ -4,6 +4,7 @@ import React from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
+import MessagePopup from "@/components/ui/MessagePopup";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Mail, MapPin, Send } from "lucide-react";
 
@@ -151,6 +152,7 @@ const ContactPage = () => {
             </div>
 
             <Footer />
+            <MessagePopup />
         </main>
     );
 };

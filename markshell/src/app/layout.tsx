@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ScrollToTop from "@/components/ui/ScrollToTop";
-import MessagePopup from "@/components/ui/MessagePopup";
 import { QuoteProvider } from "@/contexts/QuoteContext";
 
 const geistSans = Geist({
@@ -33,7 +32,6 @@ export default function RootLayout({
         <QuoteProvider>
           {children}
           <ScrollToTop />
-          <MessagePopup />
         </QuoteProvider>
       </body>
     </html>

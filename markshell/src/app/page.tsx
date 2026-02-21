@@ -5,8 +5,8 @@ import Features from "@/components/sections/Features";
 import About from "@/components/sections/About";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import Stats from "@/components/sections/Stats";
-import Testimonials from "@/components/sections/Testimonials";
 import CTA from "@/components/sections/CTA";
+import MessagePopup from "@/components/ui/MessagePopup";
 
 export default function Home() {
   return (
@@ -20,6 +20,7 @@ export default function Home() {
       {/* <Testimonials /> */}
       <CTA />
       <Footer />
+      <MessagePopup />
     </main>
   );
 }

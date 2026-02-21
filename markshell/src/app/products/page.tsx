@@ -3,8 +3,9 @@
 import React, { useState, useMemo, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Section from "@/components/ui/section";
 import ProductCard from "@/components/ui/ProductCard";
+import MessagePopup from "@/components/ui/MessagePopup";
+import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Download, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -368,6 +369,7 @@ const ProductsContent = () => {
             </div>
 
             <Footer />
+            <MessagePopup />
         </main>
     );
 };

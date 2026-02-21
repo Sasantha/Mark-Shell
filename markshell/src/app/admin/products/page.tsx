@@ -16,6 +16,16 @@ const AdminProductsPage = () => {
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
     const [showAll, setShowAll] = useState(false);
 
+    // Filter State
+    const [filterCategory, setFilterCategory] = useState("");
+    const [filterMaterial, setFilterMaterial] = useState("");
+    const [minPrice, setMinPrice] = useState("");
+    const [maxPrice, setMaxPrice] = useState("");
+
+    // Get unique categories and materials for filters
+    const uniqueCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean)));
+    const uniqueMaterials = Array.from(new Set(products.map(p => p.material).filter(Boolean)));
+
     const ITEMS_PER_PAGE = 5;
 
     useEffect(() => {
@@ -39,9 +49,17 @@ const AdminProductsPage = () => {
     }, []);
 
     // 1. Filter
-    const filteredProducts = products.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase())
-    );
+    const filteredProducts = products.filter((p) => {
+        const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+        const matchesCategory = filterCategory ? p.category === filterCategory : true;
+        const matchesMaterial = filterMaterial ? p.material === filterMaterial : true;
+
+        const price = Number(p.price) || 0;
+        const matchesMinPrice = minPrice ? price >= Number(minPrice) : true;
+        const matchesMaxPrice = maxPrice ? price <= Number(maxPrice) : true;
+
+        return matchesSearch && matchesCategory && matchesMaterial && matchesMinPrice && matchesMaxPrice;
+    });
 
     // 2. Sort
     const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -117,44 +135,109 @@ const AdminProductsPage = () => {
                 </Link>
             </div>
 
-            {/* Actions Bar */}
-            <div className="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100 justify-between items-center">
-                <div className="relative flex-1 max-w-sm w-full">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Search products..."
-                        value={search}
-                        onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-                        className="w-full rounded-lg border border-gray-200 py-2 pl-10 text-sm outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
-                    />
+            {/* Actions & Filters */}
+            <div className="flex flex-col gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div className="flex flex-col md:flex-row gap-4 justify-between items-center">
+                    {/* Search */}
+                    <div className="relative flex-1 max-w-sm w-full">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search products..."
+                            value={search}
+                            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+                            className="w-full rounded-lg border border-gray-200 py-2 pl-10 text-sm outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                        />
+                    </div>
+
+                    <div className="flex items-center gap-4 w-full md:w-auto justify-end">
+                        {/* Show All Toggle */}
+                        <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 select-none">
+                            <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${showAll ? 'bg-green-600 border-green-600' : 'border-gray-300 bg-white'}`}>
+                                <input
+                                    type="checkbox"
+                                    checked={showAll}
+                                    onChange={(e) => setShowAll(e.target.checked)}
+                                    className="hidden"
+                                />
+                                {showAll && <span className="text-white text-[10px]">✓</span>}
+                            </div>
+                            Show All
+                        </label>
+
+                        {/* Sort Button */}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={toggleSort}
+                            className="flex items-center gap-2 text-gray-600 border-gray-200"
+                        >
+                            <ArrowUpDown size={14} />
+                            Sort: {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
+                        </Button>
+                    </div>
                 </div>
 
-                <div className="flex items-center gap-4 w-full md:w-auto justify-end">
-                    {/* Show All Toggle */}
-                    <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-gray-700 select-none">
-                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${showAll ? 'bg-green-600 border-green-600' : 'border-gray-300 bg-white'}`}>
-                            <input
-                                type="checkbox"
-                                checked={showAll}
-                                onChange={(e) => setShowAll(e.target.checked)}
-                                className="hidden"
-                            />
-                            {showAll && <span className="text-white text-[10px]">✓</span>}
-                        </div>
-                        Show All
-                    </label>
+                {/* Filters Row */}
+                <div className="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-100">
+                    <span className="text-sm font-medium text-gray-700">Filters:</span>
 
-                    {/* Sort Button */}
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={toggleSort}
-                        className="flex items-center gap-2 text-gray-600 border-gray-200"
+                    <select
+                        value={filterCategory}
+                        onChange={(e) => { setFilterCategory(e.target.value); setCurrentPage(1); }}
+                        className="rounded-lg border border-gray-200 py-1.5 px-3 text-sm text-gray-700 outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
                     >
-                        <ArrowUpDown size={14} />
-                        Sort: {sortOrder === 'asc' ? 'A-Z' : 'Z-A'}
-                    </Button>
+                        <option value="">All Categories</option>
+                        {uniqueCategories.map(cat => (
+                            <option key={String(cat)} value={String(cat)}>{String(cat)}</option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={filterMaterial}
+                        onChange={(e) => { setFilterMaterial(e.target.value); setCurrentPage(1); }}
+                        className="rounded-lg border border-gray-200 py-1.5 px-3 text-sm text-gray-700 outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                    >
+                        <option value="">All Materials</option>
+                        {uniqueMaterials.map(mat => (
+                            <option key={String(mat)} value={String(mat)}>{String(mat)}</option>
+                        ))}
+                    </select>
+
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="number"
+                            placeholder="Min Price"
+                            value={minPrice}
+                            onChange={(e) => { setMinPrice(e.target.value); setCurrentPage(1); }}
+                            className="w-24 rounded-lg border border-gray-200 py-1.5 px-3 text-sm outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                        />
+                        <span className="text-gray-400">-</span>
+                        <input
+                            type="number"
+                            placeholder="Max Price"
+                            value={maxPrice}
+                            onChange={(e) => { setMaxPrice(e.target.value); setCurrentPage(1); }}
+                            className="w-24 rounded-lg border border-gray-200 py-1.5 px-3 text-sm outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500"
+                        />
+                    </div>
+
+                    {(filterCategory || filterMaterial || minPrice || maxPrice) && (
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                                setFilterCategory("");
+                                setFilterMaterial("");
+                                setMinPrice("");
+                                setMaxPrice("");
+                                setCurrentPage(1);
+                            }}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8 px-3 py-1"
+                        >
+                            Clear
+                        </Button>
+                    )}
                 </div>
             </div>
 

@@ -3,8 +3,9 @@
 import React from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import Section from "@/components/ui/section";
 import CategoryCard from "@/components/ui/CategoryCard";
+import MessagePopup from "@/components/ui/MessagePopup";
+import Section from "@/components/ui/section";
 import { categories } from "@/lib/dummy-data";
 
 const CategoriesPage = () => {
@@ -49,6 +50,7 @@ const CategoriesPage = () => {
             </Section>
 
             <Footer />
+            <MessagePopup />
         </main>
     );
 };

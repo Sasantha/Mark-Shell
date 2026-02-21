@@ -3,6 +3,7 @@
 import React from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { Leaf, Recycle, TreePine, Droplets, CheckCircle, Truck, Utensils, ShieldCheck } from "lucide-react";
@@ -238,6 +239,7 @@ const AboutPage = () => {
             </Section>
 
             <Footer />
+            <MessagePopup />
         </main>
     );
 };

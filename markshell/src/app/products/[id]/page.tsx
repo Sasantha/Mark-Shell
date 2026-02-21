@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
+import MessagePopup from "@/components/ui/MessagePopup";
 import { Check, Info, Leaf, MessageSquare, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { useQuote } from "@/contexts/QuoteContext";
@@ -277,6 +278,7 @@ const SingleProductPage = () => {
             </Section>
 
             <Footer />
+            <MessagePopup />
         </main>
     );
 };
