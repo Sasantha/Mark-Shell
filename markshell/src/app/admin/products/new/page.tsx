@@ -14,8 +14,9 @@ const AddProductPage = () => {
     const [categories, setCategories] = useState<any[]>([]);
 
     // Image Upload State
-    const [imageFile, setImageFile] = useState<File | null>(null);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [imageFiles, setImageFiles] = useState<(File | null)[]>([null, null, null, null]);
+    const [imagePreviews, setImagePreviews] = useState<(string | null)[]>([null, null, null, null]);
+    const [mainImageIndex, setMainImageIndex] = useState<number>(0);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -54,11 +55,55 @@ const AddProductPage = () => {
         setFormData((prev) => ({ ...prev, isAvailable: val === "active" }));
     };
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            setImageFile(file);
-            setImagePreview(URL.createObjectURL(file));
+
+            setImageFiles(prev => {
+                const newFiles = [...prev];
+                newFiles[index] = file;
+                return newFiles;
+            });
+
+            setImagePreviews(prev => {
+                const newPreviews = [...prev];
+                // Revoke old object URL if exists to avoid memory leaks
+                if (newPreviews[index]) {
+                    URL.revokeObjectURL(newPreviews[index] as string);
+                }
+                newPreviews[index] = URL.createObjectURL(file);
+                return newPreviews;
+            });
+
+            // If they upload their first ever image, make it the main image automatically
+            if (imageFiles.every(f => f === null)) {
+                setMainImageIndex(index);
+            }
+        }
+    };
+
+    const handleRemoveImage = (index: number, e: React.MouseEvent) => {
+        e.stopPropagation();
+
+        setImageFiles(prev => {
+            const newFiles = [...prev];
+            newFiles[index] = null;
+            return newFiles;
+        });
+
+        setImagePreviews(prev => {
+            const newPreviews = [...prev];
+            if (newPreviews[index]) {
+                URL.revokeObjectURL(newPreviews[index] as string);
+            }
+            newPreviews[index] = null;
+            return newPreviews;
+        });
+
+        // If removing the main image, try to assign a new main image
+        if (index === mainImageIndex) {
+            const nextAvailableIndex = imageFiles.findIndex((f, i) => i !== index && f !== null);
+            setMainImageIndex(nextAvailableIndex !== -1 ? nextAvailableIndex : 0);
         }
     };
 
@@ -95,16 +140,37 @@ const AddProductPage = () => {
             return;
         }
 
-        if (!imageFile) {
-            alert("Please select a main image for the product.");
+        const validFiles = imageFiles.filter(f => f !== null) as File[];
+
+        if (validFiles.length === 0) {
+            alert("Please select at least one image for the product.");
+            return;
+        }
+
+        if (imageFiles[mainImageIndex] === null) {
+            alert("The selected main image is empty. Please select a valid main image.");
             return;
         }
 
         setIsLoading(true);
 
         try {
-            // 1. Upload image to Cloudinary
-            const imageUrl = await uploadImageToCloudinary(imageFile);
+            // 1. Upload all images to Cloudinary concurrently
+            const uploadPromises = validFiles.map(file => uploadImageToCloudinary(file));
+            const uploadedUrls = await Promise.all(uploadPromises);
+
+            // Re-map the urls back to their original slots to figure out which one is the main image
+            const allUrls: (string | null)[] = [null, null, null, null];
+            let uploadedCount = 0;
+            imageFiles.forEach((f, i) => {
+                if (f !== null) {
+                    allUrls[i] = uploadedUrls[uploadedCount];
+                    uploadedCount++;
+                }
+            });
+
+            const mainImageUrl = allUrls[mainImageIndex] as string;
+            const otherUrls = uploadedUrls.filter(url => url !== mainImageUrl);
 
             // 2. Prepare payload for DB
             const payload = {
@@ -112,12 +178,12 @@ const AddProductPage = () => {
                 subname: formData.subname,
                 category: formData.category,
                 material: formData.material,
-                image: imageUrl,
+                image: mainImageUrl, // Save main image to primary field
                 price: parseFloat(formData.price),
                 isAvailable: formData.isAvailable,
                 longDescription: formData.description,
-                specs: {}, // Initialize empty specs
-                images: [imageUrl] // Add initial image to images array
+                specs: {},
+                images: [mainImageUrl, ...otherUrls] // Save all images (main first)
             };
 
             // 3. Save to database via API
@@ -290,35 +356,71 @@ const AddProductPage = () => {
                     </div>
 
                     <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
-                        <h2 className="text-lg font-bold text-gray-900 mb-4">Media *</h2>
-
-                        <div className="relative">
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                            />
-                            <div className={`border-2 border-dashed ${imagePreview ? 'border-green-300 bg-green-50' : 'border-gray-300 hover:bg-gray-50'} rounded-lg p-6 flex flex-col items-center justify-center text-center transition-colors group relative overflow-hidden`}>
-                                {imagePreview ? (
-                                    <>
-                                        <div className="absolute inset-0 opacity-20">
-                                            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover blur-sm" />
-                                        </div>
-                                        <ImageIcon className="h-8 w-8 text-green-600 mb-2 relative z-0" />
-                                        <p className="text-sm font-medium text-green-700 relative z-0">Image selected</p>
-                                        <p className="text-xs text-green-600 mt-1 relative z-0">Click or drag to change</p>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Upload className="h-8 w-8 text-gray-400 mb-2 group-hover:text-green-500 transition-colors" />
-                                        <p className="text-sm text-gray-500">Click to upload main image</p>
-                                        <p className="text-xs text-gray-400 mt-1">SVG, PNG, JPG (max 2MB)</p>
-                                    </>
-                                )}
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h2 className="text-lg font-bold text-gray-900">Media *</h2>
+                                <p className="text-xs text-gray-500">Upload up to 4 images. Select the star to set the main image.</p>
                             </div>
                         </div>
 
+                        <div className="grid grid-cols-2 gap-4">
+                            {[0, 1, 2, 3].map((index) => (
+                                <div key={index} className="relative aspect-square">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={(e) => handleImageChange(index, e)}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    />
+                                    <div className={`w-full h-full border-2 border-dashed ${imagePreviews[index] ? (mainImageIndex === index ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-gray-50') : 'border-gray-300 hover:bg-gray-50'} rounded-lg p-2 flex flex-col items-center justify-center text-center transition-colors group relative overflow-hidden`}>
+                                        {imagePreviews[index] ? (
+                                            <>
+                                                <div className="absolute inset-0">
+                                                    <img src={imagePreviews[index]!} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                                </div>
+
+                                                {/* Backdrop for buttons */}
+                                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col items-center justify-center gap-2">
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            setMainImageIndex(index);
+                                                        }}
+                                                        className={`rounded-full shadow-lg ${mainImageIndex === index ? 'bg-yellow-400 hover:bg-yellow-500 text-black' : 'bg-white text-gray-800 hover:bg-gray-100'}`}
+                                                    >
+                                                        {mainImageIndex === index ? '⭐ Main Image' : 'Set as Main'}
+                                                    </Button>
+                                                    <Button
+                                                        type="button"
+                                                        size="sm"
+                                                        variant="destructive"
+                                                        onClick={(e) => handleRemoveImage(index, e)}
+                                                        className="rounded-full shadow-lg h-8 px-3"
+                                                    >
+                                                        Remove
+                                                    </Button>
+                                                </div>
+
+                                                {/* Main Image Badge (always visible if it's main) */}
+                                                {mainImageIndex === index && (
+                                                    <div className="absolute top-2 left-2 z-10 bg-yellow-400 text-black text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                                                        MAIN
+                                                    </div>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="h-6 w-6 text-gray-400 mb-2 group-hover:text-green-500 transition-colors" />
+                                                <p className="text-[10px] text-gray-500">Image {index + 1}</p>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
