@@ -1,14 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CategoryCard from "@/components/ui/CategoryCard";
 import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
-import { categories } from "@/lib/dummy-data";
+import { Loader2 } from "lucide-react";
 
 const CategoriesPage = () => {
+    const [categories, setCategories] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories');
+                if (response.ok) {
+                    const data = await response.json();
+                    setCategories(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch categories:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchCategories();
+    }, []);
     return (
         <main className="min-h-screen font-sans bg-[#f9fafb]">
             <Navbar />
@@ -35,18 +55,28 @@ const CategoriesPage = () => {
 
             {/* Categories Grid */}
             <Section className="py-16">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {categories.map((category) => (
-                        <CategoryCard
-                            key={category.id}
-                            name={category.name}
-                            description={category.description}
-                            image={category.image}
-                            itemCount={category.itemCount}
-                            slug={category.slug}
-                        />
-                    ))}
-                </div>
+                {isLoading ? (
+                    <div className="flex items-center justify-center min-h-[40vh]">
+                        <Loader2 className="h-10 w-10 animate-spin text-green-600" />
+                    </div>
+                ) : categories.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {categories.map((category) => (
+                            <CategoryCard
+                                key={category.id || category._id}
+                                name={category.name}
+                                description={category.description}
+                                image={category.image}
+                                itemCount={category.itemCount || 0}
+                                slug={category.slug || category.name.toLowerCase().replace(/\s+/g, '-')}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20 text-gray-500">
+                        No categories found.
+                    </div>
+                )}
             </Section>
 
             <Footer />

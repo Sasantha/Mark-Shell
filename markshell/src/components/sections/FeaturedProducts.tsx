@@ -1,49 +1,34 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Section from "../ui/section";
 import ProductCard from "../ui/ProductCard";
-
-const products = [
-    {
-        name: "Wooden Spoons",
-        description: "Hand-crafted from sustainable teak wood defined for durability and elegance.",
-        image: "https://th.bing.com/th/id/OIP.cReDVrYrRmr1FfSbtumvcAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-        tag: "Kitchen"
-    },
-    {
-        name: "Reusable Forks",
-        description: "Premium bamboo forks designed for daily use, lightweight and sturdy.",
-        image: "https://th.bing.com/th/id/OIP.XQ7WPWYl6bz8Dw5DyAMvJAHaE8?w=296&h=197&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-        tag: "Dining"
-    },
-    {
-        name: "Wooden Combs",
-        description: "Gentle neem wood combs that reduce static and promote scalp health.",
-        image: "https://th.bing.com/th/id/OIP.wz-ZU1-IXcsJpctkI4atBQHaE8?w=290&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-        tag: "Personal Care"
-    },
-    {
-        name: "Bamboo Skewers",
-        description: "Biodegradable skewers perfect for grilling, appetizers, or crafts.",
-        image: "https://th.bing.com/th/id/OIP.Ov4txxrkn6_B24NO2WflOgHaHY?w=179&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-        tag: "Cooking"
-    },
-    {
-        name: "Biodegradable Cup",
-        description: "Classic design meets sustainability in these fully compostable cups.",
-        image: "https://th.bing.com/th/id/OIP.2W2pL0A0NsL6vtKPqvGlGQHaGy?w=211&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-        tag: "Travel"
-    },
-    {
-        name: "Thermal Tumbler",
-        description: "Double-walled insulation keeps your beverages at the perfect temperature.",
-        image: "https://th.bing.com/th/id/OIP.a1z8KVG-jQ5kU1v6htuZ-AHaE7?w=290&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
-        tag: "Lifestyle"
-    },
-];
+import { useQuote } from "@/contexts/QuoteContext";
+import { Loader2 } from "lucide-react";
 
 const FeaturedProducts = () => {
+    const [products, setProducts] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const { openQuote } = useQuote();
+
+    useEffect(() => {
+        const fetchFeaturedProducts = async () => {
+            try {
+                // Fetch up to 6 products for the featured section
+                const response = await fetch('/api/products?limit=6');
+                if (response.ok) {
+                    const data = await response.json();
+                    setProducts(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch featured products:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchFeaturedProducts();
+    }, []);
     return (
         <Section className="bg-white py-24">
             <div className="flex flex-col items-center mb-16 text-center">
@@ -55,18 +40,27 @@ const FeaturedProducts = () => {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0">
-                {products.map((product, idx) => (
-                    <ProductCard
-                        key={idx}
-                        title={product.name}
-                        description={product.description}
-                        image={product.image}
-                        tag={product.tag}
-                        onQuoteClick={() => console.log(`Quote requested for ${product.name}`)}
-                    />
-                ))}
-            </div>
+            {isLoading ? (
+                <div className="flex items-center justify-center min-h-[400px]">
+                    <Loader2 className="h-10 w-10 animate-spin text-green-600" />
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0">
+                    {products.map((product) => (
+                        <ProductCard
+                            key={product.id || product._id}
+                            id={product.id || product._id}
+                            title={product.name}
+                            description={product.subname || product.category || product.description}
+                            image={product.image}
+                            tag={product.category}
+                            badge={product.badge}
+                            isAvailable={product.isAvailable}
+                            onQuoteClick={() => openQuote('product', product.name)}
+                        />
+                    ))}
+                </div>
+            )}
         </Section>
     );
 };
