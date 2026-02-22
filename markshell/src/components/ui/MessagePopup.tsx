@@ -193,7 +193,7 @@ const MessagePopup = () => {
             {/* Floating Form Container */}
             <div
                 className={cn(
-                    "fixed bottom-24 right-8 z-40 w-[350px] origin-bottom-right rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl transition-all duration-300 ease-out sm:w-[400px]",
+                    "fixed bottom-24 right-8 z-40 w-[350px] origin-bottom-right rounded-2xl border-2 border-green-800 bg-white p-6 shadow-2xl transition-all duration-300 ease-out sm:w-[400px]",
                     showFloating
                         ? "scale-100 opacity-100"
                         : "pointer-events-none scale-95 opacity-0 translate-y-4"
