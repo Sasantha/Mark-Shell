@@ -139,11 +139,17 @@ const Navbar = () => {
                         </form>
 
                         {/* Dropdown Suggestions */}
+                        {/* Dropdown Suggestions */}
                         {showSuggestions && searchQuery.trim() !== "" && (
-                            <div className="absolute top-full mt-2 w-80 right-0 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[60] animate-in slide-in-from-top-2">
+                            <div className={cn(
+                                "absolute top-full mt-2 w-80 right-0 rounded-2xl shadow-2xl border overflow-hidden z-[60] animate-in slide-in-from-top-2 backdrop-blur-xl transition-colors duration-300",
+                                isScrolled 
+                                    ? "bg-white/80 border-gray-200" 
+                                    : "bg-black/20 border-white/20"
+                            )}>
                                 {isSearching ? (
-                                    <div className="p-6 text-center text-gray-400 flex justify-center">
-                                        <Loader2 size={24} className="animate-spin text-green-600" />
+                                    <div className="p-6 text-center flex justify-center">
+                                        <Loader2 size={24} className={cn("animate-spin", isScrolled ? "text-green-600" : "text-white")} />
                                     </div>
                                 ) : suggestions.length > 0 ? (
                                     <>
@@ -151,21 +157,32 @@ const Navbar = () => {
                                             {suggestions.map((item) => (
                                                 <div
                                                     key={item.id}
-                                                    className="flex items-center justify-between gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-50 last:border-0 cursor-pointer"
+                                                    className={cn(
+                                                        "flex items-center justify-between gap-3 p-3 transition-colors border-b last:border-0 cursor-pointer",
+                                                        isScrolled 
+                                                            ? "hover:bg-black/5 border-gray-100" 
+                                                            : "hover:bg-white/10 border-white/10"
+                                                    )}
                                                     onClick={() => { setShowSuggestions(false); router.push(`/products/${item.id}`); setSearchQuery(""); }}
                                                 >
                                                     <div className="flex gap-3 items-center flex-1 min-w-0">
-                                                        <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 border border-gray-200">
+                                                        <div className={cn("w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border", isScrolled ? "bg-gray-100 border-gray-200" : "bg-white/10 border-white/20")}>
                                                             <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-bold text-gray-900 truncate">{item.name}</p>
-                                                            <p className="text-xs text-gray-500 truncate">{item.category}</p>
+                                                            <p className={cn("text-sm font-bold truncate", isScrolled ? "text-gray-900" : "text-white")}>{item.name}</p>
+                                                            <p className={cn("text-xs truncate", isScrolled ? "text-gray-500" : "text-white/60")}>{item.category}</p>
                                                         </div>
                                                     </div>
+                                                    
                                                     <Button
                                                         size="sm"
-                                                        className="h-8 text-[11px] px-3 bg-green-600 hover:bg-green-700 font-bold whitespace-nowrap"
+                                                        className={cn(
+                                                            "h-8 text-[11px] px-3 backdrop-blur-sm font-bold whitespace-nowrap border transition-all active:scale-95",
+                                                            isScrolled 
+                                                                ? "bg-green-600 hover:bg-green-700 text-white border-transparent shadow-sm" 
+                                                                : "bg-green-500/40 hover:bg-green-500/60 text-white border-green-400/50"
+                                                        )}
                                                         onClick={(e) => {
                                                             e.stopPropagation();
                                                             setShowSuggestions(false);
@@ -177,16 +194,25 @@ const Navbar = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => { setShowSuggestions(false); router.push(`/products?search=${encodeURIComponent(searchQuery)}`); setSearchQuery(""); }}
-                                            className="w-full py-3 px-4 text-xs font-bold text-green-700 bg-green-50 hover:bg-green-100 transition-colors text-center border-t border-green-100"
-                                        >
-                                            See all results for "{searchQuery}" →
-                                        </button>
+                                        
+                                        {/* Updated "See all results" Button */}
+                                        <div className={cn("p-3 border-t", isScrolled ? "border-gray-200 bg-gray-50/50" : "border-white/10 bg-white/5")}>
+                                            <button
+                                                type="button"
+                                                onClick={() => { setShowSuggestions(false); router.push(`/products?search=${encodeURIComponent(searchQuery)}`); setSearchQuery(""); }}
+                                                className={cn(
+                                                    "w-full py-2.5 px-4 text-xs font-bold border rounded-lg backdrop-blur-md transition-all active:scale-95 flex items-center justify-center gap-2",
+                                                    isScrolled 
+                                                        ? "bg-green-600 hover:bg-green-700 text-white border-transparent shadow-sm" 
+                                                        : "bg-green-500/40 hover:bg-green-500/60 text-white border-green-400/50"
+                                                )}
+                                            >
+                                                See all results for "{searchQuery}" <span className="text-white/70">→</span>
+                                            </button>
+                                        </div>
                                     </>
                                 ) : (
-                                    <div className="p-6 text-center text-gray-500 text-sm">
+                                    <div className={cn("p-6 text-center text-sm", isScrolled ? "text-gray-500" : "text-white/60")}>
                                         No products match "{searchQuery}"
                                     </div>
                                 )}
