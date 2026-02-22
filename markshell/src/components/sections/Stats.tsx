@@ -45,7 +45,7 @@ const Stats = () => {
 
                     {/* Floating badge - Overlapping */}
                     <div className="absolute -bottom-6 -right-6 bg-green-700 text-white p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center rotate-3 z-10">
-                        <span className="text-4xl font-bold leading-none">100%</span>
+                        <span className="text-4xl font-bold leading-none">70%</span>
                         <span className="text-[10px] font-bold uppercase tracking-widest mt-1">Plastic Free</span>
                     </div>
 
