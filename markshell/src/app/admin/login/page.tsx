@@ -12,28 +12,33 @@ const AdminLoginPage = () => {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
         setIsLoading(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            if (email === "admin@markshell.com" && password === "admin123") {
-                // Generate detailed mock token
-                const mockToken = btoa(JSON.stringify({
-                    id: "user_123",
-                    role: "admin",
-                    email: email,
-                    exp: Date.now() + 3600000 // 1 hour
-                }));
-                localStorage.setItem("admin_token", mockToken);
+        try {
+            const res = await fetch("/api/admin/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                localStorage.setItem("admin_token", data.token);
+                // Also store a marker that it's a real token we are using, maybe just the admin name if needed
                 router.push("/admin/dashboard");
             } else {
-                setError("Invalid credentials. Use admin@markshell.com / admin123");
-                setIsLoading(false);
+                setError(data.message || "Invalid credentials.");
             }
-        }, 1500);
+        } catch (err) {
+            setError("Something went wrong. Please try again.");
+            console.error("Login failed", err);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

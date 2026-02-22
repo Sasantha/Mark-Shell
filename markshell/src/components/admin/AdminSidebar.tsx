@@ -13,6 +13,7 @@ const AdminSidebar = () => {
         { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
         { name: "Products", href: "/admin/products", icon: Package },
         { name: "Categories", href: "/admin/categories", icon: Grid },
+        { name: "Profile", href: "/admin/profile", icon: Settings },
     ];
 
     const handleLogout = () => {
