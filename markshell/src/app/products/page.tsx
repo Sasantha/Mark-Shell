@@ -25,17 +25,27 @@ const ProductsContent = () => {
 
     // Data State
     const [products, setProducts] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     // Filters
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
+    const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
     useEffect(() => {
-        const fetchProducts = async () => {
+        const fetchInitialData = async () => {
             setIsLoading(true);
             try {
+                // Fetch Categories
+                const catRes = await fetch('/api/categories');
+                if (catRes.ok) {
+                    const catData = await catRes.json();
+                    setCategories(catData);
+                }
+
+                // Fetch Products
                 const url = searchQueryParam
                     ? `/api/products?q=${encodeURIComponent(searchQueryParam)}`
                     : '/api/products';
@@ -47,13 +57,13 @@ const ProductsContent = () => {
                 setProducts(data);
             } catch (err: any) {
                 setError(err.message);
-                console.error("Error fetching products:", err);
+                console.error("Error fetching data:", err);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchProducts();
+        fetchInitialData();
     }, [searchQueryParam]);
 
     // Initialize/Update filters from URL
@@ -158,6 +168,76 @@ const ProductsContent = () => {
         }
     };
 
+    // Prevent body scroll when mobile filters are open
+    useEffect(() => {
+        if (isMobileFiltersOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isMobileFiltersOpen]);
+
+    const FilterContent = () => (
+        <>
+            <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-lg text-gray-900">Filters</h3>
+                <button
+                    onClick={handleReset}
+                    className="text-green-600 text-xs font-semibold hover:underline"
+                >
+                    Reset All
+                </button>
+            </div>
+
+            {/* Category Filter */}
+            <div className="space-y-3">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Category</h4>
+                {categories.length > 0 ? categories.map((cat) => (
+                    <label key={cat.id} className="flex items-center gap-3 cursor-pointer group select-none">
+                        <div
+                            className={`w-5 h-5 rounded flex items-center justify-center border transition-all duration-200 ${selectedCategories.includes(cat.name)
+                                ? "bg-green-600 border-green-600 shadow-sm"
+                                : "border-gray-200 bg-gray-50 group-hover:border-green-400"
+                                }`}
+                            onClick={(e) => { e.preventDefault(); handleCategoryChange(cat.name); }}
+                        >
+                            {selectedCategories.includes(cat.name) && <span className="text-white text-[10px] font-bold">✓</span>}
+                        </div>
+                        <span className={`text-sm transition-colors ${selectedCategories.includes(cat.name) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
+                            {cat.name}
+                        </span>
+                    </label>
+                )) : (
+                    <p className="text-sm text-gray-500">Loading categories...</p>
+                )}
+            </div>
+
+            {/* Material Filter */}
+            <div className="space-y-3 pt-6 mt-6 border-t border-gray-100">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Material</h4>
+                {["Birchwood", "Bamboo", "Bagasse"].map((mat) => (
+                    <label key={mat} className="flex items-center gap-3 cursor-pointer group select-none">
+                        <div
+                            className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 ${selectedMaterials.includes(mat)
+                                ? "border-green-600 bg-white"
+                                : "border-gray-300 bg-gray-50 group-hover:border-green-400"
+                                }`}
+                            onClick={(e) => { e.preventDefault(); handleMaterialChange(mat); }}
+                        >
+                            {selectedMaterials.includes(mat) && <div className="w-2 h-2 rounded-full bg-green-600" />}
+                        </div>
+                        <span className={`text-sm transition-colors ${selectedMaterials.includes(mat) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
+                            {mat}
+                        </span>
+                    </label>
+                ))}
+            </div>
+        </>
+    );
+
     // -------------------------------------------------------------------------
     // RENDER
     // -------------------------------------------------------------------------
@@ -192,60 +272,48 @@ const ProductsContent = () => {
             <Section className="py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
 
-                    {/* Sidebar Filters - Styled as White Card */}
+                    {/* Mobile Filters Toggle & Dropdown */}
+                    <div className="lg:hidden col-span-1">
+                        <Button
+                            variant="outline"
+                            className="w-full h-12 flex justify-between items-center px-4 bg-white border-gray-200 text-gray-700 font-medium"
+                            onClick={() => setIsMobileFiltersOpen(true)}
+                        >
+                            <span>Filter Results {(selectedCategories.length > 0 || selectedMaterials.length > 0) && `(${selectedCategories.length + selectedMaterials.length})`}</span>
+                            <ChevronDown size={18} className="text-gray-400" />
+                        </Button>
+                    </div>
+
+                    {/* Mobile Filters Overlay */}
+                    {isMobileFiltersOpen && (
+                        <div className="fixed inset-0 z-[60] lg:hidden flex justify-end bg-black/50 backdrop-blur-sm transition-opacity">
+                            <div className="w-[85%] max-w-sm h-full bg-white shadow-2xl p-6 overflow-y-auto animate-in slide-in-from-right flex flex-col">
+                                <div className="flex-1">
+                                    <FilterContent />
+                                </div>
+                                <div className="mt-8 pt-4 border-t border-gray-100 pb-4">
+                                    <Button
+                                        className="w-full bg-green-600 hover:bg-green-700 h-12 text-base"
+                                        onClick={() => setIsMobileFiltersOpen(false)}
+                                    >
+                                        Apply Filters
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="w-full mt-3 h-12 text-base border-gray-200 text-gray-600"
+                                        onClick={() => setIsMobileFiltersOpen(false)}
+                                    >
+                                        Cancel
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Desktop Sidebar Filters */}
                     <aside className="lg:col-span-3 hidden lg:block">
                         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-24">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="font-bold text-lg text-gray-900">Filters</h3>
-                                <button
-                                    onClick={handleReset}
-                                    className="text-green-600 text-xs font-semibold hover:underline"
-                                >
-                                    Reset All
-                                </button>
-                            </div>
-
-                            {/* Category Filter */}
-                            <div className="space-y-3">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Category</h4>
-                                {["Spoons", "Forks", "Knives", "Stirrers", "Kits (Set of 3)"].map((cat) => (
-                                    <label key={cat} className="flex items-center gap-3 cursor-pointer group select-none">
-                                        <div
-                                            className={`w-5 h-5 rounded flex items-center justify-center border transition-all duration-200 ${selectedCategories.includes(cat)
-                                                ? "bg-green-600 border-green-600 shadow-sm"
-                                                : "border-gray-200 bg-gray-50 group-hover:border-green-400"
-                                                }`}
-                                            onClick={(e) => { e.preventDefault(); handleCategoryChange(cat); }}
-                                        >
-                                            {selectedCategories.includes(cat) && <span className="text-white text-[10px] font-bold">✓</span>}
-                                        </div>
-                                        <span className={`text-sm transition-colors ${selectedCategories.includes(cat) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
-                                            {cat}
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-
-                            {/* Material Filter */}
-                            <div className="space-y-3 pt-6 mt-6 border-t border-gray-100">
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Material</h4>
-                                {["Birchwood", "Bamboo", "Bagasse"].map((mat) => (
-                                    <label key={mat} className="flex items-center gap-3 cursor-pointer group select-none">
-                                        <div
-                                            className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 ${selectedMaterials.includes(mat)
-                                                ? "border-green-600 bg-white"
-                                                : "border-gray-300 bg-gray-50 group-hover:border-green-400"
-                                                }`}
-                                            onClick={(e) => { e.preventDefault(); handleMaterialChange(mat); }}
-                                        >
-                                            {selectedMaterials.includes(mat) && <div className="w-2 h-2 rounded-full bg-green-600" />}
-                                        </div>
-                                        <span className={`text-sm transition-colors ${selectedMaterials.includes(mat) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
-                                            {mat}
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
+                            <FilterContent />
                         </div>
                     </aside>
 
@@ -262,26 +330,30 @@ const ProductsContent = () => {
                         ) : (
                             <>
                                 {/* Top Bar */}
-                                <div className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                                    <span className="text-gray-500 text-sm font-medium">
-                                        Showing <span className="text-gray-900 font-bold">{totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalItems)}</span> of <span className="text-gray-900 font-bold">{totalItems}</span> products
+                                <div className="flex flex-row justify-between items-center mb-6 sm:mb-8 gap-2 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100">
+                                    <span className="text-gray-500 text-xs sm:text-sm font-medium truncate">
+                                        <span className="hidden sm:inline">Showing </span>
+                                        <span className="text-gray-900 font-bold">{totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalItems)}</span>
+                                        <span className="text-gray-500"> of </span>
+                                        <span className="text-gray-900 font-bold">{totalItems}</span>
+                                        <span className="hidden sm:inline"> products</span>
                                     </span>
 
-                                    <div className="flex items-center gap-3">
+                                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
                                         <span className="text-gray-400 text-sm hidden sm:inline">Sort by:</span>
                                         <div className="relative">
                                             <select
-                                                className="appearance-none bg-gray-50 border border-gray-200 pl-4 pr-10 py-2 rounded-lg text-sm font-medium text-gray-700 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors cursor-pointer"
+                                                className="appearance-none bg-gray-50 border border-gray-200 pl-2 sm:pl-4 pr-7 sm:pr-10 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors cursor-pointer w-[110px] sm:w-auto text-ellipsis"
                                                 value={sortBy}
                                                 onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
                                             >
                                                 <option value="recommended">Recommended</option>
-                                                <option value="price-asc">Price: Low to High</option>
-                                                <option value="price-desc">Price: High to Low</option>
+                                                <option value="price-asc">Price: Low - High</option>
+                                                <option value="price-desc">Price: High - Low</option>
                                                 <option value="alpha-asc">Name: A - Z</option>
                                                 <option value="alpha-desc">Name: Z - A</option>
                                             </select>
-                                            <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                            <ChevronDown size={14} className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                         </div>
                                     </div>
                                 </div>
