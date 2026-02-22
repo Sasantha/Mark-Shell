@@ -11,6 +11,11 @@ const AdminCategoriesPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Deletion Modal State
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [categoryToDelete, setCategoryToDelete] = useState<any>(null);
+    const [transferToCategoryId, setTransferToCategoryId] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
     // Pagination & Sorting State
     const [currentPage, setCurrentPage] = useState(1);
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -61,22 +66,37 @@ const AdminCategoriesPage = () => {
         );
 
     // Handlers
-    const handleDelete = async (id: string) => {
-        if (confirm("Are you sure you want to delete this category?")) {
-            try {
-                const response = await fetch(`/api/categories/${id}`, {
-                    method: 'DELETE',
-                });
+    const confirmDelete = (category: any) => {
+        setCategoryToDelete(category);
+        setTransferToCategoryId(""); // Reset selection
+        setDeleteModalOpen(true);
+    };
 
-                if (!response.ok) {
-                    throw new Error('Failed to delete category');
-                }
+    const handleDelete = async () => {
+        if (!categoryToDelete) return;
+        if (!transferToCategoryId) {
+            alert("Please select a category to transfer existing products to.");
+            return;
+        }
 
-                setCategories(categories.filter((c) => c._id !== id && c.id !== id));
-            } catch (error) {
-                console.error("Error deleting:", error);
-                alert("Failed to delete category.");
+        setIsDeleting(true);
+        try {
+            const response = await fetch(`/api/categories/${categoryToDelete.id}?transferTo=${transferToCategoryId}`, {
+                method: 'DELETE',
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete category');
             }
+
+            setCategories(categories.filter((c) => c._id !== categoryToDelete.id && c.id !== categoryToDelete.id));
+            setDeleteModalOpen(false);
+            setCategoryToDelete(null);
+        } catch (error) {
+            console.error("Error deleting:", error);
+            alert("Failed to delete category.");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -201,7 +221,7 @@ const AdminCategoriesPage = () => {
                                                 <Edit size={16} />
                                             </Link>
                                             <button
-                                                onClick={() => handleDelete(category.id)}
+                                                onClick={() => confirmDelete(category)}
                                                 className="rounded p-2 text-gray-400 hover:bg-gray-100 hover:text-red-600"
                                             >
                                                 <Trash2 size={16} />
@@ -263,6 +283,53 @@ const AdminCategoriesPage = () => {
                     </div>
                 )}
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {deleteModalOpen && categoryToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 space-y-4">
+                        <h2 className="text-xl font-bold text-gray-900">Delete Category</h2>
+                        <p className="text-sm text-gray-600">
+                            You are about to delete <strong>{categoryToDelete.name}</strong>.
+                            Any products in this category must be transferred to another category.
+                        </p>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Transfer Products To *</label>
+                            <select
+                                value={transferToCategoryId}
+                                onChange={(e) => setTransferToCategoryId(e.target.value)}
+                                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                            >
+                                <option value="" disabled>Select a category</option>
+                                {categories
+                                    .filter(c => c.id !== categoryToDelete.id && c._id !== categoryToDelete.id)
+                                    .map(c => (
+                                        <option key={c.id} value={c.id}>{c.name}</option>
+                                    ))
+                                }
+                            </select>
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-6">
+                            <Button
+                                variant="outline"
+                                onClick={() => setDeleteModalOpen(false)}
+                                disabled={isDeleting}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                onClick={handleDelete}
+                                disabled={isDeleting || !transferToCategoryId}
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                            >
+                                {isDeleting ? "Deleting..." : "Confirm & Delete"}
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
