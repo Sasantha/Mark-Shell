@@ -45,10 +45,10 @@ const Footer = () => {
                                 <span>123 Green Street, Eco City, Earth 10101</span>
                             </li>
                             <li>
-                                <a href="tel:+1234567890" className="hover:text-green-500">+94 71 426 3412</a>
+                                <a href="tel:+94714263412" className="hover:text-green-500">+94 71 426 3412</a>
                             </li>
                             <li>
-                                <a href="mailto:hello@ecofood.com" className="hover:text-green-500">support@markshell.lk</a>
+                                <a href="mailto:support@markshell.lk" className="hover:text-green-500">support@markshell.lk</a>
                             </li>
                         </ul>
                     </div>
