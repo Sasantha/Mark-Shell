@@ -19,8 +19,7 @@ const Hero = () => {
             <Section className="relative z-10 w-full py-0">
                 <div className="max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight drop-shadow-lg">
-                        Ecomark <br />
-                        by <br />
+                        Ecomark by<br />
                         <span className="text-green-400">Mark-Shell Pvt Ltd.</span>
                     </h1>
 

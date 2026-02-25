@@ -11,7 +11,7 @@ const About = () => {
                 {/* Content */}
                 <div className="space-y-8 order-2 lg:order-1">
                     <span className="text-green-600 font-semibold tracking-wider text-sm uppercase">About Ecomark</span>
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
                         Ecomark is the sustainability-focused product line of Mark-Shell Pvt Ltd, <br />
                         created to serve corporate buyers seeking eco-conscious alternatives to conventional plastic cutlery. <br />
                         
