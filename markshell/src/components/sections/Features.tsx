@@ -6,7 +6,7 @@ const featureList = [
     {
         icon: Leaf,
         title: "Eco-Friendly",
-        description: "100% biodegradable materials used in all our products.",
+        description: "Morethan half of our products materials are biodegradable.",
     },
     {
         icon: Award,
@@ -21,7 +21,7 @@ const featureList = [
     {
         icon: Users,
         title: "Community",
-        description: "Join a growing community of eco-conscious changemakers.",
+        description: "Built for Bulk Procurement. Serving hotels, restaurants, caterers, supermarkets, and export clients.",
     },
 ];
 

@@ -13,10 +13,10 @@ const CTA = () => {
 
             <div className="relative z-10 text-center max-w-3xl mx-auto space-y-8">
                 <h2 className="text-4xl md:text-6xl font-bold text-white leading-tight">
-                    Join the Organic <br /> Revolution Today
+                    Ready to Upgrade <br /> Your Sustainable Supply Chain?
                 </h2>
                 <p className="text-white/80 text-xl leading-relaxed">
-                    We are committed to a sustainable future and delivering the purest organic products. Join us in making a difference, one meal at a time.
+                    Streamline your procurement with a reliable, scalable partner focused on responsible production and operational practicality.
                 </p>
                 <Button size="lg" className="bg-yellow-400 text-green-900 hover:bg-yellow-300 rounded-full px-10 py-6 text-lg font-bold">
                     Contact Us Now

@@ -2,10 +2,10 @@ import React from "react";
 import Section from "../ui/section";
 
 const stats = [
-    { value: "25+", label: "Years of Experience", color: "text-green-600" },
-    { value: "300+", label: "Happy Customers", color: "text-green-600" },
-    { value: "50k+", label: "Products Sold", color: "text-green-600" },
-    { value: "100%", label: "Eco-Friendly Certification", color: "text-green-600" },
+    { value: "3+", label: "Years of Experience", color: "text-green-600" },
+    { value: "10+", label: "Happy Customers", color: "text-green-600" },
+    { value: "100%", label: "Scalable supply capacity", color: "text-green-600" },
+    { value: "100%", label: "Consistent quality control", color: "text-green-600" },
 ];
 
 const Stats = () => {
@@ -15,7 +15,7 @@ const Stats = () => {
                 {/* Text Content */}
                 <div className="space-y-12">
                     <div>
-                        <span className="text-green-600 font-semibold tracking-wider text-sm uppercase">Who We Are</span>
+                        <span className="text-green-600 font-semibold tracking-wider text-sm uppercase">Why  Choose Ecomark</span>
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-2 mb-6">
                             Committed to a Greener <br /> Future for Everyone
                         </h2>
@@ -46,7 +46,7 @@ const Stats = () => {
                     {/* Floating badge - Overlapping */}
                     <div className="absolute -bottom-6 -right-6 bg-green-700 text-white p-8 rounded-3xl shadow-xl flex flex-col items-center justify-center rotate-3 z-10">
                         <span className="text-4xl font-bold leading-none">70%</span>
-                        <span className="text-[10px] font-bold uppercase tracking-widest mt-1">Plastic Free</span>
+                        <span className="text-[10px] font-bold uppercase tracking-widest mt-1">Eco-conscious alternative</span>
                     </div>
 
                     {/* Decorative Elements (Optional based on "exact" request) */}

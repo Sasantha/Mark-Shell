@@ -16,7 +16,7 @@ const Footer = () => {
                             <span className="text-xl font-bold">MarkShell</span>
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            We are committed to providing the freshest, organic produce directly from our sustainable farms to your table. Join the revolution.
+                            Ecomark is the sustainability-driven product line of Mark-Shell Pvt Ltd, delivering high-performance wooden cutlery solutions for corporate buyers across Sri Lanka and beyond.
                         </p>
                         <div className="flex gap-4">
                             {[Facebook, Twitter, Instagram, Linkedin].map((Icon, idx) => (
@@ -31,7 +31,7 @@ const Footer = () => {
                     <div>
                         <h4 className="font-semibold text-lg mb-6">Quick Links</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            {['Home', 'About Us', 'Using Categories', 'Our Farms', 'Sustainability', 'Contact'].map(item => (
+                            {['Home', 'About Us', 'Using Categories', 'Our Manufacturers', 'Contact'].map(item => (
                                 <li key={item}><a href={item === 'Home' ? '/' : item === 'About Us' ? '/about' : item === 'Contact' ? '/contact' : item === 'Using Categories' ? '/categories' : '#'} className="hover:text-green-500 transition-colors">{item === 'Using Categories' ? 'Categories' : item}</a></li>
                             ))}
                         </ul>
@@ -71,7 +71,7 @@ const Footer = () => {
                 </div>
 
                 <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
-                    <p>&copy; {new Date().getFullYear()} EcoFood. All rights reserved.</p>
+                    <p>&copy; {new Date().getFullYear()} Mark-Shell Pvt Ltd. All rights reserved.</p>
                     <div className="flex gap-6">
                         <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
                         <a href="#" className="hover:text-white transition-colors">Terms of Service</a>

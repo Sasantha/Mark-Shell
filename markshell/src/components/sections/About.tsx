@@ -10,18 +10,18 @@ const About = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 {/* Content */}
                 <div className="space-y-8 order-2 lg:order-1">
-                    <span className="text-green-600 font-semibold tracking-wider text-sm uppercase">About EcoFood</span>
+                    <span className="text-green-600 font-semibold tracking-wider text-sm uppercase">About Ecomark</span>
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
-                        Pioneering <br />
-                        Sustainable <br />
-                        Food Solutions
+                        Ecomark is the sustainability-focused product line of Mark-Shell Pvt Ltd, <br />
+                        created to serve corporate buyers seeking eco-conscious alternatives to conventional plastic cutlery. <br />
+                        
                     </h2>
                     <p className="text-gray-600 text-lg leading-relaxed">
-                        We believe in a future where food is grown responsibly and consumed consciously. Our clear mission is to provide high-quality organic produce while preserving the environment for future generations.
+                        We specialize in supplying bulk wooden spoons, forks, and knives tailored for hotels, restaurants, catering services, supermarkets, and export clients.
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        {["Sustainability First", "100% Organic Material", "Reduced Carbon Footprint", "Chemical Free Production"].map((item) => (
+                        {["Sustainability First", "Responsibly sourced wooden materials", "Reduced plastic dependency where technically feasible", "Compliance-ready for commercial food service operations"].map((item) => (
                             <div key={item} className="flex items-center gap-3">
                                 <CheckCircle className="text-green-600 shrink-0" size={20} />
                                 <span className="text-gray-700 font-medium">{item}</span>
