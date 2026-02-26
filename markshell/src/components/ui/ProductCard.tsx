@@ -88,21 +88,27 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
                     {/* Specs Grid for Catalog */}
                     {isCatalog && specs && (
-                        <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-[10px] text-gray-500 mb-6 font-medium">
+                        <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-[10px] text-gray-500 mb-6 font-medium items-start content-start">
                             {specs.length && (
                                 <div className="flex justify-between border-b border-gray-100 pb-1">
                                     <span>Length:</span> <span className="text-gray-900">{specs.length}</span>
                                 </div>
                             )}
-                            <div className="flex justify-between border-b border-gray-100 pb-1">
-                                <span>Pack:</span> <span className="text-gray-900">{specs.pack}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-100 pb-1">
-                                <span>Case:</span> <span className="text-gray-900">{specs.case}</span>
-                            </div>
-                            <div className="flex justify-between border-b border-gray-100 pb-1">
-                                <span>Grade:</span> <span className="text-gray-900">{specs.grade}</span>
-                            </div>
+                            {specs.pack && (
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                    <span>Pack:</span> <span className="text-gray-900">{specs.pack}</span>
+                                </div>
+                            )}
+                            {specs.case && (
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                    <span>Case:</span> <span className="text-gray-900">{specs.case}</span>
+                                </div>
+                            )}
+                            {specs.grade && (
+                                <div className="flex justify-between border-b border-gray-100 pb-1">
+                                    <span>Grade:</span> <span className="text-gray-900">{specs.grade}</span>
+                                </div>
+                            )}
                         </div>
                     )}
 

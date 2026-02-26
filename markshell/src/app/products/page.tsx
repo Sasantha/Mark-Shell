@@ -387,7 +387,12 @@ const ProductsContent = () => {
                                                 description={product.subname || product.category}
                                                 tag={product.category}
                                                 badge={product.badge}
-                                                specs={product.specs}
+                                                specs={{
+                                                    ...product.specs,
+                                                    pack: product.pack,
+                                                    case: product.case,
+                                                    grade: product.grade
+                                                }}
                                                 isAvailable={product.isAvailable}
                                                 onQuoteClick={() => console.log(`Quote for ${product.name}`)}
                                             />
