@@ -10,8 +10,9 @@ const AddProductPage = () => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
 
-    // Dynamic Categories
+    // Dynamic Categories & Materials
     const [categories, setCategories] = useState<any[]>([]);
+    const [materials, setMaterials] = useState<any[]>([]);
 
     // Image Upload State
     const [imageFiles, setImageFiles] = useState<(File | null)[]>([null, null, null, null]);
@@ -42,7 +43,22 @@ const AddProductPage = () => {
                 console.error("Failed to fetch categories:", error);
             }
         };
+
+        // Fetch materials to populate the select dropdown
+        const fetchMaterials = async () => {
+            try {
+                const response = await fetch('/api/materials');
+                if (response.ok) {
+                    const data = await response.json();
+                    setMaterials(data);
+                }
+            } catch (error) {
+                console.error("Failed to fetch materials:", error);
+            }
+        };
+
         fetchCategories();
+        fetchMaterials();
     }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -348,9 +364,9 @@ const AddProductPage = () => {
                                 required
                             >
                                 <option value="">Select Material</option>
-                                <option value="Birchwood">Birchwood</option>
-                                <option value="Bamboo">Bamboo</option>
-                                <option value="Bagasse">Bagasse</option>
+                                {materials.map((mat) => (
+                                    <option key={mat.id} value={mat.name}>{mat.name}</option>
+                                ))}
                             </select>
                         </div>
                     </div>
