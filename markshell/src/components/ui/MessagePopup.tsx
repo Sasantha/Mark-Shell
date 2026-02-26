@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import { MessageCircle, X, Send, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { products, categories } from "@/lib/dummy-data";
 import { cn } from "@/lib/utils";
 import { useQuote } from "@/contexts/QuoteContext";
 
@@ -19,6 +18,32 @@ const MessagePopup = () => {
     const [contextValue, setContextValue] = useState("");
     const [messageType, setMessageType] = useState("inquiry");
     const [customMessage, setCustomMessage] = useState("");
+
+    // Live DB Data State
+    const [dbProducts, setDbProducts] = useState<any[]>([]);
+    const [dbCategories, setDbCategories] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchInitialData = async () => {
+            try {
+                const [prodRes, catRes] = await Promise.all([
+                    fetch('/api/products'),
+                    fetch('/api/categories')
+                ]);
+
+                if (prodRes.ok) {
+                    setDbProducts(await prodRes.json());
+                }
+                if (catRes.ok) {
+                    setDbCategories(await catRes.json());
+                }
+            } catch (err) {
+                console.error("Failed to fetch data for Message Popup:", err);
+            }
+        };
+
+        fetchInitialData();
+    }, []);
 
     const handleOpen = () => setIsOpen(!isOpen);
 
@@ -133,8 +158,8 @@ const MessagePopup = () => {
                             >
                                 <option value="">Select {contextType}...</option>
                                 {contextType === 'product'
-                                    ? products.map(p => <option key={p.id} value={p.name}>{p.name}</option>)
-                                    : categories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)
+                                    ? dbProducts.map(p => <option key={p._id || p.id} value={p.name}>{p.name}</option>)
+                                    : dbCategories.map(c => <option key={c._id || c.id} value={c.name}>{c.name}</option>)
                                 }
                             </select>
                         )}
