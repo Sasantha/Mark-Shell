@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { Lock, Loader2, Save } from "lucide-react";
+import { Lock, Loader2, Save, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const AdminProfilePage = () => {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -10,6 +11,13 @@ const AdminProfilePage = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
+
+    // Password visibility states
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const router = useRouter();
 
     const handleUpdatePassword = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,6 +48,13 @@ const AdminProfilePage = () => {
             });
 
             const data = await res.json();
+
+            if (res.status === 401) {
+                // Token is invalid or expired
+                localStorage.removeItem("admin_token");
+                router.push("/admin/login?expired=true");
+                return;
+            }
 
             if (res.ok) {
                 setMessage({ type: "success", text: "Password updated successfully" });
@@ -88,13 +103,20 @@ const AdminProfilePage = () => {
                                     <Lock className="h-5 w-5 text-gray-400" />
                                 </div>
                                 <input
-                                    type="password"
+                                    type={showCurrentPassword ? "text" : "password"}
                                     required
                                     value={currentPassword}
                                     onChange={(e) => setCurrentPassword(e.target.value)}
-                                    className="block w-full rounded-lg border border-gray-300 py-2.5 pl-10 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="block w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                                     placeholder="Enter current password"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                >
+                                    {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
                             </div>
                         </div>
 
@@ -107,13 +129,20 @@ const AdminProfilePage = () => {
                                     <Lock className="h-5 w-5 text-gray-400" />
                                 </div>
                                 <input
-                                    type="password"
+                                    type={showNewPassword ? "text" : "password"}
                                     required
                                     value={newPassword}
                                     onChange={(e) => setNewPassword(e.target.value)}
-                                    className="block w-full rounded-lg border border-gray-300 py-2.5 pl-10 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="block w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                                     placeholder="Enter new password"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowNewPassword(!showNewPassword)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                >
+                                    {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
                             </div>
 
                             <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -124,13 +153,20 @@ const AdminProfilePage = () => {
                                     <Lock className="h-5 w-5 text-gray-400" />
                                 </div>
                                 <input
-                                    type="password"
+                                    type={showConfirmPassword ? "text" : "password"}
                                     required
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="block w-full rounded-lg border border-gray-300 py-2.5 pl-10 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    className="block w-full rounded-lg border border-gray-300 py-2.5 pl-10 pr-10 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                                     placeholder="Confirm new password"
                                 />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                >
+                                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
                             </div>
                         </div>
 
