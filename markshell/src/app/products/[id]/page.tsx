@@ -10,6 +10,7 @@ import MessagePopup from "@/components/ui/MessagePopup";
 import { Check, Info, Leaf, MessageSquare, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { useQuote } from "@/contexts/QuoteContext";
+import Link from "next/link";
 
 const SingleProductPage = () => {
     const { openQuote } = useQuote();
@@ -121,9 +122,9 @@ const SingleProductPage = () => {
             {/* Breadcrumbs */}
             <div className="bg-white border-b border-gray-100 py-4">
                 <div className="w-[90%] md:w-[80%] mx-auto text-sm text-gray-500">
-                    <a href="/" className="hover:text-green-600 cursor-pointer transition-colors">Home</a> &gt;{" "}
-                    <a href="/products" className="hover:text-green-600 cursor-pointer transition-colors">Products</a> &gt;{" "}
-                    <span className="hover:text-green-600 cursor-pointer">{product.category}</span> &gt;{" "}
+                    <Link href="/" className="hover:text-green-600 cursor-pointer transition-colors">Home</Link> &gt;{" "}
+                    <Link href="/products" className="hover:text-green-600 cursor-pointer transition-colors">Products</Link> &gt;{" "}
+                    <Link href={`/products?category=${encodeURIComponent(product.category)}`} className="hover:text-green-600 cursor-pointer transition-colors">{product.category}</Link> &gt;{" "}
                     <span className="text-gray-900 font-medium">{product.name}</span>
                 </div>
             </div>
