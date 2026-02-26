@@ -113,7 +113,7 @@ const SingleProductPage = () => {
                         {product.name}
                     </h1>
                     <p className="text-green-100 max-w-2xl text-lg leading-relaxed opacity-90">
-                        {product.subname || `${product.category} - ${product.material}`}
+                        {product.subname || `${product.category}${product.grade ? ` (Grade ${product.grade})` : ""} - ${product.material}`}
                     </p>
                 </div>
             </div>
@@ -165,8 +165,16 @@ const SingleProductPage = () => {
 
                     {/* Right: Product Details */}
                     <div>
-                        <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
-                            {product.material}
+                        <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 flex flex-wrap items-center gap-2">
+                            <span>{product.category}</span>
+                            {product.grade && (
+                                <>
+                                    <span>•</span>
+                                    <span className="text-green-600">Grade {product.grade}</span>
+                                </>
+                            )}
+                            <span>•</span>
+                            <span>{product.material}</span>
                         </div>
                         <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
                             {product.name}
@@ -183,17 +191,15 @@ const SingleProductPage = () => {
                         </div>
 
                         {/* Features */}
-                        <div className="flex flex-wrap gap-3 mb-8">
-                            <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-full text-sm font-medium text-gray-700">
-                                <ShieldCheck size={16} className="text-green-600" /> Food Grade
+                        {product.features && product.features.length > 0 && (
+                            <div className="flex flex-wrap gap-3 mb-8">
+                                {product.features.map((feature: string) => (
+                                    <div key={feature} className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-full text-sm font-medium text-gray-700">
+                                        <Check size={16} className="text-green-600" /> {feature}
+                                    </div>
+                                ))}
                             </div>
-                            <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-full text-sm font-medium text-gray-700">
-                                <Leaf size={16} className="text-green-600" /> Biodegradable
-                            </div>
-                            <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-full text-sm font-medium text-gray-700">
-                                <Leaf size={16} className="text-green-600" /> Sustainable
-                            </div>
-                        </div>
+                        )}
 
                         {/* Description */}
                         <p className="text-gray-600 leading-relaxed mb-8 whitespace-pre-line">
@@ -211,16 +217,16 @@ const SingleProductPage = () => {
                                     <span className="text-sm font-bold text-gray-900">{product.specs?.length || "N/A"}</span>
                                 </div>
                                 <div>
+                                    <span className="text-xs text-gray-400 block mb-1">Weight</span>
+                                    <span className="text-sm font-bold text-gray-900">{product.weight || product.specs?.weight || "N/A"}</span>
+                                </div>
+                                <div>
                                     <span className="text-xs text-gray-400 block mb-1">Material</span>
                                     <span className="text-sm font-bold text-gray-900">{product.material === "Birchwood" ? "100% White Birch" : (product.material || "Natural Material")}</span>
                                 </div>
                                 <div>
                                     <span className="text-xs text-gray-400 block mb-1">Carton Quantity</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.cartonQuantity || product.specs?.case || "N/A"}</span>
-                                </div>
-                                <div>
-                                    <span className="text-xs text-gray-400 block mb-1">Weight</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.weight || product.specs?.weight || "N/A"}</span>
+                                    <span className="text-sm font-bold text-gray-900">{product.cartonQuantity || "N/A"}</span>
                                 </div>
                             </div>
                         </div>
@@ -230,10 +236,18 @@ const SingleProductPage = () => {
                             <div className="space-y-1">
                                 <label className="text-sm font-medium text-gray-700">Estimated Order Volume</label>
                                 <select className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 cursor-pointer">
-                                    <option>1 - 5 Cartons (Trial)</option>
-                                    <option>5 - 20 Cartons</option>
-                                    <option>20+ Cartons (Bulk)</option>
-                                    <option>Full Container Load (FCL)</option>
+                                    {(product.orderVolumes && product.orderVolumes.length > 0) ? (
+                                        product.orderVolumes.map((vol: string) => (
+                                            <option key={vol} value={vol}>{vol}</option>
+                                        ))
+                                    ) : (
+                                        <>
+                                            <option>1 - 5 Cartons (Trial)</option>
+                                            <option>5 - 20 Cartons</option>
+                                            <option>20+ Cartons (Bulk)</option>
+                                            <option>Full Container Load (FCL)</option>
+                                        </>
+                                    )}
                                 </select>
                             </div>
                             <Button

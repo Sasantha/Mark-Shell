@@ -6,6 +6,16 @@ import { useRouter } from "next/navigation";
 import { ChevronLeft, Save, Upload, Plus, Loader2, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+const AVAILABLE_FEATURES = [
+    "Food Grade",
+    "Biodegradable",
+    "Sustainable",
+    "Microwave Safe",
+    "Compostable",
+    "Recyclable",
+    "Eco-Friendly"
+];
+
 const AddProductPage = () => {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
@@ -13,6 +23,9 @@ const AddProductPage = () => {
     // Dynamic Categories & Materials
     const [categories, setCategories] = useState<any[]>([]);
     const [materials, setMaterials] = useState<any[]>([]);
+
+    // Order Volumes State
+    const [newOrderVolume, setNewOrderVolume] = useState("");
 
     // Image Upload State
     const [imageFiles, setImageFiles] = useState<(File | null)[]>([null, null, null, null]);
@@ -28,6 +41,19 @@ const AddProductPage = () => {
         price: "",
         description: "",
         isAvailable: true,
+        length: "",
+        weight: "",
+        cartonQuantity: "",
+        pack: "",
+        case: "",
+        grade: "",
+        features: [] as string[],
+        orderVolumes: [
+            "1 - 5 Cartons (Trial)",
+            "5 - 20 Cartons",
+            "20+ Cartons (Bulk)",
+            "Full Container Load (FCL)"
+        ] as string[],
     });
 
     useEffect(() => {
@@ -69,6 +95,34 @@ const AddProductPage = () => {
     const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const val = e.target.value;
         setFormData((prev) => ({ ...prev, isAvailable: val === "active" }));
+    };
+
+    const handleFeatureToggle = (feature: string) => {
+        setFormData(prev => {
+            const current = new Set(prev.features);
+            if (current.has(feature)) {
+                current.delete(feature);
+            } else {
+                current.add(feature);
+            }
+            return { ...prev, features: Array.from(current) };
+        });
+    };
+
+    const handleAddOrderVolume = () => {
+        if (!newOrderVolume.trim()) return;
+        setFormData(prev => ({
+            ...prev,
+            orderVolumes: [...prev.orderVolumes, newOrderVolume.trim()]
+        }));
+        setNewOrderVolume("");
+    };
+
+    const handleRemoveOrderVolume = (tagToRemove: string) => {
+        setFormData(prev => ({
+            ...prev,
+            orderVolumes: prev.orderVolumes.filter(tag => tag !== tagToRemove)
+        }));
     };
 
     const handleImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,7 +252,16 @@ const AddProductPage = () => {
                 price: parseFloat(formData.price),
                 isAvailable: formData.isAvailable,
                 longDescription: formData.description,
-                specs: {},
+                weight: formData.weight,
+                cartonQuantity: formData.cartonQuantity,
+                pack: formData.pack,
+                case: formData.case,
+                grade: formData.grade,
+                features: formData.features,
+                orderVolumes: formData.orderVolumes,
+                specs: {
+                    length: formData.length,
+                },
                 images: [mainImageUrl, ...otherUrls] // Save all images (main first)
             };
 
@@ -298,6 +361,134 @@ const AddProductPage = () => {
                                     placeholder="Detailed product description..."
                                     required
                                 />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-4">
+                        <h2 className="text-lg font-bold text-gray-900 mb-4">Specs & Features</h2>
+
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Length</label>
+                                <input
+                                    type="text"
+                                    name="length"
+                                    value={formData.length}
+                                    onChange={handleChange}
+                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    placeholder="e.g. 160mm"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
+                                <input
+                                    type="text"
+                                    name="weight"
+                                    value={formData.weight}
+                                    onChange={handleChange}
+                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    placeholder="e.g. 2.5g"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Carton Quantity</label>
+                                <input
+                                    type="text"
+                                    name="cartonQuantity"
+                                    value={formData.cartonQuantity}
+                                    onChange={handleChange}
+                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    placeholder="e.g. 1000 pcs"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Pack</label>
+                                <input
+                                    type="text"
+                                    name="pack"
+                                    value={formData.pack}
+                                    onChange={handleChange}
+                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    placeholder="e.g. 100pcs/bag"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Case</label>
+                                <input
+                                    type="text"
+                                    name="case"
+                                    value={formData.case}
+                                    onChange={handleChange}
+                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    placeholder="e.g. 10bags/case"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Grade</label>
+                                <input
+                                    type="text"
+                                    name="grade"
+                                    value={formData.grade}
+                                    onChange={handleChange}
+                                    className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    placeholder="e.g. A"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mt-4 border-t pt-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Estimated Order Volumes</label>
+                            <div className="flex gap-2 mb-3">
+                                <input
+                                    type="text"
+                                    value={newOrderVolume}
+                                    onChange={(e) => setNewOrderVolume(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleAddOrderVolume();
+                                        }
+                                    }}
+                                    className="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
+                                    placeholder="e.g. 50+ Cartons (custom)"
+                                />
+                                <Button type="button" onClick={handleAddOrderVolume} variant="secondary">
+                                    Add
+                                </Button>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {formData.orderVolumes.map((vol) => (
+                                    <div key={vol} className="flex items-center gap-1 bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-full text-sm">
+                                        <span>{vol}</span>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveOrderVolume(vol)}
+                                            className="text-blue-400 hover:text-blue-600 rounded-full p-0.5"
+                                        >
+                                            &times;
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="mt-4 border-t pt-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Features / Badges</label>
+                            <div className="flex flex-wrap gap-2">
+                                {AVAILABLE_FEATURES.map((feature) => (
+                                    <button
+                                        key={feature}
+                                        type="button"
+                                        onClick={() => handleFeatureToggle(feature)}
+                                        className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${formData.features.includes(feature)
+                                            ? 'bg-green-100 border-green-200 text-green-700'
+                                            : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        {feature}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </div>

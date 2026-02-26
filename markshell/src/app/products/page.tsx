@@ -26,6 +26,7 @@ const ProductsContent = () => {
     // Data State
     const [products, setProducts] = useState<any[]>([]);
     const [categories, setCategories] = useState<any[]>([]);
+    const [materials, setMaterials] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -43,6 +44,13 @@ const ProductsContent = () => {
                 if (catRes.ok) {
                     const catData = await catRes.json();
                     setCategories(catData);
+                }
+
+                // Fetch Materials
+                const matRes = await fetch('/api/materials');
+                if (matRes.ok) {
+                    const matData = await matRes.json();
+                    setMaterials(matData);
                 }
 
                 // Fetch Products
@@ -196,13 +204,16 @@ const ProductsContent = () => {
             <div className="space-y-3">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Category</h4>
                 {categories.length > 0 ? categories.map((cat) => (
-                    <label key={cat.id} className="flex items-center gap-3 cursor-pointer group select-none">
+                    <label
+                        key={cat.id}
+                        className="flex items-center gap-3 cursor-pointer group select-none"
+                        onClick={(e) => { e.preventDefault(); handleCategoryChange(cat.name); }}
+                    >
                         <div
                             className={`w-5 h-5 rounded flex items-center justify-center border transition-all duration-200 ${selectedCategories.includes(cat.name)
                                 ? "bg-green-600 border-green-600 shadow-sm"
                                 : "border-gray-200 bg-gray-50 group-hover:border-green-400"
                                 }`}
-                            onClick={(e) => { e.preventDefault(); handleCategoryChange(cat.name); }}
                         >
                             {selectedCategories.includes(cat.name) && <span className="text-white text-[10px] font-bold">✓</span>}
                         </div>
@@ -218,22 +229,27 @@ const ProductsContent = () => {
             {/* Material Filter */}
             <div className="space-y-3 pt-6 mt-6 border-t border-gray-100">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Material</h4>
-                {["Birchwood", "Bamboo", "Bagasse"].map((mat) => (
-                    <label key={mat} className="flex items-center gap-3 cursor-pointer group select-none">
+                {materials.length > 0 ? materials.map((matObj) => (
+                    <label
+                        key={matObj.id || matObj.name}
+                        className="flex items-center gap-3 cursor-pointer group select-none"
+                        onClick={(e) => { e.preventDefault(); handleMaterialChange(matObj.name); }}
+                    >
                         <div
-                            className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 ${selectedMaterials.includes(mat)
+                            className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 ${selectedMaterials.includes(matObj.name)
                                 ? "border-green-600 bg-white"
                                 : "border-gray-300 bg-gray-50 group-hover:border-green-400"
                                 }`}
-                            onClick={(e) => { e.preventDefault(); handleMaterialChange(mat); }}
                         >
-                            {selectedMaterials.includes(mat) && <div className="w-2 h-2 rounded-full bg-green-600" />}
+                            {selectedMaterials.includes(matObj.name) && <div className="w-2 h-2 rounded-full bg-green-600" />}
                         </div>
-                        <span className={`text-sm transition-colors ${selectedMaterials.includes(mat) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
-                            {mat}
+                        <span className={`text-sm transition-colors ${selectedMaterials.includes(matObj.name) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
+                            {matObj.name}
                         </span>
                     </label>
-                ))}
+                )) : (
+                    <p className="text-sm text-gray-500">Loading materials...</p>
+                )}
             </div>
         </>
     );

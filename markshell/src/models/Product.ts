@@ -18,6 +18,11 @@ export interface IProduct extends Document {
     weight?: string;
     cartonQuantity?: string;
     isFeatured?: boolean;
+    features?: string[];
+    pack?: string;
+    case?: string;
+    grade?: string;
+    orderVolumes?: string[];
 }
 
 const ProductSchema: Schema = new Schema(
@@ -39,6 +44,11 @@ const ProductSchema: Schema = new Schema(
         weight: { type: String },
         cartonQuantity: { type: String },
         isFeatured: { type: Boolean, default: false },
+        features: [{ type: String }],
+        pack: { type: String },
+        case: { type: String },
+        grade: { type: String },
+        orderVolumes: [{ type: String }],
     },
     {
         timestamps: true,

@@ -23,7 +23,7 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     const { openQuote } = useQuote();
 
     return (
-        <Link href={`/products?category=${encodeURIComponent(slug)}`} className="group block h-full">
+        <Link href={`/products?category=${encodeURIComponent(name)}`} className="group block h-full">
             <div className="relative h-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                 {/* Image Section */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
