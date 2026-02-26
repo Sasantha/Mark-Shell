@@ -212,22 +212,30 @@ const SingleProductPage = () => {
                                 Technical Specifications
                             </h3>
                             <div className="grid grid-cols-2 gap-y-6 gap-x-8">
-                                <div>
-                                    <span className="text-xs text-gray-400 block mb-1">Length</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.specs?.length || "N/A"}</span>
-                                </div>
-                                <div>
-                                    <span className="text-xs text-gray-400 block mb-1">Weight</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.weight || product.specs?.weight || "N/A"}</span>
-                                </div>
-                                <div>
-                                    <span className="text-xs text-gray-400 block mb-1">Material</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.material === "Birchwood" ? "100% White Birch" : (product.material || "Natural Material")}</span>
-                                </div>
-                                <div>
-                                    <span className="text-xs text-gray-400 block mb-1">Carton Quantity</span>
-                                    <span className="text-sm font-bold text-gray-900">{product.cartonQuantity || "N/A"}</span>
-                                </div>
+                                {product.specs?.length && (
+                                    <div>
+                                        <span className="text-xs text-gray-400 block mb-1">Length</span>
+                                        <span className="text-sm font-bold text-gray-900">{product.specs.length}</span>
+                                    </div>
+                                )}
+                                {(product.weight || product.specs?.weight) && (
+                                    <div>
+                                        <span className="text-xs text-gray-400 block mb-1">Weight</span>
+                                        <span className="text-sm font-bold text-gray-900">{product.weight || product.specs.weight}</span>
+                                    </div>
+                                )}
+                                {product.material && (
+                                    <div>
+                                        <span className="text-xs text-gray-400 block mb-1">Material</span>
+                                        <span className="text-sm font-bold text-gray-900">{product.material === "Birchwood" ? "100% White Birch" : product.material}</span>
+                                    </div>
+                                )}
+                                {product.cartonQuantity && (
+                                    <div>
+                                        <span className="text-xs text-gray-400 block mb-1">Carton Quantity</span>
+                                        <span className="text-sm font-bold text-gray-900">{product.cartonQuantity}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
