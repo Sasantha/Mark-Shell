@@ -128,7 +128,7 @@ const SingleProductPage = () => {
                 </div>
             </div>
 
-            <Section className="py-12">
+            <Section className="py-8 md:py-12">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
                     {/* Left: Gallery */}
                     <div className="space-y-4">
