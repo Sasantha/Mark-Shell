@@ -28,7 +28,7 @@ const Hero = () => {
                     </p>
 
                     <p className="text-xl text-gray-100 max-w-xl leading-relaxed drop-shadow-md">
-                        Engineered for performance, hygiene, and responsible sourcing — our products balance sustainability with durability, ensuring usability without compromising operational efficiency.
+                        Engineered for performance, hygiene, and responsible sourcing our products balance sustainability with durability, ensuring usability without compromising operational efficiency.
                     </p>
 
                     <div className="flex flex-wrap gap-4">

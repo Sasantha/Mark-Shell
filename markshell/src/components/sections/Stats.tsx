@@ -37,7 +37,7 @@ const Stats = () => {
                     {/* Main Image with rotation and rounded corners */}
                     <div className="absolute inset-0 bg-gray-200 rounded-[2.5rem] overflow-hidden rotate-3 shadow-2xl">
                         <img
-                            src="https://images.unsplash.com/photo-1573871666457-7c7329118cf9?q=80&w=2670&auto=format&fit=crop"
+                            src="/stats.jpeg"
                             alt="Artistic Lifestyle"
                             className="w-full h-full object-cover"
                         />
