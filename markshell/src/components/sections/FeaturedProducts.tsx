@@ -15,7 +15,7 @@ const FeaturedProducts = () => {
         const fetchFeaturedProducts = async () => {
             try {
                 // Fetch up to 6 products for the featured section
-                const response = await fetch('/api/products?limit=6');
+                const response = await fetch('/api/products?featured=true');
                 if (response.ok) {
                     const data = await response.json();
                     setProducts(data);

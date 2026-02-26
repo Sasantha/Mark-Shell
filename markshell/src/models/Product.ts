@@ -17,6 +17,7 @@ export interface IProduct extends Document {
     longDescription?: string;
     weight?: string;
     cartonQuantity?: string;
+    isFeatured?: boolean;
 }
 
 const ProductSchema: Schema = new Schema(
@@ -37,10 +38,16 @@ const ProductSchema: Schema = new Schema(
         longDescription: { type: String },
         weight: { type: String },
         cartonQuantity: { type: String },
+        isFeatured: { type: Boolean, default: false },
     },
     {
         timestamps: true,
     }
 );
+
+// Force Mongoose to re-register the model so the new `isFeatured` field is picked up during HMR
+if (mongoose.models.Product) {
+    delete mongoose.models.Product;
+}
 
 export default mongoose.models.Product || mongoose.model<IProduct>('Product', ProductSchema);

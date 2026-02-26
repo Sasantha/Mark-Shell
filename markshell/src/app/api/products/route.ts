@@ -9,10 +9,14 @@ export async function GET(request: Request) {
         const category = searchParams.get('category');
         const limitStr = searchParams.get('limit');
         const q = searchParams.get('q');
+        const featured = searchParams.get('featured');
 
         let query: any = {};
         if (category) {
             query.category = category;
+        }
+        if (featured === 'true') {
+            query.isFeatured = true;
         }
         if (q) {
             query.$or = [
