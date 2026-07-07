@@ -7,9 +7,10 @@ import CategoryCard from "@/components/ui/CategoryCard";
 import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import { Loader2 } from "lucide-react";
+import type { Category } from "@/types";
 
 const CategoriesPage = () => {
-    const [categories, setCategories] = useState<any[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -63,12 +64,12 @@ const CategoriesPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {categories.map((category) => (
                             <CategoryCard
-                                key={category.id || category._id}
+                                key={category.id}
                                 name={category.name}
                                 description={category.description}
                                 image={category.image}
                                 itemCount={category.itemCount || 0}
-                                slug={category.slug || category.name.toLowerCase().replace(/\s+/g, '-')}
+                                slug={category.slug}
                             />
                         ))}
                     </div>
