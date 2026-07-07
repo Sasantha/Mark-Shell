@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
@@ -8,7 +8,57 @@ import MessagePopup from "@/components/ui/MessagePopup";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Mail, MapPin, Send } from "lucide-react";
 
+const PRODUCT_INTERESTS = ["Wooden Cutlery", "Bamboo Products", "Areca Plates", "Other"];
+
 const ContactPage = () => {
+    const [fullName, setFullName] = useState("");
+    const [company, setCompany] = useState("");
+    const [contactValue, setContactValue] = useState("");
+    const [productInterest, setProductInterest] = useState("");
+    const [message, setMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitError(null);
+        setIsSubmitting(true);
+
+        try {
+            const res = await fetch('/api/inquiries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: fullName,
+                    company: company || undefined,
+                    contactMethod: contactValue.includes('@') ? 'email' : 'phone',
+                    contactValue,
+                    contextType: productInterest ? 'category' : 'general',
+                    contextValue: productInterest || undefined,
+                    source: 'contact_page',
+                    message,
+                }),
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to send inquiry');
+            }
+
+            setSubmitSuccess(true);
+            setFullName("");
+            setCompany("");
+            setContactValue("");
+            setProductInterest("");
+            setMessage("");
+        } catch (err) {
+            console.error("Failed to submit contact inquiry:", err);
+            setSubmitError("Something went wrong. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <main className="min-h-screen font-sans bg-[#f9fafb]">
             <Navbar />
@@ -84,12 +134,28 @@ const ContactPage = () => {
                                 Fill out the form and our procurement specialists will contact you within 24 hours.
                             </p>
 
-                            <form className="space-y-6">
+                            {submitSuccess ? (
+                                <div className="text-center py-10">
+                                    <p className="text-lg font-bold text-gray-900 mb-2">Thanks, {fullName || "there"}!</p>
+                                    <p className="text-gray-600 mb-6">Your inquiry has been received. Our procurement specialists will contact you within 24 hours.</p>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setSubmitSuccess(false)}
+                                        className="border-[#00d084] text-[#00d084] hover:bg-[#e8f8f2]"
+                                    >
+                                        Send another inquiry
+                                    </Button>
+                                </div>
+                            ) : (
+                            <form className="space-y-6" onSubmit={handleSubmit}>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
                                         <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Full Name</label>
                                         <input
                                             type="text"
+                                            required
+                                            value={fullName}
+                                            onChange={(e) => setFullName(e.target.value)}
                                             placeholder="John Doe"
                                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00d084]/20 focus:border-[#00d084] transition-all"
                                         />
@@ -98,6 +164,8 @@ const ContactPage = () => {
                                         <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Company Name</label>
                                         <input
                                             type="text"
+                                            value={company}
+                                            onChange={(e) => setCompany(e.target.value)}
                                             placeholder="Acme Logistics Ltd"
                                             className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00d084]/20 focus:border-[#00d084] transition-all"
                                         />
@@ -105,14 +173,29 @@ const ContactPage = () => {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Email or Phone</label>
+                                    <input
+                                        type="text"
+                                        required
+                                        value={contactValue}
+                                        onChange={(e) => setContactValue(e.target.value)}
+                                        placeholder="you@company.com or +1 555 000 0000"
+                                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00d084]/20 focus:border-[#00d084] transition-all"
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
                                     <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Product Interest</label>
                                     <div className="relative">
-                                        <select className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00d084]/20 focus:border-[#00d084] transition-all appearance-none cursor-pointer">
-                                            <option>Select a category</option>
-                                            <option>Wooden Cutlery</option>
-                                            <option>Bamboo Products</option>
-                                            <option>Areca Plates</option>
-                                            <option>Other</option>
+                                        <select
+                                            value={productInterest}
+                                            onChange={(e) => setProductInterest(e.target.value)}
+                                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00d084]/20 focus:border-[#00d084] transition-all appearance-none cursor-pointer"
+                                        >
+                                            <option value="">Select a category</option>
+                                            {PRODUCT_INTERESTS.map((interest) => (
+                                                <option key={interest} value={interest}>{interest}</option>
+                                            ))}
                                         </select>
                                     </div>
                                 </div>
@@ -121,18 +204,26 @@ const ContactPage = () => {
                                     <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Message</label>
                                     <textarea
                                         rows={4}
+                                        required
+                                        value={message}
+                                        onChange={(e) => setMessage(e.target.value)}
                                         placeholder="Tell us about your requirements..."
                                         className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00d084]/20 focus:border-[#00d084] transition-all resize-none"
                                     ></textarea>
                                 </div>
 
-                                <Button className="w-full bg-[#00d084] hover:bg-[#00b070] text-white font-bold py-4 rounded-full text-base md:text-lg shadow-lg hover:shadow-[#00d084]/25 transition-all flex items-center justify-center gap-2 h-auto">
-                                    Send Inquiry via WhatsApp <Send size={18} className="fill-current" />
+                                {submitError && (
+                                    <p className="text-sm text-red-600">{submitError}</p>
+                                )}
+
+                                <Button type="submit" disabled={isSubmitting} className="w-full bg-[#00d084] hover:bg-[#00b070] text-white font-bold py-4 rounded-full text-base md:text-lg shadow-lg hover:shadow-[#00d084]/25 transition-all flex items-center justify-center gap-2 h-auto">
+                                    {isSubmitting ? "Sending..." : "Send Inquiry"} <Send size={18} className="fill-current" />
                                 </Button>
                                 <p className="text-center text-[10px] md:text-xs text-gray-400 mt-4">
                                     By submitting, you agree to our privacy policy and business terms.
                                 </p>
                             </form>
+                            )}
                         </div>
                     </div>
                 </div>
