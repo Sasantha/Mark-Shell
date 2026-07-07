@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, ChevronDown } from "lucide-react";
+import { MessageCircle, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuote } from "@/contexts/QuoteContext";
+import type { Product, Category } from "@/types";
 
 const MessagePopup = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -22,8 +23,8 @@ const MessagePopup = () => {
     const [submitError, setSubmitError] = useState<string | null>(null);
 
     // Live DB Data State
-    const [dbProducts, setDbProducts] = useState<any[]>([]);
-    const [dbCategories, setDbCategories] = useState<any[]>([]);
+    const [dbProducts, setDbProducts] = useState<Product[]>([]);
+    const [dbCategories, setDbCategories] = useState<Category[]>([]);
     const hasFetchedRef = useRef(false);
 
     // Fetch product/category options lazily, only once the popup is actually
@@ -197,8 +198,8 @@ const MessagePopup = () => {
                             >
                                 <option value="">Select {contextType}...</option>
                                 {contextType === 'product'
-                                    ? dbProducts.map(p => <option key={p._id || p.id} value={p.name}>{p.name}</option>)
-                                    : dbCategories.map(c => <option key={c._id || c.id} value={c.name}>{c.name}</option>)
+                                    ? dbProducts.map(p => <option key={p.id} value={p.name}>{p.name}</option>)
+                                    : dbCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)
                                 }
                             </select>
                         )}

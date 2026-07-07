@@ -11,6 +11,106 @@ import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Loader2 } from "
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { useQuote } from "@/contexts/QuoteContext";
+import type { Product, Category, Material } from "@/types";
+
+interface FilterSidebarProps {
+    categories: Category[];
+    materials: Material[];
+    selectedCategories: string[];
+    selectedMaterials: string[];
+    onCategoryChange: (name: string) => void;
+    onMaterialChange: (name: string) => void;
+    onReset: () => void;
+}
+
+/**
+ * Filter sidebar content, shared between the desktop sticky sidebar and the
+ * mobile slide-over. Defined outside ProductsContent so it isn't recreated
+ * (and its DOM remounted) on every state change.
+ */
+const FilterSidebar = ({
+    categories,
+    materials,
+    selectedCategories,
+    selectedMaterials,
+    onCategoryChange,
+    onMaterialChange,
+    onReset,
+}: FilterSidebarProps) => (
+    <>
+        <div className="flex items-center justify-between mb-6">
+            <h3 className="font-bold text-lg text-gray-900">Filters</h3>
+            <button
+                onClick={onReset}
+                className="text-green-600 text-xs font-semibold hover:underline"
+            >
+                Reset All
+            </button>
+        </div>
+
+        {/* Category Filter */}
+        <div className="space-y-3">
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Category</h4>
+            {categories.length > 0 ? categories.map((cat) => (
+                <label
+                    key={cat.id}
+                    className="flex items-center gap-3 cursor-pointer group select-none"
+                >
+                    <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(cat.name)}
+                        onChange={() => onCategoryChange(cat.name)}
+                        className="sr-only peer"
+                    />
+                    <div
+                        className={`w-5 h-5 rounded flex items-center justify-center border transition-all duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-green-500/50 ${selectedCategories.includes(cat.name)
+                            ? "bg-green-600 border-green-600 shadow-sm"
+                            : "border-gray-200 bg-gray-50 group-hover:border-green-400"
+                            }`}
+                    >
+                        {selectedCategories.includes(cat.name) && <span className="text-white text-[10px] font-bold">✓</span>}
+                    </div>
+                    <span className={`text-sm transition-colors ${selectedCategories.includes(cat.name) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
+                        {cat.name}
+                    </span>
+                </label>
+            )) : (
+                <p className="text-sm text-gray-500">Loading categories...</p>
+            )}
+        </div>
+
+        {/* Material Filter */}
+        <div className="space-y-3 pt-6 mt-6 border-t border-gray-100">
+            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Material</h4>
+            {materials.length > 0 ? materials.map((matObj) => (
+                <label
+                    key={matObj.id}
+                    className="flex items-center gap-3 cursor-pointer group select-none"
+                >
+                    <input
+                        type="checkbox"
+                        checked={selectedMaterials.includes(matObj.name)}
+                        onChange={() => onMaterialChange(matObj.name)}
+                        className="sr-only peer"
+                    />
+                    <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 peer-focus-visible:ring-2 peer-focus-visible:ring-green-500/50 ${selectedMaterials.includes(matObj.name)
+                            ? "border-green-600 bg-white"
+                            : "border-gray-300 bg-gray-50 group-hover:border-green-400"
+                            }`}
+                    >
+                        {selectedMaterials.includes(matObj.name) && <div className="w-2 h-2 rounded-full bg-green-600" />}
+                    </div>
+                    <span className={`text-sm transition-colors ${selectedMaterials.includes(matObj.name) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
+                        {matObj.name}
+                    </span>
+                </label>
+            )) : (
+                <p className="text-sm text-gray-500">Loading materials...</p>
+            )}
+        </div>
+    </>
+);
 
 /**
  * ProductsContent Component (Inner component to handle Suspense)
@@ -26,9 +126,9 @@ const ProductsContent = () => {
     // -------------------------------------------------------------------------
 
     // Data State
-    const [products, setProducts] = useState<any[]>([]);
-    const [categories, setCategories] = useState<any[]>([]);
-    const [materials, setMaterials] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [materials, setMaterials] = useState<Material[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -65,8 +165,8 @@ const ProductsContent = () => {
                 }
                 const data = await response.json();
                 setProducts(data);
-            } catch (err: any) {
-                setError(err.message);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : "Something went wrong");
                 console.error("Error fetching data:", err);
             } finally {
                 setIsLoading(false);
@@ -190,72 +290,6 @@ const ProductsContent = () => {
         };
     }, [isMobileFiltersOpen]);
 
-    const FilterContent = () => (
-        <>
-            <div className="flex items-center justify-between mb-6">
-                <h3 className="font-bold text-lg text-gray-900">Filters</h3>
-                <button
-                    onClick={handleReset}
-                    className="text-green-600 text-xs font-semibold hover:underline"
-                >
-                    Reset All
-                </button>
-            </div>
-
-            {/* Category Filter */}
-            <div className="space-y-3">
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Category</h4>
-                {categories.length > 0 ? categories.map((cat) => (
-                    <label
-                        key={cat.id}
-                        className="flex items-center gap-3 cursor-pointer group select-none"
-                        onClick={(e) => { e.preventDefault(); handleCategoryChange(cat.name); }}
-                    >
-                        <div
-                            className={`w-5 h-5 rounded flex items-center justify-center border transition-all duration-200 ${selectedCategories.includes(cat.name)
-                                ? "bg-green-600 border-green-600 shadow-sm"
-                                : "border-gray-200 bg-gray-50 group-hover:border-green-400"
-                                }`}
-                        >
-                            {selectedCategories.includes(cat.name) && <span className="text-white text-[10px] font-bold">✓</span>}
-                        </div>
-                        <span className={`text-sm transition-colors ${selectedCategories.includes(cat.name) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
-                            {cat.name}
-                        </span>
-                    </label>
-                )) : (
-                    <p className="text-sm text-gray-500">Loading categories...</p>
-                )}
-            </div>
-
-            {/* Material Filter */}
-            <div className="space-y-3 pt-6 mt-6 border-t border-gray-100">
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Material</h4>
-                {materials.length > 0 ? materials.map((matObj) => (
-                    <label
-                        key={matObj.id || matObj.name}
-                        className="flex items-center gap-3 cursor-pointer group select-none"
-                        onClick={(e) => { e.preventDefault(); handleMaterialChange(matObj.name); }}
-                    >
-                        <div
-                            className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all duration-200 ${selectedMaterials.includes(matObj.name)
-                                ? "border-green-600 bg-white"
-                                : "border-gray-300 bg-gray-50 group-hover:border-green-400"
-                                }`}
-                        >
-                            {selectedMaterials.includes(matObj.name) && <div className="w-2 h-2 rounded-full bg-green-600" />}
-                        </div>
-                        <span className={`text-sm transition-colors ${selectedMaterials.includes(matObj.name) ? "text-gray-900 font-bold" : "text-gray-500 group-hover:text-green-600"}`}>
-                            {matObj.name}
-                        </span>
-                    </label>
-                )) : (
-                    <p className="text-sm text-gray-500">Loading materials...</p>
-                )}
-            </div>
-        </>
-    );
-
     // -------------------------------------------------------------------------
     // RENDER
     // -------------------------------------------------------------------------
@@ -307,7 +341,15 @@ const ProductsContent = () => {
                         <div className="fixed inset-0 z-[60] lg:hidden flex justify-end bg-black/50 backdrop-blur-sm transition-opacity">
                             <div className="w-[85%] max-w-sm h-full bg-white shadow-2xl p-6 overflow-y-auto animate-in slide-in-from-right flex flex-col">
                                 <div className="flex-1">
-                                    <FilterContent />
+                                    <FilterSidebar
+                                        categories={categories}
+                                        materials={materials}
+                                        selectedCategories={selectedCategories}
+                                        selectedMaterials={selectedMaterials}
+                                        onCategoryChange={handleCategoryChange}
+                                        onMaterialChange={handleMaterialChange}
+                                        onReset={handleReset}
+                                    />
                                 </div>
                                 <div className="mt-8 pt-4 border-t border-gray-100 pb-4">
                                     <Button
@@ -331,7 +373,15 @@ const ProductsContent = () => {
                     {/* Desktop Sidebar Filters */}
                     <aside className="lg:col-span-3 hidden lg:block">
                         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 sticky top-24">
-                            <FilterContent />
+                            <FilterSidebar
+                                categories={categories}
+                                materials={materials}
+                                selectedCategories={selectedCategories}
+                                selectedMaterials={selectedMaterials}
+                                onCategoryChange={handleCategoryChange}
+                                onMaterialChange={handleMaterialChange}
+                                onReset={handleReset}
+                            />
                         </div>
                     </aside>
 
@@ -358,9 +408,10 @@ const ProductsContent = () => {
                                     </span>
 
                                     <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                                        <span className="text-gray-400 text-sm hidden sm:inline">Sort by:</span>
+                                        <label htmlFor="sort-by" className="text-gray-400 text-sm hidden sm:inline">Sort by:</label>
                                         <div className="relative">
                                             <select
+                                                id="sort-by"
                                                 className="appearance-none bg-gray-50 border border-gray-200 pl-2 sm:pl-4 pr-7 sm:pr-10 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors cursor-pointer w-[110px] sm:w-auto text-ellipsis"
                                                 value={sortBy}
                                                 onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
@@ -391,9 +442,9 @@ const ProductsContent = () => {
                                                 badge={product.badge}
                                                 specs={{
                                                     ...product.specs,
-                                                    pack: product.pack,
-                                                    case: product.case,
-                                                    grade: product.grade
+                                                    pack: product.pack ?? "",
+                                                    case: product.case ?? "",
+                                                    grade: product.grade ?? ""
                                                 }}
                                                 isAvailable={product.isAvailable}
                                                 onQuoteClick={() => openQuote('product', product.name)}
@@ -418,6 +469,7 @@ const ProductsContent = () => {
                                         <button
                                             onClick={() => handlePageChange(currentPage - 1)}
                                             disabled={currentPage === 1}
+                                            aria-label="Previous page"
                                             className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed hover:text-gray-600 transition-colors"
                                         >
                                             <ChevronLeft size={16} />
@@ -427,6 +479,8 @@ const ProductsContent = () => {
                                             <button
                                                 key={page}
                                                 onClick={() => handlePageChange(page)}
+                                                aria-label={`Page ${page}`}
+                                                aria-current={currentPage === page ? "page" : undefined}
                                                 className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-all duration-200 ${currentPage === page
                                                     ? "bg-green-700 text-white shadow-lg shadow-green-900/20 font-bold scale-105"
                                                     : "border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-green-200"
@@ -439,6 +493,7 @@ const ProductsContent = () => {
                                         <button
                                             onClick={() => handlePageChange(currentPage + 1)}
                                             disabled={currentPage === totalPages}
+                                            aria-label="Next page"
                                             className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-600 transition-colors"
                                         >
                                             <ChevronRight size={16} />

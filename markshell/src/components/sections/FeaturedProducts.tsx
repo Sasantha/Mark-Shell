@@ -5,9 +5,10 @@ import Section from "../ui/section";
 import ProductCard from "../ui/ProductCard";
 import { useQuote } from "@/contexts/QuoteContext";
 import { Loader2 } from "lucide-react";
+import type { Product } from "@/types";
 
 const FeaturedProducts = () => {
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const { openQuote } = useQuote();
 
@@ -48,10 +49,10 @@ const FeaturedProducts = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0">
                     {products.map((product) => (
                         <ProductCard
-                            key={product.id || product._id}
-                            id={product.id || product._id}
+                            key={product.id}
+                            id={product.id}
                             title={product.name}
-                            description={product.subname || product.category || product.description}
+                            description={product.subname || product.category}
                             image={product.image}
                             tag={product.category}
                             badge={product.badge}

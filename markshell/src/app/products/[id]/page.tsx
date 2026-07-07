@@ -8,18 +8,19 @@ import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import MessagePopup from "@/components/ui/MessagePopup";
-import { Check, Info, Leaf, MessageSquare, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
+import { Check, MessageSquare, ArrowRight, Loader2 } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { useQuote } from "@/contexts/QuoteContext";
 import Link from "next/link";
+import type { Product } from "@/types";
 
 const SingleProductPage = () => {
     const { openQuote } = useQuote();
     const params = useParams();
     const id = params.id as string;
 
-    const [product, setProduct] = useState<any>(null);
-    const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+    const [product, setProduct] = useState<Product | null>(null);
+    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [mainImage, setMainImage] = useState<string | undefined>();
@@ -35,7 +36,7 @@ const SingleProductPage = () => {
                 const productData = await res.json();
 
                 // Convert MongoDB _id to id if necessary
-                const formattedProduct = {
+                const formattedProduct: Product = {
                     ...productData,
                     id: productData._id || productData.id
                 };
@@ -50,15 +51,15 @@ const SingleProductPage = () => {
                         const relData = await relRes.json();
                         // Filter out current product and take up to 4
                         const filtered = relData
-                            .filter((p: any) => (p._id || p.id) !== formattedProduct.id)
-                            .map((p: any) => ({ ...p, id: p._id || p.id }))
+                            .filter((p: Product & { _id?: string }) => (p._id || p.id) !== formattedProduct.id)
+                            .map((p: Product & { _id?: string }) => ({ ...p, id: p._id || p.id }))
                             .slice(0, 4);
                         setRelatedProducts(filtered);
                     }
                 }
-            } catch (err: any) {
+            } catch (err) {
                 console.error("Error fetching product:", err);
-                setError(err.message);
+                setError(err instanceof Error ? err.message : "Something went wrong");
             } finally {
                 setIsLoading(false);
             }
@@ -223,10 +224,10 @@ const SingleProductPage = () => {
                                         <span className="text-sm font-bold text-gray-900">{product.specs.length}</span>
                                     </div>
                                 )}
-                                {(product.weight || product.specs?.weight) && (
+                                {product.weight && (
                                     <div>
                                         <span className="text-xs text-gray-400 block mb-1">Weight</span>
-                                        <span className="text-sm font-bold text-gray-900">{product.weight || product.specs.weight}</span>
+                                        <span className="text-sm font-bold text-gray-900">{product.weight}</span>
                                     </div>
                                 )}
                                 {product.material && (

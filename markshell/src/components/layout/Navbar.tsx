@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Menu, X, Leaf, Search, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuote } from "@/contexts/QuoteContext";
+import type { Product } from "@/types";
 
 const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -15,7 +16,7 @@ const Navbar = () => {
 
     // Search State
     const [searchQuery, setSearchQuery] = useState("");
-    const [suggestions, setSuggestions] = useState<any[]>([]);
+    const [suggestions, setSuggestions] = useState<Product[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
 
@@ -199,13 +200,13 @@ const Navbar = () => {
                                                 : "bg-green-500/40 hover:bg-green-500/60 text-white border-green-400/50"
                                         )}
                                     >
-                                        See all results for "{searchQuery}" <span className="text-white/70">→</span>
+                                        See all results for &quot;{searchQuery}&quot; <span className="text-white/70">→</span>
                                     </button>
                                 </div>
                             </>
                         ) : (
                             <div className={cn("p-6 text-center text-sm", solid ? "text-gray-500" : "text-white/60")}>
-                                No products match "{searchQuery}"
+                                No products match &quot;{searchQuery}&quot;
                             </div>
                         )}
                     </div>
