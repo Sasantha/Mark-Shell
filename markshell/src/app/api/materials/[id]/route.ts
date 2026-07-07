@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Material from '@/models/Material';
 import Product from '@/models/Product';
+import { verifyAdmin, unauthorized, escapeRegex } from '@/lib/auth';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -24,6 +25,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        if (!verifyAdmin(request)) {
+            return unauthorized();
+        }
+
         const { id } = await params;
         await dbConnect();
 
@@ -37,7 +42,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
         // Check if renaming to something that already exists
         if (body.name && body.name.toLowerCase() !== existingMaterial.name.toLowerCase()) {
-            const nameConflict = await Material.findOne({ name: { $regex: new RegExp(`^${body.name}$`, 'i') } });
+            const nameConflict = await Material.findOne({ name: { $regex: new RegExp(`^${escapeRegex(body.name)}$`, 'i') } });
             if (nameConflict) {
                 return NextResponse.json({ error: 'A material with this new name already exists' }, { status: 400 });
             }
@@ -66,6 +71,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        if (!verifyAdmin(request)) {
+            return unauthorized();
+        }
+
         const { id } = await params;
         await dbConnect();
 

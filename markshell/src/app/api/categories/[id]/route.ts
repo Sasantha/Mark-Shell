@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Category from '@/models/Category';
 import Product from '@/models/Product';
+import { verifyAdmin, unauthorized } from '@/lib/auth';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -24,6 +25,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        if (!verifyAdmin(request)) {
+            return unauthorized();
+        }
+
         const { id } = await params;
         await dbConnect();
 
@@ -48,6 +53,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
+        if (!verifyAdmin(request)) {
+            return unauthorized();
+        }
+
         const { id } = await params;
         await dbConnect();
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { adminFetch } from "@/lib/adminFetch";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ const AdminNewMaterialPage = () => {
                 description
             };
 
-            const response = await fetch('/api/materials', {
+            const response = await adminFetch('/api/materials', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(materialData),

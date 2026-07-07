@@ -3,8 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/mongoose';
 import Admin from '@/models/Admin';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-change-in-production';
+import { getJwtSecret } from '@/lib/auth';
 
 export async function POST(request: Request) {
     try {
@@ -15,18 +14,6 @@ export async function POST(request: Request) {
 
         if (!email || !password) {
             return NextResponse.json({ message: 'Email and password are required' }, { status: 400 });
-        }
-
-        // Check if ANY admin exists. If not, we create the default one.
-        const adminCount = await Admin.countDocuments();
-        if (adminCount === 0) {
-            console.log("No admin found in DB. Creating default admin...");
-            const defaultHashedPassword = await bcrypt.hash('admin123', 10);
-            await Admin.create({
-                email: 'admin@markshell.com',
-                password: defaultHashedPassword,
-                name: 'Administrator'
-            });
         }
 
         // Find admin by email
@@ -46,7 +33,7 @@ export async function POST(request: Request) {
         // Generate JWT token
         const token = jwt.sign(
             { id: admin._id, email: admin.email, role: 'admin' },
-            JWT_SECRET,
+            getJwtSecret(),
             { expiresIn: '24h' }
         );
 
