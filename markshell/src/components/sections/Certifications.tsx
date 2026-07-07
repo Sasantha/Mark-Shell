@@ -37,7 +37,10 @@ const Certifications = () => {
                 </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {/* auto-fit + justify-center: leftover tracks collapse instead of
+                stretching, so 1-2 items center as a group rather than
+                left-aligning with empty space to the right. */}
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,200px))] justify-center gap-6">
                 {certifications.map((cert) => (
                     <div
                         key={cert.id}

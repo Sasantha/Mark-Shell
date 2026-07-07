@@ -27,12 +27,12 @@ const Partners = () => {
     if (partners.length === 0) return null;
 
     return (
-        <Section className="py-12 md:py-16 bg-white border-b border-gray-100">
+        <Section className="pt-12 pb-0 md:pt-16 md:pb-0 bg-white border-b border-gray-100">
             <div className="flex flex-col items-center">
-                <span className="text-gray-400 font-semibold tracking-widest text-xs uppercase mb-8">
+                <span className="text-gray-400 font-semibold tracking-widest text-xs uppercase mb-6">
                     Trusted By Our Business Partners
                 </span>
-                <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8 w-full">
+                <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 w-full">
                     {partners.map((partner) => {
                         const logo = (
                             <div className="relative h-12 w-32 grayscale opacity-70 transition-all duration-300 hover:grayscale-0 hover:opacity-100">
