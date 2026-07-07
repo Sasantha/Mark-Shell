@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import Section from "../ui/section";
 import { Button } from "../ui/button";
 
@@ -18,9 +19,11 @@ const CTA = () => {
                 <p className="text-white/80 text-xl leading-relaxed">
                     Streamline your procurement with a reliable, scalable partner focused on responsible production and operational practicality.
                 </p>
-                <Button size="lg" className="bg-yellow-400 text-green-900 hover:bg-yellow-300 rounded-full px-10 py-6 text-lg font-bold">
-                    Contact Us Now
-                </Button>
+                <Link href="/contact">
+                    <Button size="lg" className="bg-yellow-400 text-green-900 hover:bg-yellow-300 rounded-full px-10 py-6 text-lg font-bold">
+                        Contact Us Now
+                    </Button>
+                </Link>
             </div>
         </Section>
     );
