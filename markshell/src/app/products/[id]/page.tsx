@@ -8,7 +8,7 @@ import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import MessagePopup from "@/components/ui/MessagePopup";
-import { Check, MessageSquare, ArrowRight, Loader2 } from "lucide-react";
+import { Check, X, MessageSquare, ArrowRight, Loader2 } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { useQuote } from "@/contexts/QuoteContext";
 import Link from "next/link";
@@ -188,8 +188,11 @@ const SingleProductPage = () => {
 
                         {/* Stock Badge */}
                         <div className="flex items-center gap-2 mb-8">
-                            <div className="bg-green-100 p-1 rounded-full">
-                                <Check size={12} className="text-green-600" />
+                            <div className={`p-1 rounded-full ${product.isAvailable ? "bg-green-100" : "bg-gray-100"}`}>
+                                {product.isAvailable
+                                    ? <Check size={12} className="text-green-600" />
+                                    : <X size={12} className="text-gray-500" />
+                                }
                             </div>
                             <span className="text-sm font-medium text-gray-700">
                                 {product.isAvailable ? "In Stock & Ready to Ship" : "Currently Unavailable"}

@@ -8,7 +8,7 @@ import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Loader2 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Suspense } from "react";
 import { useQuote } from "@/contexts/QuoteContext";
 import type { Product, Category, Material } from "@/types";
@@ -117,6 +117,8 @@ const FilterSidebar = ({
  */
 const ProductsContent = () => {
     const { openQuote } = useQuote();
+    const router = useRouter();
+    const pathname = usePathname();
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get("category");
     const searchQueryParam = searchParams.get("search");
@@ -269,6 +271,14 @@ const ProductsContent = () => {
         setSelectedMaterials([]);
         setSortBy("recommended");
         setCurrentPage(1);
+
+        // Also clear ?category= from the URL so a refresh doesn't silently
+        // re-apply the filter that was just reset.
+        if (categoryParam) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.delete("category");
+            router.replace(params.toString() ? `${pathname}?${params.toString()}` : pathname);
+        }
     };
 
     const handlePageChange = (page: number) => {
