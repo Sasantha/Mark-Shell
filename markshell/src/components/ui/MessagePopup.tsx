@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { MessageCircle, X, Send, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,8 +24,15 @@ const MessagePopup = () => {
     // Live DB Data State
     const [dbProducts, setDbProducts] = useState<any[]>([]);
     const [dbCategories, setDbCategories] = useState<any[]>([]);
+    const hasFetchedRef = useRef(false);
 
+    // Fetch product/category options lazily, only once the popup is actually
+    // opened, instead of on every page load regardless of whether it's used.
     useEffect(() => {
+        if (!isOpen && !isQuoteOpen) return;
+        if (hasFetchedRef.current) return;
+        hasFetchedRef.current = true;
+
         const fetchInitialData = async () => {
             try {
                 const [prodRes, catRes] = await Promise.all([
@@ -45,7 +52,7 @@ const MessagePopup = () => {
         };
 
         fetchInitialData();
-    }, []);
+    }, [isOpen, isQuoteOpen]);
 
     const handleOpen = () => setIsOpen(!isOpen);
 

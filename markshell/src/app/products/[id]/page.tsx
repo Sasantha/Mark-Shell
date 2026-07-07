@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -141,10 +142,13 @@ const SingleProductPage = () => {
                                 </span>
                             )}
                             {displayImage && (
-                                <img
+                                <Image
                                     src={displayImage}
                                     alt={product.name}
-                                    className="max-w-full max-h-full object-contain transition-transform duration-500 hover:scale-105"
+                                    fill
+                                    sizes="(min-width: 1024px) 50vw, 100vw"
+                                    className="object-contain transition-transform duration-500 hover:scale-105"
+                                    priority
                                 />
                             )}
                         </div>
@@ -153,11 +157,11 @@ const SingleProductPage = () => {
                                 {galleryImages.map((img: string, idx: number) => (
                                     <div
                                         key={idx}
-                                        className={`bg-white rounded-xl p-2 cursor-pointer border-2 transition-all ${displayImage === img ? "border-green-500" : "border-transparent hover:border-gray-200"
+                                        className={`relative aspect-square bg-white rounded-xl p-2 cursor-pointer border-2 transition-all ${displayImage === img ? "border-green-500" : "border-transparent hover:border-gray-200"
                                             }`}
                                         onClick={() => setMainImage(img)}
                                     >
-                                        <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover rounded-lg" />
+                                        <Image src={img} alt={`Thumbnail ${idx}`} fill sizes="120px" className="object-cover rounded-lg" />
                                     </div>
                                 ))}
                             </div>

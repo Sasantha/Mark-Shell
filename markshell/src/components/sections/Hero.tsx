@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "../ui/button";
 import Section from "../ui/section";
 import { useQuote } from "@/contexts/QuoteContext";
@@ -13,10 +14,13 @@ const Hero = () => {
         <div className="relative min-h-[80vh] flex items-center pt-20 overflow-hidden bg-[#f3f0ea]">
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
-                <img
+                <Image
                     src="/hero-bg.jpg"
                     alt="Bamboo Forest"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="100vw"
+                    priority
+                    className="object-cover"
                 />
                 {/* Overlay for text readability */}
                 <div className="absolute inset-0 bg-black/40"></div>
