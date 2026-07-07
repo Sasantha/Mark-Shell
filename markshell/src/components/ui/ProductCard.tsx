@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "./button";
 import { useQuote } from "@/contexts/QuoteContext";
 
@@ -47,10 +48,12 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <div className="group bg-white rounded-2xl transition-all duration-300 hover:shadow-xl border border-gray-100 h-full flex flex-col overflow-hidden cursor-pointer">
                 <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
                     {/* Product Image */}
-                    <img
+                    <Image
                         src={image}
                         alt={title}
-                        className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 ${!isAvailable ? "grayscale opacity-70" : ""}`}
+                        fill
+                        sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
+                        className={`object-cover transition-transform duration-500 group-hover:scale-110 ${!isAvailable ? "grayscale opacity-70" : ""}`}
                     />
 
                     {/* Badges */}

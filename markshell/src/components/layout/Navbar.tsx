@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import Image from "next/image";
 import { Menu, X, Leaf, Search, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuote } from "@/contexts/QuoteContext";
@@ -157,8 +158,8 @@ const Navbar = () => {
                                             onClick={() => { setShowSuggestions(false); setIsMobileMenuOpen(false); router.push(`/products/${item.id}`); setSearchQuery(""); }}
                                         >
                                             <div className="flex gap-3 items-center flex-1 min-w-0">
-                                                <div className={cn("w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border", solid ? "bg-gray-100 border-gray-200" : "bg-white/10 border-white/20")}>
-                                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                                <div className={cn("relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border", solid ? "bg-gray-100 border-gray-200" : "bg-white/10 border-white/20")}>
+                                                    <Image src={item.image} alt={item.name} fill sizes="40px" className="object-cover" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <p className={cn("text-sm font-bold truncate", solid ? "text-gray-900" : "text-white")}>{item.name}</p>

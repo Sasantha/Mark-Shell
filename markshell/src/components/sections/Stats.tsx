@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import Section from "../ui/section";
 
 const stats = [
@@ -36,10 +37,12 @@ const Stats = () => {
                 <div className="relative h-[500px] w-full">
                     {/* Main Image with rotation and rounded corners */}
                     <div className="absolute inset-0 bg-gray-200 rounded-[2.5rem] overflow-hidden rotate-3 shadow-2xl">
-                        <img
+                        <Image
                             src="/stats.jpeg"
                             alt="Artistic Lifestyle"
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="(min-width: 1024px) 50vw, 100vw"
+                            className="object-cover"
                         />
                     </div>
 

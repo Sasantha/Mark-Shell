@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, MessageSquare } from "lucide-react";
 import { useQuote } from "@/contexts/QuoteContext";
 
@@ -27,10 +28,12 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
             <div className="relative h-full overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
                 {/* Image Section */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100">
-                    <img
+                    <Image
                         src={image}
                         alt={name}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        fill
+                        sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-80 transition-opacity group-hover:opacity-90"></div>
 
