@@ -18,6 +18,8 @@ const MessagePopup = () => {
     const [contextValue, setContextValue] = useState("");
     const [messageType, setMessageType] = useState("inquiry");
     const [customMessage, setCustomMessage] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
     // Live DB Data State
     const [dbProducts, setDbProducts] = useState<any[]>([]);
@@ -64,15 +66,44 @@ const MessagePopup = () => {
         }
     }, [isQuoteOpen, quoteData]);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulate sending
-        alert("Message sent! We'll get back to you soon.");
-        handleClose();
-        // Reset form (optional)
-        setName("");
-        setContactValue("");
-        setCustomMessage("");
+        setSubmitError(null);
+        setIsSubmitting(true);
+
+        const preset = presetMessages.find(p => p.value === messageType);
+        const message = messageType === 'custom' ? customMessage : (preset?.label ?? '');
+
+        try {
+            const res = await fetch('/api/inquiries', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    contactMethod,
+                    contactValue,
+                    contextType,
+                    contextValue: contextType !== 'general' ? contextValue : undefined,
+                    source: 'popup',
+                    message,
+                }),
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to send message');
+            }
+
+            alert("Message sent! We'll get back to you soon.");
+            handleClose();
+            setName("");
+            setContactValue("");
+            setCustomMessage("");
+        } catch (err) {
+            console.error("Failed to submit inquiry:", err);
+            setSubmitError("Something went wrong. Please try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const presetMessages = [
@@ -154,6 +185,7 @@ const MessagePopup = () => {
                             <select
                                 value={contextValue}
                                 onChange={(e) => setContextValue(e.target.value)}
+                                required
                                 className="w-2/3 rounded-lg border border-gray-300 px-2 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                             >
                                 <option value="">Select {contextType}...</option>
@@ -192,9 +224,13 @@ const MessagePopup = () => {
                     </div>
                 </div>
 
-                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700">
+                {submitError && (
+                    <p className="text-sm text-red-600">{submitError}</p>
+                )}
+
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 hover:bg-green-700">
                     <Send size={16} className="mr-2" />
-                    Send Message
+                    {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
             </form>
         </>
