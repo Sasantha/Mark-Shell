@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Product from '@/models/Product';
+import { verifyAdmin, unauthorized, escapeRegex } from '@/lib/auth';
 
 export async function GET(request: Request) {
     try {
@@ -19,10 +20,11 @@ export async function GET(request: Request) {
             query.isFeatured = true;
         }
         if (q) {
+            const safeQuery = escapeRegex(q);
             query.$or = [
-                { name: { $regex: q, $options: 'i' } },
-                { longDescription: { $regex: q, $options: 'i' } },
-                { subname: { $regex: q, $options: 'i' } }
+                { name: { $regex: safeQuery, $options: 'i' } },
+                { longDescription: { $regex: safeQuery, $options: 'i' } },
+                { subname: { $regex: safeQuery, $options: 'i' } }
             ];
         }
 
@@ -54,6 +56,10 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        if (!verifyAdmin(request)) {
+            return unauthorized();
+        }
+
         await dbConnect();
         const body = await request.json();
 

@@ -1,28 +1,8 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import dbConnect from '@/lib/mongoose';
 import Admin from '@/models/Admin';
-
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret-key-change-in-production';
-
-// Helper to verify token and extract admin ID
-const verifyAdmin = (request: Request) => {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return null;
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    try {
-        const decoded = jwt.verify(token, JWT_SECRET) as { id: string, role: string };
-        if (decoded.role !== 'admin') return null;
-        return decoded.id;
-    } catch (error) {
-        return null;
-    }
-};
+import { verifyAdmin } from '@/lib/auth';
 
 export async function PUT(request: Request) {
     try {

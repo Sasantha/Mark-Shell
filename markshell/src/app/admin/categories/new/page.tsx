@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { adminFetch } from "@/lib/adminFetch";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Save, Upload, Loader2, Image as ImageIcon } from "lucide-react";
@@ -93,7 +94,7 @@ const AddCategoryPage = () => {
             };
 
             // 3. Save to database via API
-            const response = await fetch('/api/categories', {
+            const response = await adminFetch('/api/categories', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

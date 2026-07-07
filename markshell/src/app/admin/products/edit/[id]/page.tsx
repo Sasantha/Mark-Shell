@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { adminFetch } from "@/lib/adminFetch";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { ChevronLeft, Save, Upload, Loader2, Image as ImageIcon } from "lucide-react";
@@ -351,7 +352,7 @@ const EditProductPage = () => {
             };
 
             // 3. Save to database via API
-            const response = await fetch(`/api/products/${id}`, {
+            const response = await adminFetch(`/api/products/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

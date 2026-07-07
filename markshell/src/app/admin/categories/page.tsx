@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { adminFetch } from "@/lib/adminFetch";
 import Link from "next/link";
 import { Plus, Search, Edit, Trash2, ChevronLeft, ChevronRight, ArrowUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -81,7 +82,7 @@ const AdminCategoriesPage = () => {
 
         setIsDeleting(true);
         try {
-            const response = await fetch(`/api/categories/${categoryToDelete.id}?transferTo=${transferToCategoryId}`, {
+            const response = await adminFetch(`/api/categories/${categoryToDelete.id}?transferTo=${transferToCategoryId}`, {
                 method: 'DELETE',
             });
 

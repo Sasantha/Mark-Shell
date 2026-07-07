@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { adminFetch } from "@/lib/adminFetch";
 import { Search, ArrowUpDown, Loader2, Star, StarOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -67,7 +68,7 @@ const AdminFeaturedPage = () => {
         }
 
         try {
-            const response = await fetch(`/api/products/${product.id}/feature`, {
+            const response = await adminFetch(`/api/products/${product.id}/feature`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ isFeatured: !currentlyFeatured })

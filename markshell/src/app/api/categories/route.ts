@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Category from '@/models/Category';
+import { verifyAdmin, unauthorized } from '@/lib/auth';
 
 export async function GET() {
     try {
@@ -25,6 +26,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
+        if (!verifyAdmin(request)) {
+            return unauthorized();
+        }
+
         await dbConnect();
         const body = await request.json();
         const category = await Category.create(body);

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { adminFetch } from "@/lib/adminFetch";
 import Link from "next/link";
 import { Plus, Search, Edit, Trash2, ArrowUpDown, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -63,7 +64,7 @@ const AdminMaterialsPage = () => {
 
         setIsDeleting(true);
         try {
-            const response = await fetch(`/api/materials/${materialToDelete.id}`, {
+            const response = await adminFetch(`/api/materials/${materialToDelete.id}`, {
                 method: 'DELETE',
             });
 

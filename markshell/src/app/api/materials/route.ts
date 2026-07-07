@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Material from '@/models/Material';
 import Product from '@/models/Product'; // We might need to check if a material is used later
+import { verifyAdmin, unauthorized, escapeRegex } from '@/lib/auth';
 
 export async function GET(request: Request) {
     try {
@@ -28,11 +29,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        if (!verifyAdmin(request)) {
+            return unauthorized();
+        }
+
         await dbConnect();
         const body = await request.json();
 
         // Check for uniqueness
-        const existingMaterial = await Material.findOne({ name: { $regex: new RegExp(`^${body.name}$`, 'i') } });
+        const existingMaterial = await Material.findOne({ name: { $regex: new RegExp(`^${escapeRegex(body.name)}$`, 'i') } });
         if (existingMaterial) {
             return NextResponse.json({ error: 'A material with this name already exists' }, { status: 400 });
         }
