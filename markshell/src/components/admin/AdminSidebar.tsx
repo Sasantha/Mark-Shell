@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, Grid, LogOut, Settings, Leaf, Star, Layers, Mail } from "lucide-react";
+import { LayoutDashboard, Package, Grid, LogOut, Settings, Leaf, Star, Layers, Mail, Handshake, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const AdminSidebar = () => {
@@ -15,6 +15,8 @@ const AdminSidebar = () => {
         { name: "Categories", href: "/admin/categories", icon: Grid },
         { name: "Materials", href: "/admin/materials", icon: Layers },
         { name: "Featured", href: "/admin/featured", icon: Star },
+        { name: "Partners", href: "/admin/partners", icon: Handshake },
+        { name: "Certifications", href: "/admin/certifications", icon: Award },
         { name: "Inquiries", href: "/admin/inquiries", icon: Mail },
         { name: "Profile", href: "/admin/profile", icon: Settings },
     ];

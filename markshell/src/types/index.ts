@@ -44,6 +44,20 @@ export interface Material {
     description?: string;
 }
 
+export interface Partner {
+    id: string;
+    name: string;
+    logo: string;
+    websiteUrl?: string;
+}
+
+export interface Certification {
+    id: string;
+    name: string;
+    image: string;
+    description?: string;
+}
+
 export interface Inquiry {
     id: string;
     name: string;
