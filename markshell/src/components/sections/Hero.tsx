@@ -1,8 +1,14 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
 import { Button } from "../ui/button";
 import Section from "../ui/section";
+import { useQuote } from "@/contexts/QuoteContext";
 
 const Hero = () => {
+    const { openQuote } = useQuote();
+
     return (
         <div className="relative min-h-[80vh] flex items-center pt-20 overflow-hidden bg-[#f3f0ea]">
             {/* Background Image */}
@@ -32,12 +38,18 @@ const Hero = () => {
                     </p>
 
                     <div className="flex flex-wrap gap-4">
-                        <Button size="lg" className="rounded-full text-base px-8 py-6 bg-green-600 hover:bg-green-700 border-none transition-transform hover:scale-105">
+                        <Button
+                            size="lg"
+                            className="rounded-full text-base px-8 py-6 bg-green-600 hover:bg-green-700 border-none transition-transform hover:scale-105"
+                            onClick={() => openQuote('general', 'Bulk Quotation')}
+                        >
                             Request Bulk Quotation
                         </Button>
-                        <Button size="lg" variant="outline" className="rounded-full text-base px-8 py-6 border-2 border-white text-white hover:bg-white hover:text-green-900 transition-colors">
-                            Contact Us
-                        </Button>
+                        <Link href="/contact">
+                            <Button size="lg" variant="outline" className="rounded-full text-base px-8 py-6 border-2 border-white text-white hover:bg-white hover:text-green-900 transition-colors">
+                                Contact Us
+                            </Button>
+                        </Link>
                     </div>
                 </div>
             </Section>
