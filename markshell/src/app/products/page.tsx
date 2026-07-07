@@ -7,14 +7,16 @@ import ProductCard from "@/components/ui/ProductCard";
 import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Download, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Loader2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { useQuote } from "@/contexts/QuoteContext";
 
 /**
  * ProductsContent Component (Inner component to handle Suspense)
  */
 const ProductsContent = () => {
+    const { openQuote } = useQuote();
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get("category");
     const searchQueryParam = searchParams.get("search");
@@ -394,7 +396,7 @@ const ProductsContent = () => {
                                                     grade: product.grade
                                                 }}
                                                 isAvailable={product.isAvailable}
-                                                onQuoteClick={() => console.log(`Quote for ${product.name}`)}
+                                                onQuoteClick={() => openQuote('product', product.name)}
                                             />
                                         ))}
                                     </div>
@@ -449,22 +451,21 @@ const ProductsContent = () => {
                 </div>
             </Section>
 
-            {/* Bottom Download CTA */}
+            {/* Bottom Consultation CTA */}
             <div className="bg-[#e5ddd5] py-20 border-t border-[#d8d0c8]">
                 <div className="w-[90%] md:w-[80%] mx-auto text-center">
                     <h2 className="text-3xl font-bold text-gray-900 mb-4">Need the full technical specifications?</h2>
                     <p className="text-gray-600 max-w-2xl mx-auto mb-10">
-                        Download our complete 2024 Corporate Catalog PDF for detailed dimensions, material certifications (FSC, SGS), and packaging options.
+                        Talk to our sales team for detailed dimensions, material certifications (FSC, SGS), packaging options, and wholesale pricing tiers.
                     </p>
                     <div className="flex flex-col sm:flex-row justify-center gap-4">
-                        <Button className="bg-green-700 hover:bg-green-800 text-white rounded-lg px-8 py-6 text-base font-bold flex items-center gap-3 shadow-xl shadow-green-900/10">
-                            <Download size={20} /> Download PDF Catalog
-                        </Button>
-                        <Button variant="white" className="bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 rounded-lg px-8 py-6 text-base font-bold flex items-center gap-3">
+                        <Button
+                            className="bg-green-700 hover:bg-green-800 text-white rounded-lg px-8 py-6 text-base font-bold flex items-center gap-3 shadow-xl shadow-green-900/10"
+                            onClick={() => openQuote('general', 'Sales Consultation')}
+                        >
                             <MessageSquare size={20} /> Consult with a Sales Rep
                         </Button>
                     </div>
-                    <p className="text-xs text-gray-500 mt-6">*PDF includes full wholesale pricing tiers and shipping logistics information.</p>
                 </div>
             </div>
 
@@ -476,7 +477,11 @@ const ProductsContent = () => {
 
 const ProductsPage = () => {
     return (
-        <Suspense fallback={<div>Loading chemicals...</div>}>
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center bg-[#f9fafb]">
+                <Loader2 className="h-10 w-10 animate-spin text-green-600" />
+            </div>
+        }>
             <ProductsContent />
         </Suspense>
     );
