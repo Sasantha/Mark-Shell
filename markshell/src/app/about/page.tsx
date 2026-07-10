@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
+import AboutGalleryGrid from "@/components/sections/AboutGalleryGrid";
 import { Button } from "@/components/ui/button";
 import { Leaf, Recycle, TreePine, Droplets, CheckCircle, Truck, Utensils, ShieldCheck } from "lucide-react";
 
@@ -35,7 +36,10 @@ const AboutPage = () => {
                         artisanal quality, and a commitment to the planet.
                     </p>
                     <div className="pt-8">
-                        <Button className="rounded-full px-8 py-6 text-lg bg-green-600 hover:bg-green-700 text-white border-none shadow-lg hover:shadow-green-900/20 transition-all">
+                        <Button
+                            onClick={() => document.getElementById("vision-mission")?.scrollIntoView({ behavior: "smooth" })}
+                            className="rounded-full px-8 py-6 text-lg bg-green-600 hover:bg-green-700 text-white border-none shadow-lg hover:shadow-green-900/20 transition-all"
+                        >
                             Explore Our Journey ↓
                         </Button>
                     </div>
@@ -56,8 +60,8 @@ const AboutPage = () => {
                 <div className="space-y-6">
                     {/* Row 1 */}
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                        {/* Large Left Image - Sustainable Sourcing */}
-                        <div className="md:col-span-7 relative rounded-[2.5rem] overflow-hidden group min-h-[400px]">
+                        {/* Left Image - Sustainable Sourcing */}
+                        <div className="md:col-span-5 relative rounded-[2.5rem] overflow-hidden group min-h-[400px]">
                             <img
                                 src="https://tse4.mm.bing.net/th/id/OIP.uRXPczcS2Ax9cqdnVIUwIwHaE8?rs=1&pid=ImgDetMain&o=7&rm=3"
                                 alt="Sustainable Forest"
@@ -70,30 +74,9 @@ const AboutPage = () => {
                             </div>
                         </div>
 
-                        {/* Right Column Stack */}
-                        <div className="md:col-span-5 flex flex-col gap-6">
-                            {/* Top Card - Artisanal Craft */}
-                            <div className="bg-[#fcfbf9] p-8 rounded-[2.5rem] flex-grow flex flex-col justify-center relative overflow-hidden group min-h-[220px]">
-                                <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                                    <Utensils size={100} className="text-green-800" />
-                                </div>
-                                <div className="bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mb-4 text-green-700">
-                                    <Leaf size={24} />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">Artisanal Craft</h3>
-                                <p className="text-gray-600 text-sm leading-relaxed">
-                                    Combining traditional woodworking techniques with modern precision machinery to ensure smooth finishes without chemicals.
-                                </p>
-                            </div>
-
-                            {/* Middle Image - Workshop Detail */}
-                            <div className="h-48 rounded-[2.5rem] overflow-hidden relative group">
-                                <img
-                                    src="https://images.unsplash.com/photo-1610701596007-11502861dcfa?q=80&w=2670&auto=format&fit=crop"
-                                    alt="Woodworking Detail"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                            </div>
+                        {/* CMS Gallery Grid - managed via Admin > About Gallery */}
+                        <div className="md:col-span-7">
+                            <AboutGalleryGrid />
                         </div>
                     </div>
 
@@ -124,7 +107,7 @@ const AboutPage = () => {
             </Section>
 
             {/* Mission & Vision Section */}
-            <Section className="bg-white py-20 border-t border-gray-100">
+            <Section id="vision-mission" className="bg-white py-20 border-t border-gray-100">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
                     {/* Mission */}
                     <div className="space-y-6">
