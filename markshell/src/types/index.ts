@@ -58,6 +58,12 @@ export interface Certification {
     description?: string;
 }
 
+export interface AboutGalleryImage {
+    id: string;
+    image: string;
+    alt?: string;
+}
+
 export interface Inquiry {
     id: string;
     name: string;
