@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import Image from "next/image";
-import { Menu, X, Leaf, Search, Loader2 } from "lucide-react";
+import { Menu, X, Search, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuote } from "@/contexts/QuoteContext";
 import type { Product } from "@/types";
@@ -225,9 +225,14 @@ const Navbar = () => {
             <div className="w-[90%] md:w-[80%] mx-auto flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsMobileMenuOpen(false)}>
-                    <div className="bg-green-600 p-1.5 rounded-full text-white group-hover:scale-110 transition-transform">
-                        <Leaf size={20} fill="currentColor" />
-                    </div>
+                    <Image
+                        src="/MS_logo_transparent.svg"
+                        alt="MarkShell"
+                        width={36}
+                        height={36}
+                        className="group-hover:scale-110 transition-transform"
+                        priority
+                    />
                     <span className={cn("text-xl font-bold tracking-tight", isNavSolid ? "text-green-900" : "text-white")}>
                         MarkShell
                     </span>

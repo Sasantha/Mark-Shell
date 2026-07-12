@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Section from "../ui/section";
 import { Button } from "../ui/button";
 import { CheckCircle } from "lucide-react";
@@ -10,6 +11,12 @@ const About = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 {/* Content */}
                 <div className="space-y-8 order-2 lg:order-1">
+                    <Image
+                        src="/EcoMark_logo_transparent.svg"
+                        alt="Ecomark"
+                        width={180}
+                        height={180}
+                    />
                     <span className="text-green-600 font-semibold tracking-wider text-sm uppercase">About Ecomark</span>
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
                         Ecomark – The Sustainable Product Line by Mark-Shell Pvt Ltd <br />

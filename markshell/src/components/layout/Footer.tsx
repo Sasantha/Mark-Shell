@@ -1,5 +1,6 @@
 import React from "react";
-import { Leaf, Facebook, Twitter, Instagram, Linkedin, Send } from "lucide-react";
+import Image from "next/image";
+import { Facebook, Twitter, Instagram, Linkedin, Send } from "lucide-react";
 import { Button } from "../ui/button";
 
 const Footer = () => {
@@ -10,10 +11,12 @@ const Footer = () => {
                     {/* Brand */}
                     <div className="space-y-6">
                         <div className="flex items-center gap-2">
-                            <div className="bg-green-600 p-1.5 rounded-full text-white">
-                                <Leaf size={20} fill="currentColor" />
-                            </div>
-                            <span className="text-xl font-bold">MarkShell</span>
+                            <Image
+                                src="/MS_main_logo.svg"
+                                alt="MarkShell"
+                                width={160}
+                                height={32}
+                            />
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed">
                             Ecomark is the sustainability-driven product line of Mark-Shell Pvt Ltd, delivering high-performance wooden cutlery solutions for corporate buyers across Sri Lanka and beyond.
@@ -41,12 +44,19 @@ const Footer = () => {
                     <div>
                         <h4 className="font-semibold text-lg mb-6">Contact Info</h4>
                         <ul className="space-y-4 text-gray-400 text-sm">
+                            {/* HARDCODED - client contact info, update manually if changed */}
                             <li className="flex gap-3">
-                                <span>123 Green Street, Eco City, Earth 10101</span>
+                                <span>87/3A, Ernest Place, Lakshapathiya, Moratuwa, Sri Lanka</span>
                             </li>
+                            {/* HARDCODED - client contact info, update manually if changed */}
                             <li>
                                 <a href="tel:+94714263412" className="hover:text-green-500">+94 71 426 3412</a>
                             </li>
+                            {/* HARDCODED - client contact info, update manually if changed */}
+                            <li>
+                                <a href="tel:+94112649551" className="hover:text-green-500">+94 11 264 9551</a>
+                            </li>
+                            {/* HARDCODED - client contact info, update manually if changed */}
                             <li>
                                 <a href="mailto:support@markshell.lk" className="hover:text-green-500">support@markshell.lk</a>
                             </li>
@@ -76,6 +86,12 @@ const Footer = () => {
                         <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
                         <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
                     </div>
+                    <p>
+                        Design by{" "}
+                        <a href="https://acmevia.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                            Acmevia.com
+                        </a>
+                    </p>
                 </div>
             </div>
         </footer>

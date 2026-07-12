@@ -6,7 +6,7 @@ import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
 import MessagePopup from "@/components/ui/MessagePopup";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Mail, MapPin, Send } from "lucide-react";
+import { MessageSquare, Mail, MapPin, Phone, Send } from "lucide-react";
 
 const PRODUCT_INTERESTS = ["Wooden Cutlery", "Bamboo Products", "Areca Plates", "Other"];
 
@@ -95,8 +95,21 @@ const ContactPage = () => {
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="font-bold text-gray-900 text-sm md:text-base">WhatsApp Business</h3>
-                                    <p className="text-[#00d084] font-bold text-sm md:text-base">+1 (555) 012-3456</p>
+                                    {/* HARDCODED - client contact info, update manually if changed */}
+                                    <a href="https://wa.me/94714263412" target="_blank" rel="noopener noreferrer" className="block text-[#00d084] font-bold text-sm md:text-base hover:underline">+94 71 426 3412</a>
                                     <p className="text-gray-400 text-[11px] md:text-xs mt-1">Response time: &lt; 2 hours</p>
+                                </div>
+                            </div>
+
+                            {/* Office Phone Card */}
+                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex items-start gap-4 hover:shadow-md transition-shadow">
+                                <div className="bg-[#e8f8f2] p-3 rounded-xl text-[#00d084]">
+                                    <Phone size={24} />
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="font-bold text-gray-900 text-sm md:text-base">Office Phone</h3>
+                                    {/* HARDCODED - client contact info, update manually if changed */}
+                                    <a href="tel:+94112649551" className="block text-[#00d084] font-bold text-sm md:text-base hover:underline">+94 11 264 9551</a>
                                 </div>
                             </div>
 
@@ -107,7 +120,8 @@ const ContactPage = () => {
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="font-bold text-gray-900 text-sm md:text-base">Email Our Sales Team</h3>
-                                    <p className="text-[#00d084] font-bold text-sm md:text-base">sales@markshell.com</p>
+                                    {/* HARDCODED - client contact info, update manually if changed */}
+                                    <p className="text-[#00d084] font-bold text-sm md:text-base">support@markshell.lk</p>
                                     <p className="text-gray-400 text-[11px] md:text-xs mt-1">For bulk orders and global export inquiries.</p>
                                 </div>
                             </div>
@@ -119,7 +133,8 @@ const ContactPage = () => {
                                 </div>
                                 <div className="flex-1">
                                     <h3 className="font-bold text-gray-900 text-sm md:text-base">Global Headquarters</h3>
-                                    <p className="text-gray-500 text-sm mt-1 leading-relaxed">Manufacturing Unit 1, Industrial Zone North, Bangalore, India</p>
+                                    {/* HARDCODED - client contact info, update manually if changed */}
+                                    <p className="text-gray-500 text-sm mt-1 leading-relaxed">87/3A, Ernest Place, Lakshapathiya, Moratuwa, Sri Lanka</p>
                                     <p className="text-gray-400 text-[11px] md:text-xs mt-2">Monday - Friday, 9AM - 6PM IST</p>
                                 </div>
                             </div>
