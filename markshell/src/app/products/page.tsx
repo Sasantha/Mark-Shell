@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
 import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Loader2 } from "lucide-react";
+import { CheckCircle, ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Loader2 } from "lucide-react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Suspense } from "react";
 import { useQuote } from "@/contexts/QuoteContext";
@@ -325,8 +326,29 @@ const ProductsContent = () => {
                     <p className="text-green-100 max-w-2xl text-lg leading-relaxed opacity-90">
                         {searchQueryParam
                             ? "Explore the products matching your search query across our entire catalog."
-                            : "Browse our extensive range of FSC-certified wooden cutlery. Designed for bulk manufacturing, perfect for hospitality chains, catering services, and wholesale distributors."}
+                            : "Browse our extensive range of FSC-certified wooden cutlery. Sourced for bulk supply, built for hospitality chains, catering services, and wholesale distributors."}
                     </p>
+                </div>
+            </div>
+
+            {/* Sourcing Highlights Strip */}
+            <div className="bg-white border-b border-gray-100">
+                <div className="w-[90%] md:w-[80%] mx-auto py-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {[
+                        { text: "Certified sustainable materials" },
+                        { text: "Bulk order ready" },
+                        { text: "Plastic-free dining, made simple" },
+                        { text: "Custom sourcing available for food-service disposables", href: "/contact" },
+                    ].map(({ text, href }) => (
+                        <div key={text} className="flex items-center gap-3">
+                            <CheckCircle className="text-green-600 shrink-0" size={18} />
+                            {href ? (
+                                <Link href={href} className="text-sm font-medium text-gray-700 hover:text-green-600 hover:underline transition-colors">{text}</Link>
+                            ) : (
+                                <span className="text-sm font-medium text-gray-700">{text}</span>
+                            )}
+                        </div>
+                    ))}
                 </div>
             </div>
 
@@ -513,6 +535,20 @@ const ProductsContent = () => {
                             </>
                         )}
                     </div>
+                </div>
+            </Section>
+
+            {/* Beyond the Catalog */}
+            <Section className="bg-white py-16 border-t border-gray-100">
+                <div className="text-center max-w-2xl mx-auto">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-4">Need Something You Don't See Here?</h2>
+                    <p className="text-gray-600 mb-8">
+                        We can source additional food-service disposables — bags, cups, and related items —
+                        through our certified manufacturer network.
+                    </p>
+                    <Link href="/contact">
+                        <Button className="rounded-full px-8 py-6 text-base bg-green-600 hover:bg-green-700 text-white">Get in Touch</Button>
+                    </Link>
                 </div>
             </Section>
 

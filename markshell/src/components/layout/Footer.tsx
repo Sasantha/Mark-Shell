@@ -22,8 +22,19 @@ const Footer = () => {
                             Ecomark is the sustainability-driven product line of Mark-Shell Pvt Ltd, delivering high-performance wooden cutlery solutions for corporate buyers across Sri Lanka and beyond.
                         </p>
                         <div className="flex gap-4">
-                            {[Facebook, Twitter, Instagram, Linkedin].map((Icon, idx) => (
-                                <a key={idx} href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition-colors text-gray-400 hover:text-white">
+                            {[
+                                { Icon: Facebook, href: "#" },
+                                { Icon: Twitter, href: "#" },
+                                { Icon: Instagram, href: "https://www.instagram.com/markshell.lk/" },
+                                { Icon: Linkedin, href: "#" },
+                            ].map(({ Icon, href }, idx) => (
+                                <a
+                                    key={idx}
+                                    href={href}
+                                    target={href !== "#" ? "_blank" : undefined}
+                                    rel={href !== "#" ? "noopener noreferrer" : undefined}
+                                    className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-600 transition-colors text-gray-400 hover:text-white"
+                                >
                                     <Icon size={16} />
                                 </a>
                             ))}
@@ -33,9 +44,16 @@ const Footer = () => {
                     {/* Quick Links */}
                     <div>
                         <h4 className="font-semibold text-lg mb-6">Quick Links</h4>
+                        {/* Mirrors the main nav links in Navbar.tsx — keep in sync */}
                         <ul className="space-y-4 text-gray-400 text-sm">
-                            {['Home', 'About Us', 'Using Categories', 'Our Manufacturers', 'Contact'].map(item => (
-                                <li key={item}><a href={item === 'Home' ? '/' : item === 'About Us' ? '/about' : item === 'Contact' ? '/contact' : item === 'Using Categories' ? '/categories' : '#'} className="hover:text-green-500 transition-colors">{item === 'Using Categories' ? 'Categories' : item}</a></li>
+                            {[
+                                { name: 'Home', href: '/' },
+                                { name: 'Products', href: '/products' },
+                                { name: 'Categories', href: '/categories' },
+                                { name: 'About', href: '/about' },
+                                { name: 'Contact', href: '/contact' },
+                            ].map(link => (
+                                <li key={link.name}><a href={link.href} className="hover:text-green-500 transition-colors">{link.name}</a></li>
                             ))}
                         </ul>
                     </div>

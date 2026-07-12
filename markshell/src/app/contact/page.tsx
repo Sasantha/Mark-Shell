@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
@@ -68,10 +69,10 @@ const ContactPage = () => {
                 {/* We can remove the absolute gradient since the image shows a solid/flat earthy color */}
                 <div className="relative z-10 max-w-3xl mx-auto space-y-6">
                     <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-[#1a2e1a] leading-tight">
-                        Partner with <span className="text-[#00d084]">Markshell</span>
+                        Partner with <span className="text-[#007c40]">Mark-Shell</span>
                     </h1>
                     <p className="text-base md:text-lg text-[#3f4f3f] max-w-2xl mx-auto font-medium px-4">
-                        Sustainable wooden cutlery solutions for your global business. Quality craftsmanship meets eco-friendly manufacturing.
+                        Sustainable wooden cutlery solutions for your global business. Quality you can trust, sourced responsibly — let's talk about your order.
                     </p>
                 </div>
             </div>
@@ -147,6 +148,11 @@ const ContactPage = () => {
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Send an Inquiry</h2>
                             <p className="text-[#00d084] font-medium text-sm mb-8">
                                 Fill out the form and our procurement specialists will contact you within 24 hours.
+                            </p>
+                            <p className="text-gray-500 text-xs md:text-sm -mt-6 mb-8">
+                                For custom-sourced orders, we secure your request with a deposit and import on your behalf —
+                                balance due on delivery confirmation.{" "}
+                                <Link href="/about#how-it-works" className="text-[#00d084] font-semibold hover:underline">Learn how it works →</Link>
                             </p>
 
                             {submitSuccess ? (
@@ -255,7 +261,7 @@ const ContactPage = () => {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-bounce">
                         <MapPin className="text-green-600 fill-green-600" size={20} />
-                        <span className="text-xs font-bold text-gray-900">Markshell Manufacturing Unit 1</span>
+                        <span className="text-xs font-bold text-gray-900">MarkShell Office</span>
                     </div>
                 </div>
             </div>

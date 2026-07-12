@@ -7,7 +7,7 @@ import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import AboutGalleryGrid from "@/components/sections/AboutGalleryGrid";
 import { Button } from "@/components/ui/button";
-import { Leaf, Recycle, TreePine, Droplets, CheckCircle, Truck, Utensils, ShieldCheck } from "lucide-react";
+import { Leaf, TreePine, Droplets, CheckCircle, Truck, Utensils, ShieldCheck } from "lucide-react";
 
 const AboutPage = () => {
     return (
@@ -32,8 +32,8 @@ const AboutPage = () => {
                         <span className="text-green-400">Built for Business</span>
                     </h1>
                     <p className="text-lg md:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
-                        The MarkShell story: Redefining B2B cutlery with organic materials,
-                        artisanal quality, and a commitment to the planet.
+                        We search the world for the best certified, sustainable alternatives to plastic —
+                        and bring them to Sri Lankan businesses ready to make the switch.
                     </p>
                     <div className="pt-8">
                         <Button
@@ -51,10 +51,20 @@ const AboutPage = () => {
                 <div className="text-center mb-16">
                     <span className="text-green-600 font-bold tracking-widest text-xs uppercase mb-3 block">Our Origins</span>
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">From Forest to Fork</h2>
-                    <p className="text-gray-500 max-w-2xl mx-auto">
-                        Our journey begins in sustainably managed forests. We select the finest birch and bamboo,
-                        ensuring that every piece of cutlery we manufacture respects the raw material's natural beauty and strength.
-                    </p>
+                    <div className="text-gray-500 max-w-2xl mx-auto space-y-4">
+                        <p>
+                            Mark-Shell Pvt Ltd was built on a simple belief: businesses shouldn't have to choose
+                            between convenience and the planet. We work with internationally certified manufacturers
+                            around the world to source high-quality, sustainable alternatives to single-use plastic —
+                            wooden cutlery, straws, and food-service disposables — and deliver them reliably to hotels,
+                            restaurants, catering services, and supermarkets across Sri Lanka.
+                        </p>
+                        <p>
+                            Every product we supply meets international sustainability and food-safety certification
+                            standards before it reaches you. As we grow, we're building toward local manufacturing
+                            capability — but our commitment to certified quality starts today, with every order.
+                        </p>
+                    </div>
                 </div>
 
                 <div className="space-y-6">
@@ -149,19 +159,23 @@ const AboutPage = () => {
                 <div className="text-center mb-16">
                     <h2 className="text-4xl font-bold text-gray-900 mb-4">Rooted In Responsibility</h2>
                     <p className="text-gray-500 max-w-xl mx-auto">
-                        We don't just make cutlery; we steward resources. Our core values define every step of our production line.
+                        We don't just supply cutlery; we steward relationships — with certified manufacturers,
+                        with the environment, and with every business that trusts us to deliver on our word.
+                        Our core values define every step of our supply chain.
                     </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Zero Waste Policy */}
+                    {/* Genuinely Biodegradable */}
                     <div className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                         <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
-                            <Recycle size={36} />
+                            <Leaf size={36} />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3">Zero Waste Policy</h3>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3">Genuinely Biodegradable</h3>
                         <p className="text-gray-500 text-sm leading-relaxed">
-                            Every scrap of sawdust is repurposed for energy or compost. Nothing goes to landfill in our facilities.
+                            Every product we supply is designed to return to the earth, not sit in a landfill for
+                            centuries. Wood and plant-based materials break down naturally — a small change with a
+                            real environmental difference.
                         </p>
                     </div>
 
@@ -189,6 +203,24 @@ const AboutPage = () => {
                 </div>
             </Section>
 
+            {/* How We Work / Custom Sourcing Section */}
+            <Section id="how-it-works" className="bg-white py-24">
+                <div className="text-center mb-10">
+                    <span className="text-green-600 font-bold tracking-widest text-xs uppercase mb-3 block">How We Work</span>
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Order What You Need. We Source It For You.</h2>
+                    <p className="text-gray-500 max-w-2xl mx-auto">
+                        Beyond our core catalog, we can source additional food-service disposables — bags, cups,
+                        and related items — through our network of certified manufacturers, tailored to your order.
+                    </p>
+                </div>
+                <p className="max-w-3xl mx-auto text-gray-600 leading-relaxed text-lg text-center">
+                    Here's how it works: place your order, and we secure it with a deposit — this lets us begin
+                    sourcing and importing immediately, with no need to hold speculative inventory, which keeps our
+                    pricing competitive for you. The remaining balance is due once your order lands and is confirmed.
+                    Transparent, straightforward, and built for businesses that order at scale.
+                </p>
+            </Section>
+
             <div className="bg-white border-y border-gray-100 py-12">
                 <div className="w-[90%] md:w-[80%] mx-auto">
                     <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Trusted by Industry Leaders & Certifications</p>
@@ -202,24 +234,6 @@ const AboutPage = () => {
                     </div>
                 </div>
             </div>
-
-            {/* Bottom CTA */}
-            <Section className="bg-[#ebe9e4] py-24">
-                <div className="text-center max-w-3xl mx-auto">
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Ready to Switch to Sustainable?</h2>
-                    <p className="text-gray-600 mb-10 text-lg">
-                        Join the movement towards a plastic-free future. Request our catalog today and see how MarkShell can elevate your dining experience naturally.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button className="rounded-full px-8 py-6 text-base bg-gray-900 text-white hover:bg-black">
-                            Request a Catalog 📖
-                        </Button>
-                        <Button variant="outline" className="rounded-full px-8 py-6 text-base border-gray-400 hover:bg-white hover:border-gray-900 text-gray-900">
-                            Contact Sales
-                        </Button>
-                    </div>
-                </div>
-            </Section>
 
             <Footer />
             <MessagePopup />

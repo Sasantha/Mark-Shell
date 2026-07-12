@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MarkShell | Sustainable Wooden Cutlery Manufacturing",
-  description: "FSC-certified wooden cutlery for hospitality chains, catering services, and wholesale distributors. Bulk manufacturing with global export capability.",
+  title: "MarkShell | Sustainable Cutlery & Disposables Supplier — Sri Lanka",
+  description: "MarkShell (by Mark-Shell Pvt Ltd) supplies internationally certified, sustainable wooden cutlery, straws, and food-service disposables in bulk to hotels, restaurants, catering services, and supermarkets across Sri Lanka.",
 };
 
 export default function RootLayout({
