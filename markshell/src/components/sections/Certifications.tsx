@@ -40,18 +40,18 @@ const Certifications = () => {
             {/* auto-fit + justify-center: leftover tracks collapse instead of
                 stretching, so 1-2 items center as a group rather than
                 left-aligning with empty space to the right. */}
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,200px))] justify-center gap-6">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,280px))] justify-center gap-6">
                 {certifications.map((cert) => (
                     <div
                         key={cert.id}
                         className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col items-center text-center"
                     >
-                        <div className="relative h-20 w-20 mb-4">
+                        <div className="relative h-40 w-40 mb-4">
                             <Image
                                 src={cert.image}
                                 alt={cert.name}
                                 fill
-                                sizes="80px"
+                                sizes="160px"
                                 className="object-contain"
                             />
                         </div>
