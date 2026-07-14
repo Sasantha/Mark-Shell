@@ -15,8 +15,8 @@ export default function Home() {
     <main className="min-h-screen font-sans">
       <Navbar />
       <Hero />
-      <Partners />
       <Features />
+      <Partners />
       <About />
       <FeaturedProducts />
       <Stats />

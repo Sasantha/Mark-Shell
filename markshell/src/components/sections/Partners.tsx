@@ -35,7 +35,7 @@ const Partners = () => {
                 <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 w-full">
                     {partners.map((partner) => {
                         const logo = (
-                            <div className="relative h-12 w-32 grayscale opacity-70 transition-all duration-300 hover:grayscale-0 hover:opacity-100">
+                            <div className="relative h-12 w-32">
                                 <Image
                                     src={partner.logo}
                                     alt={partner.name}

@@ -9,7 +9,7 @@ import MessagePopup from "@/components/ui/MessagePopup";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Mail, MapPin, Phone, Send } from "lucide-react";
 
-const PRODUCT_INTERESTS = ["Wooden Cutlery", "Bamboo Products", "Areca Plates", "Other"];
+const PRODUCT_INTERESTS = ["Wooden Cutlery", "Bamboo Products", "Areca Plates", "Any Other Products"];
 
 const ContactPage = () => {
     const [fullName, setFullName] = useState("");
@@ -122,7 +122,7 @@ const ContactPage = () => {
                                 <div className="flex-1">
                                     <h3 className="font-bold text-gray-900 text-sm md:text-base">Email Our Sales Team</h3>
                                     {/* HARDCODED - client contact info, update manually if changed */}
-                                    <p className="text-[#00d084] font-bold text-sm md:text-base">support@markshell.lk</p>
+                                    <p className="text-[#00d084] font-bold text-sm md:text-base">sales@markshell.lk</p>
                                     <p className="text-gray-400 text-[11px] md:text-xs mt-1">For bulk orders and global export inquiries.</p>
                                 </div>
                             </div>
@@ -133,7 +133,7 @@ const ContactPage = () => {
                                     <MapPin size={24} />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="font-bold text-gray-900 text-sm md:text-base">Global Headquarters</h3>
+                                    <h3 className="font-bold text-gray-900 text-sm md:text-base">Office Address</h3>
                                     {/* HARDCODED - client contact info, update manually if changed */}
                                     <p className="text-gray-500 text-sm mt-1 leading-relaxed">87/3A, Ernest Place, Lakshapathiya, Moratuwa, Sri Lanka</p>
                                     <p className="text-gray-400 text-[11px] md:text-xs mt-2">Monday - Friday, 9AM - 6PM IST</p>
@@ -261,7 +261,7 @@ const ContactPage = () => {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                     <div className="bg-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-bounce">
                         <MapPin className="text-green-600 fill-green-600" size={20} />
-                        <span className="text-xs font-bold text-gray-900">MarkShell Office</span>
+                        <span className="text-xs font-bold text-gray-900">Mark-Shell Pvt Ltd Office</span>
                     </div>
                 </div>
             </div>
