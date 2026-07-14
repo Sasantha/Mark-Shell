@@ -17,10 +17,35 @@ const About = () => {
                         width={180}
                         height={180}
                     />
-                    <span className="text-green-600 font-semibold tracking-wider text-sm uppercase">About Ecomark</span>
+                    <span className="text-green-600 font-semibold tracking-wider text-sm uppercase inline-flex items-center gap-1.5">
+                        About
+                        <span className="relative inline-block overflow-hidden align-middle w-26.25 h-5">
+                            <Image
+                                src="/Ecomark_logo_transparent.png"
+                                alt=""
+                                aria-hidden="true"
+                                width={2000}
+                                height={2000}
+                                className="absolute max-w-none w-32.5 h-32.5 -top-11.25 -left-3.25"
+                            />
+                        </span>
+                        <span className="sr-only">EcoMark</span>
+                    </span>
                     <h2 className="text-2xl md:text-3xl font-bold text-gray-900 leading-tight">
-                        Ecomark – The Sustainable Product Line by Mark-Shell Pvt Ltd <br />
-                        
+                        <span className="inline-flex items-center gap-2 align-middle">
+                            <span className="relative inline-block overflow-hidden align-middle w-31.5 h-6 md:w-42.25 md:h-8">
+                                <Image
+                                    src="/Ecomark_logo_transparent.png"
+                                    alt=""
+                                    aria-hidden="true"
+                                    width={2000}
+                                    height={2000}
+                                    className="absolute max-w-none w-39 h-39 -top-13.5 -left-4 md:w-52.25 md:h-52.25 md:-top-18 md:-left-5.25"
+                                />
+                            </span>
+                            <span className="sr-only">EcoMark</span>
+                        </span> – The Sustainable Product Line by Mark-Shell Pvt Ltd <br />
+
                     </h2>
                     <p className="text-gray-600 text-lg leading-relaxed">
                         Offering eco-conscious alternatives to conventional plastic cutlery.

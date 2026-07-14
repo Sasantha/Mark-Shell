@@ -12,9 +12,9 @@ const Footer = () => {
                     <div className="space-y-6">
                         <div className="flex items-center gap-2">
                             <Image
-                                src="/MS_main_logo.svg"
+                                src="/MarkShell_logo_banner.png"
                                 alt="MarkShell"
-                                width={160}
+                                width={220}
                                 height={32}
                             />
                         </div>

@@ -7,7 +7,7 @@ import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import AboutGalleryGrid from "@/components/sections/AboutGalleryGrid";
 import { Button } from "@/components/ui/button";
-import { Leaf, TreePine, Droplets, CheckCircle, Truck, Utensils, ShieldCheck } from "lucide-react";
+import { Leaf, TreePine, Droplets, CheckCircle } from "lucide-react";
 
 const AboutPage = () => {
     return (
@@ -220,20 +220,6 @@ const AboutPage = () => {
                     Transparent, straightforward, and built for businesses that order at scale.
                 </p>
             </Section>
-
-            <div className="bg-white border-y border-gray-100 py-12">
-                <div className="w-[90%] md:w-[80%] mx-auto">
-                    <p className="text-center text-xs font-bold text-gray-400 uppercase tracking-widest mb-8">Trusted by Industry Leaders & Certifications</p>
-                    <div className="flex flex-wrap justify-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-                        {/* Mock Logos using Lucide + Text for now as placeholders */}
-                        <div className="flex items-center gap-2 font-bold text-gray-800"><ShieldCheck /> ISO 9001</div>
-                        <div className="flex items-center gap-2 font-bold text-gray-800"><TreePine /> FSC Certified</div>
-                        <div className="flex items-center gap-2 font-bold text-gray-800"><Utensils /> HoReCa Pro</div>
-                        <div className="flex items-center gap-2 font-bold text-gray-800"><Leaf /> EcoAlliance</div>
-                        <div className="flex items-center gap-2 font-bold text-gray-800"><Truck /> GlobalLogistics</div>
-                    </div>
-                </div>
-            </div>
 
             <Footer />
             <MessagePopup />

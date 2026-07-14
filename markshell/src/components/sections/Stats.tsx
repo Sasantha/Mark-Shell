@@ -16,7 +16,20 @@ const Stats = () => {
                 {/* Text Content */}
                 <div className="space-y-12">
                     <div>
-                        <span className="text-green-600 font-semibold tracking-wider text-sm uppercase">Why  Choose Ecomark</span>
+                        <span className="text-green-600 font-semibold tracking-wider text-sm uppercase inline-flex items-center gap-1.5">
+                            Why Choose
+                            <span className="relative inline-block overflow-hidden align-middle w-26.25 h-5">
+                                <Image
+                                    src="/Ecomark_logo_transparent.png"
+                                    alt=""
+                                    aria-hidden="true"
+                                    width={2000}
+                                    height={2000}
+                                    className="absolute max-w-none w-32.5 h-32.5 -top-11.25 -left-3.25"
+                                />
+                            </span>
+                            <span className="sr-only">EcoMark</span>
+                        </span>
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mt-2 mb-6">
                             Committed to a Greener <br /> Future for Everyone
                         </h2>

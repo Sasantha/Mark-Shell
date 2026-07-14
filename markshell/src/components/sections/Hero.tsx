@@ -29,7 +29,20 @@ const Hero = () => {
             <Section className="relative z-10 w-full py-0">
                 <div className="max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight drop-shadow-lg">
-                        Ecomark by<br />
+                        <span className="inline-flex items-center gap-2 md:gap-3 align-middle">
+                            <span className="relative inline-block overflow-hidden align-middle w-51.25 h-11 md:w-74.5 md:h-16">
+                                <Image
+                                    src="/Ecomark_logo_glow.png"
+                                    alt=""
+                                    aria-hidden="true"
+                                    width={2000}
+                                    height={2000}
+                                    className="absolute max-w-none w-67.5 h-67.5 -top-23.25 -left-7.75 md:w-98.25 md:h-98.25 md:-top-33.75 md:-left-11.5"
+                                />
+                            </span>
+                            <span className="sr-only">EcoMark</span>
+                            by
+                        </span><br />
                         <span className="text-green-400">Mark-Shell Pvt Ltd.</span>
                     </h1>
 
