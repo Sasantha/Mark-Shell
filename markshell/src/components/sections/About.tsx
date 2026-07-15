@@ -8,7 +8,7 @@ import { CheckCircle } from "lucide-react";
 const About = () => {
     return (
         <Section className="bg-[#fcfbf9]">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 {/* Content */}
                 <div className="space-y-8 order-2 lg:order-1">
                     <Image
