@@ -27,7 +27,7 @@ const Partners = () => {
     if (partners.length === 0) return null;
 
     return (
-        <Section className="pt-96 pb-96 md:pt-8 md:pb-8 bg-white border-b border-gray-100">
+        <Section className="pb-96 md:pt-8 md:pb-8 bg-white border-b border-gray-100">
             <div className="flex flex-col items-center">
                 <span className="text-gray-400 font-semibold tracking-widest text-xs uppercase mb-6">
                     Trusted By Our Business Partners
