@@ -27,7 +27,7 @@ const Hero = () => {
             </div>
 
             <Section className="relative z-10 w-full py-0">
-                <div className="max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                <div className="max-w-3xl space-y-4 md:space-y-6 animate-in fade-in slide-in-from-bottom-10 duration-1000">
                     <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight drop-shadow-lg">
                         <span className="inline-flex items-center gap-2 md:gap-3 align-middle">
                             <span className="relative inline-block overflow-hidden align-middle w-51.25 h-11 md:w-74.5 md:h-16">
@@ -43,15 +43,23 @@ const Hero = () => {
                             <span className="sr-only">EcoMark</span>
                             by
                         </span><br />
-                        <span className="text-green-400">Mark-Shell Pvt Ltd.</span>
+                        <span className="text-green-400">Mark-Shell (Pvt) Ltd.</span>
                     </h1>
 
-                    <p className="text-xl text-gray-100 max-w-xl leading-relaxed drop-shadow-md">
-                        Your Trusted B2B Partner for Sustainable Cutlery & Packaging Solutions.
+                    <p className="text-base md:text-lg text-gray-100 max-w-xl md:max-w-2xl leading-relaxed drop-shadow-md">
+                        Sustainable Cutlery & Packaging Solutions for Your Business
                     </p>
 
-                    <p className="text-xl text-gray-100 max-w-xl leading-relaxed drop-shadow-md">
-                        Engineered for performance, hygiene, and responsible sourcing our products balance sustainability with durability, ensuring usability without compromising operational efficiency.
+                    <p className="text-base md:text-lg text-gray-100 max-w-xl md:max-w-2xl leading-relaxed drop-shadow-md">
+                        At Mark-Shell (Pvt) Ltd., we supply high-quality, responsibly sourced wooden cutlery and sustainable packaging products for hotels, restaurants, cafés, supermarkets, catering companies, and food service businesses.
+                    </p>
+
+                    <p className="text-base md:text-lg text-gray-100 max-w-xl md:max-w-2xl leading-relaxed drop-shadow-md">
+                        We are committed to delivering reliable, hygienic, and environmentally responsible products that help businesses serve with confidence.
+                    </p>
+
+                    <p className="text-base md:text-lg text-gray-100 max-w-xl md:max-w-2xl leading-relaxed drop-shadow-md">
+                        Premium Quality • Competitive Prices • Reliable Supply
                     </p>
 
                     <div className="flex flex-wrap gap-4">

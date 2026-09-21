@@ -45,7 +45,7 @@ const About = () => {
                         Offering eco-conscious alternatives to conventional plastic cutlery.
                     </p>
                     <p className="text-gray-600 text-lg leading-relaxed">
-                        We specialize in supplying bulk wooden spoons, forks, and knives tailored for hotels, restaurants, catering services, supermarkets, and export clients.
+                        We specialize in supplying bulk wooden spoons, forks, knives, coffee stirrers and many more, tailored for hotels, restaurants, catering services, supermarkets, and export clients.
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

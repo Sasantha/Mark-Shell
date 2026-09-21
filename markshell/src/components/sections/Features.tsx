@@ -6,22 +6,22 @@ const featureList = [
     {
         icon: Leaf,
         title: "Eco-Friendly",
-        description: "Morethan half of our products materials are biodegradable.",
+        description: "Responsibly sourced materials that support a greener future.",
     },
     {
         icon: Award,
         title: "High Quality",
-        description: "Premium grade materials ensuring durability and style.",
+        description: "Premium products designed for durability, hygiene, and reliability.",
     },
     {
         icon: DollarSign,
         title: "Affordable",
-        description: "Sustainable living shouldn't cost the earth.",
+        description: "Competitive pricing without compromising on quality.",
     },
     {
         icon: Users,
-        title: "Community",
-        description: "Built for Bulk Procurement. Serving hotels, restaurants, caterers, supermarkets, and export clients.",
+        title: "Trusted Partner",
+        description: "Reliable bulk supply for hotels, restaurants, cafés, and retailers.",
     },
 ];
 
