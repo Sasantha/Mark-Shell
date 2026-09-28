@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongoose';
 import AboutGalleryImage, { GALLERY_FIELDS } from '@/models/AboutGalleryImage';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 import { pick } from '@/lib/pick';
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -26,6 +27,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         }
 
         const obj = updated.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...obj, id: obj._id.toString() });
     } catch (error) {
         return apiError(error, "Error updating about gallery image");
@@ -47,6 +49,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
             return NextResponse.json({ error: 'Gallery image not found' }, { status: 404 });
         }
 
+        revalidatePublicPages();
         return NextResponse.json({ message: 'Gallery image deleted successfully' });
     } catch (error) {
         return apiError(error, "Error deleting about gallery image");

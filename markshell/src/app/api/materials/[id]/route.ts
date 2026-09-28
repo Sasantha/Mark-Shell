@@ -4,6 +4,7 @@ import Material, { MATERIAL_FIELDS } from '@/models/Material';
 import Product from '@/models/Product';
 import { verifyAdmin, unauthorized, escapeRegex } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 import { pick } from '@/lib/pick';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -67,6 +68,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         }
 
         const mObj = updatedMaterial!.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...mObj, id: mObj._id.toString() });
     } catch (error) {
         return apiError(error, "Error updating material");
@@ -90,6 +92,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
         const deletedMaterial = await Material.findByIdAndDelete(id);
 
+        revalidatePublicPages();
         return NextResponse.json({ message: 'Material deleted successfully' });
     } catch (error) {
         return apiError(error, "Error deleting material");

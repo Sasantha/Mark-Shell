@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongoose';
 import Certification, { CERTIFICATION_FIELDS } from '@/models/Certification';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 import { pick } from '@/lib/pick';
 
 export async function GET() {
@@ -32,6 +33,7 @@ export async function POST(request: Request) {
         const certification = await Certification.create(pick(body, CERTIFICATION_FIELDS));
 
         const obj = certification.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...obj, id: obj._id.toString() }, { status: 201 });
     } catch (error) {
         return apiError(error, "Error creating certification");

@@ -1,15 +1,26 @@
-"use client";
-
 import React from "react";
+import type { Metadata } from "next";
+import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import AboutGalleryGrid from "@/components/sections/AboutGalleryGrid";
-import { Button } from "@/components/ui/button";
+import ScrollToSectionButton from "@/components/ui/ScrollToSectionButton";
+import { getGalleryImages } from "@/lib/data";
 import { Leaf, TreePine, Droplets, CheckCircle } from "lucide-react";
 
-const AboutPage = () => {
+export const metadata: Metadata = {
+    title: "About Us",
+    description: "Mark-Shell Pvt Ltd sources internationally certified, sustainable alternatives to single-use plastic and supplies them to hotels, restaurants, caterers and supermarkets across Sri Lanka.",
+};
+
+// Pre-rendered; refreshed on admin changes (lib/revalidate.ts) and hourly as a fallback.
+export const revalidate = 3600;
+
+const AboutPage = async () => {
+    const galleryImages = await getGalleryImages();
+
     return (
         <main className="min-h-screen font-sans">
             <Navbar />
@@ -17,12 +28,16 @@ const AboutPage = () => {
             {/* Hero Section */}
             <div className="relative h-[80vh] min-h-[600px] flex items-center justify-center text-center px-4 overflow-hidden">
                 {/* Wood Background */}
-                <div
-                    className="absolute inset-0 bg-cover bg-center z-0"
-                    style={{
-                        backgroundImage: 'url("https://tse3.mm.bing.net/th/id/OIP.NN-4NoZ4FczVoDAf794-twHaEK?rs=1&pid=ImgDetMain&o=7&rm=3")', // Dark wood texture
-                    }}
-                >
+                <div className="absolute inset-0 z-0">
+                    {/* Dark wood texture */}
+                    <Image
+                        src="https://tse3.mm.bing.net/th/id/OIP.NN-4NoZ4FczVoDAf794-twHaEK?rs=1&pid=ImgDetMain&o=7&rm=3"
+                        alt=""
+                        fill
+                        sizes="100vw"
+                        priority
+                        className="object-cover"
+                    />
                     <div className="absolute inset-0 bg-black/40" /> {/* Overlay for readability */}
                 </div>
 
@@ -36,12 +51,12 @@ const AboutPage = () => {
                         and bring them to Sri Lankan businesses ready to make the switch.
                     </p>
                     <div className="pt-8">
-                        <Button
-                            onClick={() => document.getElementById("vision-mission")?.scrollIntoView({ behavior: "smooth" })}
+                        <ScrollToSectionButton
+                            targetId="vision-mission"
                             className="rounded-full px-8 py-6 text-lg bg-green-600 hover:bg-green-700 text-white border-none shadow-lg hover:shadow-green-900/20 transition-all"
                         >
                             Explore Our Journey ↓
-                        </Button>
+                        </ScrollToSectionButton>
                     </div>
                 </div>
             </div>
@@ -72,10 +87,12 @@ const AboutPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                         {/* Left Image - Sustainable Sourcing */}
                         <div className="md:col-span-5 relative rounded-[2.5rem] overflow-hidden group min-h-[400px]">
-                            <img
+                            <Image
                                 src="https://tse4.mm.bing.net/th/id/OIP.uRXPczcS2Ax9cqdnVIUwIwHaE8?rs=1&pid=ImgDetMain&o=7&rm=3"
                                 alt="Sustainable Forest"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                fill
+                                sizes="(min-width: 768px) 40vw, 90vw"
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                             <div className="absolute bottom-8 left-8 text-white">
@@ -86,7 +103,7 @@ const AboutPage = () => {
 
                         {/* CMS Gallery Grid - managed via Admin > About Gallery */}
                         <div className="md:col-span-7">
-                            <AboutGalleryGrid />
+                            <AboutGalleryGrid images={galleryImages} />
                         </div>
                     </div>
 
@@ -94,10 +111,12 @@ const AboutPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
                         {/* Left Image - Spoons (New) */}
                         <div className="md:col-span-5 relative rounded-[2.5rem] overflow-hidden group min-h-[300px]">
-                            <img
+                            <Image
                                 src="https://th.bing.com/th/id/OIP.a1z8KVG-jQ5kU1v6htuZ-AHaE7?w=290&h=193&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
                                 alt="Wooden Spoons"
-                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                fill
+                                sizes="(min-width: 768px) 40vw, 90vw"
+                                className="object-cover transition-transform duration-700 group-hover:scale-105"
                             />
                         </div>
 

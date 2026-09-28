@@ -4,6 +4,7 @@ import Category, { CATEGORY_FIELDS } from '@/models/Category';
 import Product from '@/models/Product';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 import { pick } from '@/lib/pick';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -45,6 +46,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         }
 
         const catObj = updatedCategory.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...catObj, id: catObj._id.toString() });
     } catch (error) {
         return apiError(error, "Error updating category");
@@ -84,6 +86,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
         await Category.findByIdAndDelete(id);
 
+        revalidatePublicPages();
         return NextResponse.json({ message: 'Category deleted successfully' });
     } catch (error) {
         return apiError(error, "Error deleting category");

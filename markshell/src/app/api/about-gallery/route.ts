@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongoose';
 import AboutGalleryImage, { GALLERY_FIELDS } from '@/models/AboutGalleryImage';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 import { pick } from '@/lib/pick';
 
 export async function GET() {
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
         const image = await AboutGalleryImage.create(pick(body, GALLERY_FIELDS));
 
         const obj = image.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...obj, id: obj._id.toString() }, { status: 201 });
     } catch (error) {
         return apiError(error, "Error creating about gallery image");

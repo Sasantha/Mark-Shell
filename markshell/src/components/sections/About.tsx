@@ -68,7 +68,13 @@ const About = () => {
                 <div className="order-1 lg:order-2 relative">
                     <div className="aspect-[4/3] rounded-3xl overflow-hidden bg-gray-200 relative z-10">
                         {/* Placeholder for About Image - e.g. wood logs/texture as in design */}
-                        <div className="w-full h-full bg-[url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2613&auto=format&fit=crop')] bg-cover bg-center hover:scale-105 transition-transform duration-700"></div>
+                        <Image
+                            src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2613&auto=format&fit=crop"
+                            alt=""
+                            fill
+                            sizes="(min-width: 1024px) 40vw, 90vw"
+                            className="object-cover hover:scale-105 transition-transform duration-700"
+                        />
                     </div>
                     {/* Decorative element */}
                     <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-yellow-400 rounded-full z-0 blur-2xl opacity-50"></div>

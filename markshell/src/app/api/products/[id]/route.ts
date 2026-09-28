@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongoose';
 import Product, { PRODUCT_FIELDS } from '@/models/Product';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 import { pick } from '@/lib/pick';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -53,6 +54,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         }
 
         const pObj = updatedProduct.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...pObj, id: pObj._id.toString() });
     } catch (error) {
         return apiError(error, "Error updating product");
@@ -74,6 +76,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
             return NextResponse.json({ error: 'Product not found' }, { status: 404 });
         }
 
+        revalidatePublicPages();
         return NextResponse.json({ message: 'Product deleted successfully' });
     } catch (error) {
         return apiError(error, "Error deleting product");

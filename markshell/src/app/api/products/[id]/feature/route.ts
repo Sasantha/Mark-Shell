@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongoose';
 import Product from '@/models/Product';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -44,6 +45,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         }
 
         const pObj = updatedProduct.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...pObj, id: pObj._id.toString() });
     } catch (error) {
         return apiError(error, "Error toggling product feature status");

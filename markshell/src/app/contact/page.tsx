@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
@@ -280,10 +281,12 @@ const ContactPage = () => {
 
             {/* Map Section */}
             <div className="h-[400px] w-full bg-gray-200 relative grayscale opacity-80">
-                <img
+                <Image
                     src="https://imgs.search.brave.com/aCgtC3sfpQOpqC0C8J2XoH0M3r_yJkGqz-y4wXq6j8E/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly91cGxv/YWQud2lraW1lZGlh/Lm9yZy93aWtpcGVk/aWEvY29tbW9ucy90/aHVtYi83Lzc2L0Jh/bmdhbG9yZV9tYXBf/b3BxcS5wbmcvNTEy/cHgtQmFuZ2Fsb3Jl/X21hcF9vcHFxLnBu/Zw" // Placeholder Map Image
                     alt="Map Location"
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="100vw"
+                    className="object-cover"
                 />
                 {/* Map Pin Overlay */}
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">

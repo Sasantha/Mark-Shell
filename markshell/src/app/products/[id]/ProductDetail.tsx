@@ -1,96 +1,30 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import MessagePopup from "@/components/ui/MessagePopup";
-import { Check, X, MessageSquare, ArrowRight, Loader2 } from "lucide-react";
+import { Check, X, MessageSquare, ArrowRight } from "lucide-react";
 import ProductCard from "@/components/ui/ProductCard";
 import { useQuote } from "@/contexts/QuoteContext";
 import Link from "next/link";
 import type { Product } from "@/types";
 
-const SingleProductPage = () => {
+interface ProductDetailProps {
+    product: Product;
+    relatedProducts: Product[];
+}
+
+/**
+ * Interactive product view (image gallery, quote buttons). The data is loaded
+ * on the server by page.tsx, so the product is in the initial HTML.
+ */
+const ProductDetail = ({ product, relatedProducts }: ProductDetailProps) => {
     const { openQuote } = useQuote();
-    const params = useParams();
-    const id = params.id as string;
-
-    const [product, setProduct] = useState<Product | null>(null);
-    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [mainImage, setMainImage] = useState<string | undefined>();
-
-    useEffect(() => {
-        const fetchProductData = async () => {
-            if (!id) return;
-            setIsLoading(true);
-            try {
-                // Fetch main product
-                const res = await fetch(`/api/products/${id}`);
-                if (!res.ok) throw new Error('Product not found');
-                const productData = await res.json();
-
-                // Convert MongoDB _id to id if necessary
-                const formattedProduct: Product = {
-                    ...productData,
-                    id: productData._id || productData.id
-                };
-
-                setProduct(formattedProduct);
-                setMainImage(formattedProduct.image);
-
-                // Fetch related products (same category)
-                if (formattedProduct.category) {
-                    const relRes = await fetch(`/api/products?category=${encodeURIComponent(formattedProduct.category)}`);
-                    if (relRes.ok) {
-                        const relData = await relRes.json();
-                        // Filter out current product and take up to 4
-                        const filtered = relData
-                            .filter((p: Product & { _id?: string }) => (p._id || p.id) !== formattedProduct.id)
-                            .map((p: Product & { _id?: string }) => ({ ...p, id: p._id || p.id }))
-                            .slice(0, 4);
-                        setRelatedProducts(filtered);
-                    }
-                }
-            } catch (err) {
-                console.error("Error fetching product:", err);
-                setError(err instanceof Error ? err.message : "Something went wrong");
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchProductData();
-    }, [id]);
-
-    if (isLoading) {
-        return (
-            <main className="min-h-screen font-sans bg-[#f9fafb] flex flex-col">
-                <Navbar />
-                <div className="flex-grow flex items-center justify-center">
-                    <Loader2 className="h-10 w-10 animate-spin text-green-600" />
-                </div>
-                <Footer />
-            </main>
-        );
-    }
-
-    if (error || !product) {
-        return (
-            <main className="min-h-screen font-sans bg-[#f9fafb] flex flex-col">
-                <Navbar />
-                <div className="flex-grow flex items-center justify-center">
-                    <p className="text-xl text-gray-700">{error || "Product not found."}</p>
-                </div>
-                <Footer />
-            </main>
-        );
-    }
+    const [mainImage, setMainImage] = useState<string | undefined>(product.image);
 
     // Default Images if extended field is missing
     const galleryImages = product.images?.length ? product.images : [product.image];
@@ -103,10 +37,12 @@ const SingleProductPage = () => {
             {/* Hero Section */}
             <div className="relative bg-green-900 py-20 overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <img
+                    <Image
                         src="https://images.unsplash.com/photo-1584620583865-c3c43e87ea13?auto=format&fit=crop&q=80"
-                        alt="Background"
-                        className="w-full h-full object-cover opacity-20"
+                        alt=""
+                        fill
+                        sizes="100vw"
+                        className="object-cover opacity-20"
                     />
                     <div className="absolute inset-0 bg-green-950/60 backdrop-blur-[2px]" />
                 </div>
@@ -314,4 +250,4 @@ const SingleProductPage = () => {
     );
 };
 
-export default SingleProductPage;
+export default ProductDetail;

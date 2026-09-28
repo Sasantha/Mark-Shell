@@ -4,6 +4,7 @@ import Material, { MATERIAL_FIELDS } from '@/models/Material';
 import Product from '@/models/Product'; // We might need to check if a material is used later
 import { verifyAdmin, unauthorized, escapeRegex } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 import { pick } from '@/lib/pick';
 
 export async function GET(request: Request) {
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
         const material = await Material.create(pick(body, MATERIAL_FIELDS));
 
         const mObj = material.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...mObj, id: mObj._id.toString() }, { status: 201 });
     } catch (error) {
         return apiError(error, "Error creating material");

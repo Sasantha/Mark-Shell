@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongoose';
 import Category, { CATEGORY_FIELDS } from '@/models/Category';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
 import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
 import { pick } from '@/lib/pick';
 
 export async function GET() {
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
         const category = await Category.create(pick(body, CATEGORY_FIELDS));
 
         const catObj = category.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...catObj, id: catObj._id.toString() }, { status: 201 });
     } catch (error) {
         return apiError(error, "Error creating category");

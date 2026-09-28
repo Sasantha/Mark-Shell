@@ -2,15 +2,15 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProductCard from "@/components/ui/ProductCard";
 import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { CheckCircle, ChevronDown, ChevronLeft, ChevronRight, MessageSquare, Loader2 } from "lucide-react";
+import { CheckCircle, ChevronDown, ChevronLeft, ChevronRight, MessageSquare } from "lucide-react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { Suspense } from "react";
 import { useQuote } from "@/contexts/QuoteContext";
 import type { Product, Category, Material } from "@/types";
 
@@ -26,7 +26,7 @@ interface FilterSidebarProps {
 
 /**
  * Filter sidebar content, shared between the desktop sticky sidebar and the
- * mobile slide-over. Defined outside ProductsContent so it isn't recreated
+ * mobile slide-over. Defined outside ProductsCatalog so it isn't recreated
  * (and its DOM remounted) on every state change.
  */
 const FilterSidebar = ({
@@ -113,78 +113,34 @@ const FilterSidebar = ({
     </>
 );
 
+interface ProductsCatalogProps {
+    products: Product[];
+    categories: Category[];
+    materials: Material[];
+    /** The ?search= term; products are already filtered by it on the server. */
+    searchQuery?: string;
+}
+
 /**
- * ProductsContent Component (Inner component to handle Suspense)
+ * Interactive catalog (filters, sorting, pagination). The data is loaded on the
+ * server by app/products/page.tsx, so the products are in the initial HTML.
  */
-const ProductsContent = () => {
+const ProductsCatalog = ({ products, categories, materials, searchQuery }: ProductsCatalogProps) => {
     const { openQuote } = useQuote();
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get("category");
-    const searchQueryParam = searchParams.get("search");
+    const searchQueryParam = searchQuery;
 
     // -------------------------------------------------------------------------
     // STATE
     // -------------------------------------------------------------------------
 
-    // Data State
-    const [products, setProducts] = useState<Product[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [materials, setMaterials] = useState<Material[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    // Filters
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    // Filters (start from ?category= so the first server render is already filtered)
+    const [selectedCategories, setSelectedCategories] = useState<string[]>(categoryParam ? [categoryParam] : []);
     const [selectedMaterials, setSelectedMaterials] = useState<string[]>([]);
     const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-
-    useEffect(() => {
-        const fetchInitialData = async () => {
-            setIsLoading(true);
-            try {
-                // Fetch Categories
-                const catRes = await fetch('/api/categories');
-                if (catRes.ok) {
-                    const catData = await catRes.json();
-                    setCategories(catData);
-                }
-
-                // Fetch Materials
-                const matRes = await fetch('/api/materials');
-                if (matRes.ok) {
-                    const matData = await matRes.json();
-                    setMaterials(matData);
-                }
-
-                // Fetch Products
-                const url = searchQueryParam
-                    ? `/api/products?q=${encodeURIComponent(searchQueryParam)}`
-                    : '/api/products';
-                const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch products');
-                }
-                const data = await response.json();
-                setProducts(data);
-            } catch (err) {
-                setError(err instanceof Error ? err.message : "Something went wrong");
-                console.error("Error fetching data:", err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchInitialData();
-    }, [searchQueryParam]);
-
-    // Initialize/Update filters from URL
-    useEffect(() => {
-        if (categoryParam) {
-            setSelectedCategories([categoryParam]);
-        }
-    }, [categoryParam]);
 
     // Sorting: 'recommended' | 'price-asc' | 'price-desc' | 'alpha-asc' | 'alpha-desc'
     const [sortBy, setSortBy] = useState<string>("recommended");
@@ -192,6 +148,17 @@ const ProductsContent = () => {
     // Pagination
     const [currentPage, setCurrentPage] = useState(1);
     const ITEMS_PER_PAGE = 6;
+
+    // Update filters when ?category= changes (e.g. a category link while on this page).
+    // Adjusted during render rather than in an effect, as React recommends for derived state.
+    const [prevCategoryParam, setPrevCategoryParam] = useState(categoryParam);
+    if (categoryParam !== prevCategoryParam) {
+        setPrevCategoryParam(categoryParam);
+        if (categoryParam) {
+            setSelectedCategories([categoryParam]);
+            setCurrentPage(1);
+        }
+    }
 
     // -------------------------------------------------------------------------
     // DERIVED STATE (FILTERING & SORTING)
@@ -237,11 +204,6 @@ const ProductsContent = () => {
     const totalItems = sortedProducts.length;
     const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
 
-    // Handle Page Reset on Filter/Sort Change
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [selectedCategories, selectedMaterials, sortBy]);
-
     const currentProducts = sortedProducts.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
@@ -251,12 +213,14 @@ const ProductsContent = () => {
     // HANDLERS
     // -------------------------------------------------------------------------
 
+    // Filter and sort changes go back to page 1.
     const handleCategoryChange = (cat: string) => {
         setSelectedCategories(prev =>
             prev.includes(cat)
                 ? prev.filter(c => c !== cat)
                 : [...prev, cat]
         );
+        setCurrentPage(1);
     };
 
     const handleMaterialChange = (mat: string) => {
@@ -265,6 +229,7 @@ const ProductsContent = () => {
                 ? prev.filter(m => m !== mat)
                 : [...prev, mat]
         );
+        setCurrentPage(1);
     };
 
     const handleReset = () => {
@@ -312,10 +277,13 @@ const ProductsContent = () => {
             {/* Hero Section */}
             <div className="relative h-[300px] flex items-center px-4 overflow-hidden">
                 <div className="absolute inset-0 bg-[#1a4a1a] z-0">
-                    <img
+                    <Image
                         src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2613&auto=format&fit=crop"
                         alt="Wood Texture"
-                        className="w-full h-full object-cover opacity-20 mix-blend-overlay"
+                        fill
+                        sizes="100vw"
+                        priority
+                        className="object-cover opacity-20 mix-blend-overlay"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-green-900/90 to-transparent"></div>
                 </div>
@@ -419,121 +387,111 @@ const ProductsContent = () => {
 
                     {/* Product Grid Area */}
                     <div className="lg:col-span-9">
-                        {isLoading ? (
-                            <div className="flex h-[40vh] items-center justify-center">
-                                <Loader2 className="h-10 w-10 animate-spin text-green-600" />
-                            </div>
-                        ) : error ? (
-                            <div className="flex h-[40vh] items-center justify-center">
-                                <p className="text-red-500 text-lg">Error loading products: {error}</p>
-                            </div>
-                        ) : (
-                            <>
-                                {/* Top Bar */}
-                                <div className="flex flex-row justify-between items-center mb-6 sm:mb-8 gap-2 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100">
-                                    <span className="text-gray-500 text-xs sm:text-sm font-medium truncate">
-                                        <span className="hidden sm:inline">Showing </span>
-                                        <span className="text-gray-900 font-bold">{totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalItems)}</span>
-                                        <span className="text-gray-500"> of </span>
-                                        <span className="text-gray-900 font-bold">{totalItems}</span>
-                                        <span className="hidden sm:inline"> products</span>
-                                    </span>
+                        <>
+                            {/* Top Bar */}
+                            <div className="flex flex-row justify-between items-center mb-6 sm:mb-8 gap-2 bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100">
+                                <span className="text-gray-500 text-xs sm:text-sm font-medium truncate">
+                                    <span className="hidden sm:inline">Showing </span>
+                                    <span className="text-gray-900 font-bold">{totalItems === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, totalItems)}</span>
+                                    <span className="text-gray-500"> of </span>
+                                    <span className="text-gray-900 font-bold">{totalItems}</span>
+                                    <span className="hidden sm:inline"> products</span>
+                                </span>
 
-                                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                                        <label htmlFor="sort-by" className="text-gray-400 text-sm hidden sm:inline">Sort by:</label>
-                                        <div className="relative">
-                                            <select
-                                                id="sort-by"
-                                                className="appearance-none bg-gray-50 border border-gray-200 pl-2 sm:pl-4 pr-7 sm:pr-10 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors cursor-pointer w-[110px] sm:w-auto text-ellipsis"
-                                                value={sortBy}
-                                                onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
-                                            >
-                                                <option value="recommended">Recommended</option>
-                                                <option value="price-asc">Price: Low - High</option>
-                                                <option value="price-desc">Price: High - Low</option>
-                                                <option value="alpha-asc">Name: A - Z</option>
-                                                <option value="alpha-desc">Name: Z - A</option>
-                                            </select>
-                                            <ChevronDown size={14} className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                                        </div>
+                                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                                    <label htmlFor="sort-by" className="text-gray-400 text-sm hidden sm:inline">Sort by:</label>
+                                    <div className="relative">
+                                        <select
+                                            id="sort-by"
+                                            className="appearance-none bg-gray-50 border border-gray-200 pl-2 sm:pl-4 pr-7 sm:pr-10 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors cursor-pointer w-[110px] sm:w-auto text-ellipsis"
+                                            value={sortBy}
+                                            onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                                        >
+                                            <option value="recommended">Recommended</option>
+                                            <option value="price-asc">Price: Low - High</option>
+                                            <option value="price-desc">Price: High - Low</option>
+                                            <option value="alpha-asc">Name: A - Z</option>
+                                            <option value="alpha-desc">Name: Z - A</option>
+                                        </select>
+                                        <ChevronDown size={14} className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Grid */}
-                                {currentProducts.length > 0 ? (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
-                                        {currentProducts.map((product) => (
-                                            <ProductCard
-                                                key={product.id}
-                                                id={product.id} // Added id
-                                                variant="catalog"
-                                                image={product.image}
-                                                title={product.name}
-                                                description={product.subname || product.category}
-                                                tag={product.category}
-                                                badge={product.badge}
-                                                specs={{
-                                                    ...product.specs,
-                                                    pack: product.pack ?? "",
-                                                    case: product.case ?? "",
-                                                    grade: product.grade ?? ""
-                                                }}
-                                                isAvailable={product.isAvailable}
-                                                onQuoteClick={() => openQuote('product', product.name)}
-                                            />
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mb-12">
-                                        <p className="text-gray-500 font-medium">No products match your filters.</p>
+                            {/* Grid */}
+                            {currentProducts.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mb-12">
+                                    {currentProducts.map((product) => (
+                                        <ProductCard
+                                            key={product.id}
+                                            id={product.id} // Added id
+                                            variant="catalog"
+                                            image={product.image}
+                                            title={product.name}
+                                            description={product.subname || product.category}
+                                            tag={product.category}
+                                            badge={product.badge}
+                                            specs={{
+                                                ...product.specs,
+                                                pack: product.pack ?? "",
+                                                case: product.case ?? "",
+                                                grade: product.grade ?? ""
+                                            }}
+                                            isAvailable={product.isAvailable}
+                                            onQuoteClick={() => openQuote('product', product.name)}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-20 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 mb-12">
+                                    <p className="text-gray-500 font-medium">No products match your filters.</p>
+                                    <button
+                                        onClick={handleReset}
+                                        className="text-green-600 text-sm font-bold mt-2 hover:underline"
+                                    >
+                                        Clear all filters
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Pagination */}
+                            {totalItems > 0 && (
+                                <div className="flex justify-center items-center gap-2">
+                                    <button
+                                        onClick={() => handlePageChange(currentPage - 1)}
+                                        disabled={currentPage === 1}
+                                        aria-label="Previous page"
+                                        className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed hover:text-gray-600 transition-colors"
+                                    >
+                                        <ChevronLeft size={16} />
+                                    </button>
+
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                                         <button
-                                            onClick={handleReset}
-                                            className="text-green-600 text-sm font-bold mt-2 hover:underline"
+                                            key={page}
+                                            onClick={() => handlePageChange(page)}
+                                            aria-label={`Page ${page}`}
+                                            aria-current={currentPage === page ? "page" : undefined}
+                                            className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-all duration-200 ${currentPage === page
+                                                ? "bg-green-700 text-white shadow-lg shadow-green-900/20 font-bold scale-105"
+                                                : "border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-green-200"
+                                                }`}
                                         >
-                                            Clear all filters
+                                            {page}
                                         </button>
-                                    </div>
-                                )}
+                                    ))}
 
-                                {/* Pagination */}
-                                {totalItems > 0 && (
-                                    <div className="flex justify-center items-center gap-2">
-                                        <button
-                                            onClick={() => handlePageChange(currentPage - 1)}
-                                            disabled={currentPage === 1}
-                                            aria-label="Previous page"
-                                            className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed hover:text-gray-600 transition-colors"
-                                        >
-                                            <ChevronLeft size={16} />
-                                        </button>
-
-                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                                            <button
-                                                key={page}
-                                                onClick={() => handlePageChange(page)}
-                                                aria-label={`Page ${page}`}
-                                                aria-current={currentPage === page ? "page" : undefined}
-                                                className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-all duration-200 ${currentPage === page
-                                                    ? "bg-green-700 text-white shadow-lg shadow-green-900/20 font-bold scale-105"
-                                                    : "border border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-green-200"
-                                                    }`}
-                                            >
-                                                {page}
-                                            </button>
-                                        ))}
-
-                                        <button
-                                            onClick={() => handlePageChange(currentPage + 1)}
-                                            disabled={currentPage === totalPages}
-                                            aria-label="Next page"
-                                            className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-600 transition-colors"
-                                        >
-                                            <ChevronRight size={16} />
-                                        </button>
-                                    </div>
-                                )}
-                            </>
-                        )}
+                                    <button
+                                        onClick={() => handlePageChange(currentPage + 1)}
+                                        disabled={currentPage === totalPages}
+                                        aria-label="Next page"
+                                        className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-green-600 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-gray-600 transition-colors"
+                                    >
+                                        <ChevronRight size={16} />
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     </div>
                 </div>
             </Section>
@@ -576,16 +534,4 @@ const ProductsContent = () => {
     );
 };
 
-const ProductsPage = () => {
-    return (
-        <Suspense fallback={
-            <div className="flex min-h-screen items-center justify-center bg-[#f9fafb]">
-                <Loader2 className="h-10 w-10 animate-spin text-green-600" />
-            </div>
-        }>
-            <ProductsContent />
-        </Suspense>
-    );
-};
-
-export default ProductsPage;
+export default ProductsCatalog;

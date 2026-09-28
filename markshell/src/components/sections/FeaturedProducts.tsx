@@ -1,35 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Section from "../ui/section";
 import ProductCard from "../ui/ProductCard";
 import { useQuote } from "@/contexts/QuoteContext";
-import { Loader2 } from "lucide-react";
 import type { Product } from "@/types";
 
-const FeaturedProducts = () => {
-    const [products, setProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+/** Featured products, loaded on the server by the home page and passed in. */
+const FeaturedProducts = ({ products }: { products: Product[] }) => {
     const { openQuote } = useQuote();
 
-    useEffect(() => {
-        const fetchFeaturedProducts = async () => {
-            try {
-                // Fetch up to 6 products for the featured section
-                const response = await fetch('/api/products?featured=true');
-                if (response.ok) {
-                    const data = await response.json();
-                    setProducts(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch featured products:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchFeaturedProducts();
-    }, []);
     return (
         <Section className="bg-white py-24">
             <div className="flex flex-col items-center mb-16 text-center">
@@ -41,27 +21,21 @@ const FeaturedProducts = () => {
                 </p>
             </div>
 
-            {isLoading ? (
-                <div className="flex items-center justify-center min-h-[400px]">
-                    <Loader2 className="h-10 w-10 animate-spin text-green-600" />
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0">
-                    {products.map((product) => (
-                        <ProductCard
-                            key={product.id}
-                            id={product.id}
-                            title={product.name}
-                            description={product.subname || product.category}
-                            image={product.image}
-                            tag={product.category}
-                            badge={product.badge}
-                            isAvailable={product.isAvailable}
-                            onQuoteClick={() => openQuote('product', product.name)}
-                        />
-                    ))}
-                </div>
-            )}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 md:px-0">
+                {products.map((product) => (
+                    <ProductCard
+                        key={product.id}
+                        id={product.id}
+                        title={product.name}
+                        description={product.subname || product.category}
+                        image={product.image}
+                        tag={product.category}
+                        badge={product.badge}
+                        isAvailable={product.isAvailable}
+                        onQuoteClick={() => openQuote('product', product.name)}
+                    />
+                ))}
+            </div>
         </Section>
     );
 };

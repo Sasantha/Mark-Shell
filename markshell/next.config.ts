@@ -42,18 +42,31 @@ const nextConfig: NextConfig = {
   // Don't advertise the framework in an X-Powered-By header.
   poweredByHeader: false,
   images: {
+    // AVIF is ~30% smaller than WebP; browsers without AVIF support get WebP.
+    formats: ["image/avif", "image/webp"],
+    // 50 is used for photos under dark overlays (e.g. the home hero), where artifacts don't show.
+    qualities: [50, 75],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
       },
       {
-        // Temporary: some dummy/placeholder products still reference hotlinked
-        // Bing thumbnail images. Remove once all products have a real
-        // Cloudinary image uploaded through the admin panel.
+        // Stock backgrounds (Unsplash allows hotlinking).
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        // Temporary: some dummy/placeholder products and About page photos
+        // still reference hotlinked Bing thumbnails, and the Contact map is a
+        // placeholder from a Brave image proxy. Replace them with your own
+        // photos (uploaded to Cloudinary) and remove these entries.
         protocol: "https",
         hostname: "th.bing.com",
       },
+      { protocol: "https", hostname: "tse3.mm.bing.net" },
+      { protocol: "https", hostname: "tse4.mm.bing.net" },
+      { protocol: "https", hostname: "imgs.search.brave.com" },
     ],
   },
   async headers() {
