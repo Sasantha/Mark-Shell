@@ -1,45 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import React from "react";
+import { usePathname } from "next/navigation";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
-import { Loader2 } from "lucide-react";
 
+// Access control happens on the server: proxy.ts redirects logged-out visitors
+// to /admin/login before any admin page is served.
 export default function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
     const pathname = usePathname();
-    const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
 
-    const isLoginPage = pathname === "/admin/login";
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            const token = localStorage.getItem("admin_token");
-
-            if (!token && !isLoginPage) {
-                router.push("/admin/login");
-            } else if (token && isLoginPage) {
-                router.push("/admin/dashboard");
-            } else {
-                setIsLoading(false);
-            }
-        }
-    }, [pathname, isLoginPage, router]);
-
-    if (isLoading) {
-        return (
-            <div className="flex h-screen w-full items-center justify-center bg-gray-50">
-                <Loader2 className="h-8 w-8 animate-spin text-green-600" />
-            </div>
-        );
-    }
-
-    if (isLoginPage) {
+    if (pathname === "/admin/login") {
         return <>{children}</>;
     }
 

@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import Certification from '@/models/Certification';
+import Certification, { CERTIFICATION_FIELDS } from '@/models/Certification';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { pick } from '@/lib/pick';
 
 export async function GET() {
     try {
@@ -15,25 +17,23 @@ export async function GET() {
 
         return NextResponse.json(formatted);
     } catch (error) {
-        console.error("Error fetching certifications:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error fetching certifications");
     }
 }
 
 export async function POST(request: Request) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
         await dbConnect();
         const body = await request.json();
-        const certification = await Certification.create(body);
+        const certification = await Certification.create(pick(body, CERTIFICATION_FIELDS));
 
         const obj = certification.toObject();
         return NextResponse.json({ ...obj, id: obj._id.toString() }, { status: 201 });
     } catch (error) {
-        console.error("Error creating certification:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error creating certification");
     }
 }

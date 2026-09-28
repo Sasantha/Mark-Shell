@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import Certification from '@/models/Certification';
+import Certification, { CERTIFICATION_FIELDS } from '@/models/Certification';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { pick } from '@/lib/pick';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -17,14 +19,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         const obj = certification.toObject();
         return NextResponse.json({ ...obj, id: obj._id.toString() });
     } catch (error) {
-        console.error("Error fetching certification:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error fetching certification");
     }
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -33,8 +34,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
         const body = await request.json();
 
-        const updated = await Certification.findByIdAndUpdate(id, body, {
-            new: true,
+        const updated = await Certification.findByIdAndUpdate(id, pick(body, CERTIFICATION_FIELDS), {
+            returnDocument: 'after',
             runValidators: true
         });
 
@@ -45,14 +46,13 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         const obj = updated.toObject();
         return NextResponse.json({ ...obj, id: obj._id.toString() });
     } catch (error) {
-        console.error("Error updating certification:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error updating certification");
     }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -67,7 +67,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
         return NextResponse.json({ message: 'Certification deleted successfully' });
     } catch (error) {
-        console.error("Error deleting certification:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error deleting certification");
     }
 }

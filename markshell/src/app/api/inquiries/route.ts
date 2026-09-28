@@ -3,13 +3,14 @@ import mongoose from 'mongoose';
 import dbConnect from '@/lib/mongoose';
 import Inquiry from '@/models/Inquiry';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
 import { rateLimit, getClientIp } from '@/lib/rateLimit';
 import { notifyEmail } from '@/lib/notifyEmail';
 import { notifyWhatsApp } from '@/lib/notifyWhatsApp';
 
 export async function GET(request: Request) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -22,9 +23,8 @@ export async function GET(request: Request) {
         });
 
         return NextResponse.json(formatted);
-    } catch (error: any) {
-        console.error("Error fetching inquiries:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error fetching inquiries");
     }
 }
 
@@ -65,11 +65,11 @@ export async function POST(request: Request) {
 
         const obj = inquiry.toObject();
         return NextResponse.json({ ...obj, id: obj._id.toString() }, { status: 201 });
-    } catch (error: any) {
+    } catch (error) {
+        // Public form: a friendly message rather than the schema's own wording.
         if (error instanceof mongoose.Error.ValidationError) {
             return NextResponse.json({ error: 'Please check the form: a field is too long or invalid.' }, { status: 400 });
         }
-        console.error("Error creating inquiry:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return apiError(error, "Error creating inquiry");
     }
 }

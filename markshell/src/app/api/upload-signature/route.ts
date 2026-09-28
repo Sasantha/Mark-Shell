@@ -12,7 +12,7 @@ const ALLOWED_FORMATS = 'jpg,jpeg,png,webp,avif,gif,svg';
  * https://cloudinary.com/documentation/authentication_signatures
  */
 export async function POST(request: Request) {
-    if (!verifyAdmin(request)) {
+    if (!(await verifyAdmin(request))) {
         return unauthorized();
     }
 

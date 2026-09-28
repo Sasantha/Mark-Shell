@@ -6,6 +6,9 @@ export interface ICertification extends Document {
     description?: string;
 }
 
+/** Fields the admin certification form may set. */
+export const CERTIFICATION_FIELDS = ['name', 'image', 'description'] as const;
+
 const CertificationSchema: Schema = new Schema(
     {
         name: { type: String, required: true },

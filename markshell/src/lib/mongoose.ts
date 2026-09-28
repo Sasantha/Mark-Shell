@@ -3,7 +3,10 @@ import dns from 'node:dns';
 
 // Node's DNS auto-detection can fail on Windows (falls back to 127.0.0.1),
 // breaking the SRV lookup that mongodb+srv:// connection strings require.
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+// Development only: in production the host's own DNS resolvers are used.
+if (process.env.NODE_ENV === 'development') {
+    dns.setServers(['8.8.8.8', '1.1.1.1']);
+}
 
 const MONGODB_URI = process.env.MONGODB_URI;
 

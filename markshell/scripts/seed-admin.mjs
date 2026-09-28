@@ -26,8 +26,9 @@ if (!email || !password) {
     process.exit(1);
 }
 
-if (password.length < 6) {
-    console.error('Password must be at least 6 characters.');
+// Keep in sync with MIN_PASSWORD_LENGTH in src/lib/passwordPolicy.ts.
+if (password.length < 12) {
+    console.error('Password must be at least 12 characters.');
     process.exit(1);
 }
 

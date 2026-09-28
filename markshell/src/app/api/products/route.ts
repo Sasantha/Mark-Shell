@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import Product from '@/models/Product';
+import Product, { PRODUCT_FIELDS } from '@/models/Product';
 import { verifyAdmin, unauthorized, escapeRegex } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { pick } from '@/lib/pick';
 
 export async function GET(request: Request) {
     try {
@@ -48,15 +50,14 @@ export async function GET(request: Request) {
         });
 
         return NextResponse.json(formattedProducts);
-    } catch (error: any) {
-        console.error("Error fetching products:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error fetching products");
     }
 }
 
 export async function POST(request: Request) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -72,12 +73,11 @@ export async function POST(request: Request) {
             });
         }
 
-        const product = await Product.create(body);
+        const product = await Product.create(pick(body, PRODUCT_FIELDS));
 
         const pObj = product.toObject();
         return NextResponse.json({ ...pObj, id: pObj._id.toString() }, { status: 201 });
-    } catch (error: any) {
-        console.error("Error creating product:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error creating product");
     }
 }

@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import Category from '@/models/Category';
+import Category, { CATEGORY_FIELDS } from '@/models/Category';
 import Product from '@/models/Product';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { pick } from '@/lib/pick';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -17,15 +19,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
         const catObj = category.toObject();
         return NextResponse.json({ ...catObj, id: catObj._id.toString() });
-    } catch (error: any) {
-        console.error("Error fetching category:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error fetching category");
     }
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -34,8 +35,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
         const body = await request.json();
 
-        const updatedCategory = await Category.findByIdAndUpdate(id, body, {
-            new: true,
+        const updatedCategory = await Category.findByIdAndUpdate(id, pick(body, CATEGORY_FIELDS), {
+            returnDocument: 'after',
             runValidators: true
         });
 
@@ -45,15 +46,14 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
         const catObj = updatedCategory.toObject();
         return NextResponse.json({ ...catObj, id: catObj._id.toString() });
-    } catch (error: any) {
-        console.error("Error updating category:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error updating category");
     }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -85,8 +85,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         await Category.findByIdAndDelete(id);
 
         return NextResponse.json({ message: 'Category deleted successfully' });
-    } catch (error: any) {
-        console.error("Error deleting category:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error deleting category");
     }
 }

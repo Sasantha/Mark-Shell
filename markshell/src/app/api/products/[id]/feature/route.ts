@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Product from '@/models/Product';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
 
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -35,7 +36,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         const updatedProduct = await Product.findByIdAndUpdate(
             id,
             { isFeatured },
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         );
 
         if (!updatedProduct) {
@@ -44,8 +45,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
         const pObj = updatedProduct.toObject();
         return NextResponse.json({ ...pObj, id: pObj._id.toString() });
-    } catch (error: any) {
-        console.error("Error toggling product feature status:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error toggling product feature status");
     }
 }

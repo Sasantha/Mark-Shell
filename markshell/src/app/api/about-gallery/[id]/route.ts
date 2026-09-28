@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import AboutGalleryImage from '@/models/AboutGalleryImage';
+import AboutGalleryImage, { GALLERY_FIELDS } from '@/models/AboutGalleryImage';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { pick } from '@/lib/pick';
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -14,8 +16,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 
         const body = await request.json();
 
-        const updated = await AboutGalleryImage.findByIdAndUpdate(id, body, {
-            new: true,
+        const updated = await AboutGalleryImage.findByIdAndUpdate(id, pick(body, GALLERY_FIELDS), {
+            returnDocument: 'after',
             runValidators: true
         });
 
@@ -26,14 +28,13 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         const obj = updated.toObject();
         return NextResponse.json({ ...obj, id: obj._id.toString() });
     } catch (error) {
-        console.error("Error updating about gallery image:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error updating about gallery image");
     }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -48,7 +49,6 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
         return NextResponse.json({ message: 'Gallery image deleted successfully' });
     } catch (error) {
-        console.error("Error deleting about gallery image:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error deleting about gallery image");
     }
 }

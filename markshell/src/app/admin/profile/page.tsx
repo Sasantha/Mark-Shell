@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { Lock, Loader2, Save, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { adminFetch } from "@/lib/adminFetch";
+import { MIN_PASSWORD_LENGTH } from "@/lib/passwordPolicy";
 
 const AdminProfilePage = () => {
     const [currentPassword, setCurrentPassword] = useState("");
@@ -17,8 +18,6 @@ const AdminProfilePage = () => {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const router = useRouter();
-
     const handleUpdatePassword = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage({ type: "", text: "" });
@@ -28,36 +27,27 @@ const AdminProfilePage = () => {
             return;
         }
 
-        if (newPassword.length < 6) {
-            setMessage({ type: "error", text: "New password must be at least 6 characters" });
+        if (newPassword.length < MIN_PASSWORD_LENGTH) {
+            setMessage({ type: "error", text: `New password must be at least ${MIN_PASSWORD_LENGTH} characters` });
             return;
         }
 
         setIsLoading(true);
 
-        const token = localStorage.getItem("admin_token");
-
         try {
-            const res = await fetch("/api/admin/profile", {
+            // adminFetch redirects to the login page if the session has expired.
+            const res = await adminFetch("/api/admin/profile", {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ currentPassword, newPassword }),
             });
 
+            if (res.status === 401) return;
+
             const data = await res.json();
 
-            if (res.status === 401) {
-                // Token is invalid or expired
-                localStorage.removeItem("admin_token");
-                router.push("/admin/login?expired=true");
-                return;
-            }
-
             if (res.ok) {
-                setMessage({ type: "success", text: "Password updated successfully" });
+                setMessage({ type: "success", text: "Password updated successfully. Any other devices have been signed out." });
                 setCurrentPassword("");
                 setNewPassword("");
                 setConfirmPassword("");
