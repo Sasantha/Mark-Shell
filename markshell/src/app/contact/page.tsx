@@ -8,6 +8,7 @@ import Section from "@/components/ui/section";
 import MessagePopup from "@/components/ui/MessagePopup";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, Mail, MapPin, Phone, Send } from "lucide-react";
+import { INQUIRY_LIMITS } from "@/lib/inquiryLimits";
 
 const PRODUCT_INTERESTS = ["Wooden Cutlery", "Bamboo Products", "Areca Plates", "Any Other Products"];
 
@@ -17,6 +18,7 @@ const ContactPage = () => {
     const [contactValue, setContactValue] = useState("");
     const [productInterest, setProductInterest] = useState("");
     const [message, setMessage] = useState("");
+    const [website, setWebsite] = useState(""); // honeypot, see the hidden field in the form
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -39,11 +41,17 @@ const ContactPage = () => {
                     contextValue: productInterest || undefined,
                     source: 'contact_page',
                     message,
+                    website,
                 }),
             });
 
             if (!res.ok) {
-                throw new Error('Failed to send inquiry');
+                // Rate-limit (429) and validation (400) messages are written for visitors; show them as-is.
+                const data = await res.json().catch(() => null);
+                setSubmitError((res.status === 429 || res.status === 400) && data?.error
+                    ? data.error
+                    : "Something went wrong. Please try again.");
+                return;
             }
 
             setSubmitSuccess(true);
@@ -52,6 +60,7 @@ const ContactPage = () => {
             setContactValue("");
             setProductInterest("");
             setMessage("");
+            setWebsite("");
         } catch (err) {
             console.error("Failed to submit contact inquiry:", err);
             setSubmitError("Something went wrong. Please try again.");
@@ -175,6 +184,7 @@ const ContactPage = () => {
                                         <input
                                             type="text"
                                             required
+                                            maxLength={INQUIRY_LIMITS.name}
                                             value={fullName}
                                             onChange={(e) => setFullName(e.target.value)}
                                             placeholder="John Doe"
@@ -185,6 +195,7 @@ const ContactPage = () => {
                                         <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Company Name</label>
                                         <input
                                             type="text"
+                                            maxLength={INQUIRY_LIMITS.company}
                                             value={company}
                                             onChange={(e) => setCompany(e.target.value)}
                                             placeholder="Acme Logistics Ltd"
@@ -198,6 +209,7 @@ const ContactPage = () => {
                                     <input
                                         type="text"
                                         required
+                                        maxLength={INQUIRY_LIMITS.contactValue}
                                         value={contactValue}
                                         onChange={(e) => setContactValue(e.target.value)}
                                         placeholder="you@company.com or +1 555 000 0000"
@@ -226,11 +238,27 @@ const ContactPage = () => {
                                     <textarea
                                         rows={4}
                                         required
+                                        maxLength={INQUIRY_LIMITS.message}
                                         value={message}
                                         onChange={(e) => setMessage(e.target.value)}
                                         placeholder="Tell us about your requirements..."
                                         className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#00d084]/20 focus:border-[#00d084] transition-all resize-none"
                                     ></textarea>
+                                </div>
+
+                                {/* Honeypot: off-screen and skipped by keyboard and screen readers, so only bots fill it in */}
+                                <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                                    <label>
+                                        Website
+                                        <input
+                                            type="text"
+                                            name="website"
+                                            tabIndex={-1}
+                                            autoComplete="off"
+                                            value={website}
+                                            onChange={(e) => setWebsite(e.target.value)}
+                                        />
+                                    </label>
                                 </div>
 
                                 {submitError && (

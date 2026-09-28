@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
+import { INQUIRY_LIMITS } from '@/lib/inquiryLimits';
 
 export interface IInquiry extends Document {
     name: string;
@@ -15,14 +16,14 @@ export interface IInquiry extends Document {
 
 const InquirySchema: Schema = new Schema(
     {
-        name: { type: String, required: true },
-        company: { type: String },
+        name: { type: String, required: true, maxlength: INQUIRY_LIMITS.name },
+        company: { type: String, maxlength: INQUIRY_LIMITS.company },
         contactMethod: { type: String, enum: ['email', 'phone'], required: true },
-        contactValue: { type: String, required: true },
+        contactValue: { type: String, required: true, maxlength: INQUIRY_LIMITS.contactValue },
         contextType: { type: String, enum: ['general', 'product', 'category'], required: true },
-        contextValue: { type: String },
+        contextValue: { type: String, maxlength: INQUIRY_LIMITS.contextValue },
         source: { type: String, enum: ['popup', 'contact_page'], required: true },
-        message: { type: String, required: true },
+        message: { type: String, required: true, maxlength: INQUIRY_LIMITS.message },
         status: { type: String, enum: ['new', 'read', 'resolved'], default: 'new' },
     },
     {
