@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import type { IInquiry } from '@/models/Inquiry';
+import { renderInquiryEmailHtml } from '@/lib/emailTemplate';
 
 let transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
 
@@ -37,9 +38,11 @@ export async function notifyEmail(inquiry: IInquiry): Promise<void> {
 
     try {
         await client.sendMail({
-            from: process.env.SMTP_USER,
+            from: `MarkShell Website <${process.env.SMTP_USER}>`,
             to: ownerEmail,
             subject: `New inquiry from ${inquiry.name} (MarkShell website)`,
+            // Plain-text fallback for clients that prefer it and for spam filters;
+            // most inboxes will show the branded HTML version below instead.
             text: [
                 `Name: ${inquiry.name}`,
                 ...(inquiry.company ? [`Company: ${inquiry.company}`] : []),
@@ -50,6 +53,7 @@ export async function notifyEmail(inquiry: IInquiry): Promise<void> {
                 'Message:',
                 inquiry.message,
             ].join('\n'),
+            html: renderInquiryEmailHtml(inquiry),
         });
     } catch (error) {
         console.error('Failed to send email notification:', error);
