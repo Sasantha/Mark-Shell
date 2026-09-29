@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import Product from '@/models/Product';
+import Product, { PRODUCT_FIELDS } from '@/models/Product';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
+import { pick } from '@/lib/pick';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -16,15 +19,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
         const pObj = product.toObject();
         return NextResponse.json({ ...pObj, id: pObj._id.toString() });
-    } catch (error: any) {
-        console.error("Error fetching product:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error fetching product");
     }
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -42,8 +44,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             });
         }
 
-        const updatedProduct = await Product.findByIdAndUpdate(id, body, {
-            new: true,
+        const updatedProduct = await Product.findByIdAndUpdate(id, pick(body, PRODUCT_FIELDS), {
+            returnDocument: 'after',
             runValidators: true
         });
 
@@ -52,16 +54,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         }
 
         const pObj = updatedProduct.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...pObj, id: pObj._id.toString() });
-    } catch (error: any) {
-        console.error("Error updating product:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error updating product");
     }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -74,9 +76,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
             return NextResponse.json({ error: 'Product not found' }, { status: 404 });
         }
 
+        revalidatePublicPages();
         return NextResponse.json({ message: 'Product deleted successfully' });
-    } catch (error: any) {
-        console.error("Error deleting product:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error deleting product");
     }
 }

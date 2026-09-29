@@ -25,6 +25,12 @@ export interface IProduct extends Document {
     orderVolumes?: string[];
 }
 
+/** Fields the admin product form may set; isFeatured is excluded (see /api/products/[id]/feature). */
+export const PRODUCT_FIELDS = [
+    'name', 'subname', 'category', 'material', 'image', 'price', 'badge', 'specs', 'isAvailable',
+    'images', 'longDescription', 'weight', 'cartonQuantity', 'features', 'pack', 'case', 'grade', 'orderVolumes',
+] as const;
+
 const ProductSchema: Schema = new Schema(
     {
         name: { type: String, required: true },

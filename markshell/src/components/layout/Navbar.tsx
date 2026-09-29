@@ -226,7 +226,7 @@ const Navbar = () => {
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-2 group" onClick={() => setIsMobileMenuOpen(false)}>
                     <Image
-                        src="/MS_logo_transparent.svg"
+                        src="/MS_logo.png"
                         alt="MarkShell"
                         width={36}
                         height={36}

@@ -22,6 +22,12 @@ const AdminSchema = new mongoose.Schema(
             type: String,
             default: "Administrator",
         },
+        // Stored in every session token; incrementing it (on password change)
+        // signs out all existing sessions.
+        tokenVersion: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true }
 );

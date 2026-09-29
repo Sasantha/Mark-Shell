@@ -22,9 +22,9 @@ const AdminSidebar = () => {
         { name: "Profile", href: "/admin/profile", icon: Settings },
     ];
 
-    const handleLogout = () => {
-        // Clear mock token
-        localStorage.removeItem("admin_token");
+    const handleLogout = async () => {
+        // The session cookie is httpOnly, so the server has to clear it.
+        await fetch("/api/admin/logout", { method: "POST" });
         window.location.href = "/admin/login";
     };
 

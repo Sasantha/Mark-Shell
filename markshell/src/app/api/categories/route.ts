@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import Category from '@/models/Category';
+import Category, { CATEGORY_FIELDS } from '@/models/Category';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
+import { pick } from '@/lib/pick';
 
 export async function GET() {
     try {
@@ -18,26 +21,25 @@ export async function GET() {
         });
 
         return NextResponse.json(formattedCategories);
-    } catch (error: any) {
-        console.error("Error fetching categories:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error fetching categories");
     }
 }
 
 export async function POST(request: Request) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
         await dbConnect();
         const body = await request.json();
-        const category = await Category.create(body);
+        const category = await Category.create(pick(body, CATEGORY_FIELDS));
 
         const catObj = category.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...catObj, id: catObj._id.toString() }, { status: 201 });
-    } catch (error: any) {
-        console.error("Error creating category:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error creating category");
     }
 }

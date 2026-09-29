@@ -15,7 +15,7 @@ const Footer = () => {
                                 src="/MarkShell_logo_banner.png"
                                 alt="MarkShell"
                                 width={220}
-                                height={32}
+                                height={44}
                             />
                         </div>
                         <p className="text-gray-400 text-sm leading-relaxed">

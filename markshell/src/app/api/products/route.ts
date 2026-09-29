@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import Product from '@/models/Product';
+import Product, { PRODUCT_FIELDS } from '@/models/Product';
 import { verifyAdmin, unauthorized, escapeRegex } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
+import { pick } from '@/lib/pick';
+
+const MAX_LIMIT = 500;
 
 export async function GET(request: Request) {
     try {
@@ -11,8 +16,9 @@ export async function GET(request: Request) {
         const limitStr = searchParams.get('limit');
         const q = searchParams.get('q');
         const featured = searchParams.get('featured');
+        const pageStr = searchParams.get('page');
 
-        let query: any = {};
+        const query: Record<string, unknown> = {};
         if (category) {
             query.category = category;
         }
@@ -28,35 +34,26 @@ export async function GET(request: Request) {
             ];
         }
 
-        let productsQuery = Product.find(query);
+        // Never return more than MAX_LIMIT products in one response, whatever ?limit= says.
+        const requested = parseInt(limitStr ?? '', 10);
+        const limit = requested > 0 ? Math.min(requested, MAX_LIMIT) : MAX_LIMIT;
+        // Optional 1-based ?page= for callers that want the catalog in chunks.
+        const page = Math.max(1, parseInt(pageStr ?? '', 10) || 1);
 
-        if (limitStr) {
-            const limit = parseInt(limitStr);
-            if (!isNaN(limit)) {
-                productsQuery = productsQuery.limit(limit);
-            }
-        }
+        // lean() returns plain objects, skipping Mongoose document overhead for read-only data.
+        const products = await Product.find(query).skip((page - 1) * limit).limit(limit).lean();
 
-        const products = await productsQuery;
-
-        const formattedProducts = products.map(p => {
-            const pObj = p.toObject();
-            return {
-                ...pObj,
-                id: pObj._id.toString(),
-            };
-        });
+        const formattedProducts = products.map(p => ({ ...p, id: String(p._id) }));
 
         return NextResponse.json(formattedProducts);
-    } catch (error: any) {
-        console.error("Error fetching products:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error fetching products");
     }
 }
 
 export async function POST(request: Request) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -72,12 +69,12 @@ export async function POST(request: Request) {
             });
         }
 
-        const product = await Product.create(body);
+        const product = await Product.create(pick(body, PRODUCT_FIELDS));
 
         const pObj = product.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...pObj, id: pObj._id.toString() }, { status: 201 });
-    } catch (error: any) {
-        console.error("Error creating product:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error creating product");
     }
 }

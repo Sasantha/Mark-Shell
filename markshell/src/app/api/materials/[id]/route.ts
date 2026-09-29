@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import Material from '@/models/Material';
+import Material, { MATERIAL_FIELDS } from '@/models/Material';
 import Product from '@/models/Product';
 import { verifyAdmin, unauthorized, escapeRegex } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
+import { pick } from '@/lib/pick';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -17,15 +20,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
         const mObj = material.toObject();
         return NextResponse.json({ ...mObj, id: mObj._id.toString() });
-    } catch (error: any) {
-        console.error("Error fetching material:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error fetching material");
     }
 }
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -33,6 +35,10 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         await dbConnect();
 
         const body = await request.json();
+
+        if (body?.name !== undefined && (typeof body.name !== 'string' || !body.name.trim())) {
+            return NextResponse.json({ error: 'Material name must be text' }, { status: 400 });
+        }
 
         // Find existing material to check what the name was
         const existingMaterial = await Material.findById(id);
@@ -48,8 +54,8 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
             }
         }
 
-        const updatedMaterial = await Material.findByIdAndUpdate(id, body, {
-            new: true,
+        const updatedMaterial = await Material.findByIdAndUpdate(id, pick(body, MATERIAL_FIELDS), {
+            returnDocument: 'after',
             runValidators: true
         });
 
@@ -62,16 +68,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         }
 
         const mObj = updatedMaterial!.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...mObj, id: mObj._id.toString() });
-    } catch (error: any) {
-        console.error("Error updating material:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error updating material");
     }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -86,9 +92,9 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
 
         const deletedMaterial = await Material.findByIdAndDelete(id);
 
+        revalidatePublicPages();
         return NextResponse.json({ message: 'Material deleted successfully' });
-    } catch (error: any) {
-        console.error("Error deleting material:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error deleting material");
     }
 }

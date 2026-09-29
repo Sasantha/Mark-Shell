@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import Section from "../ui/section";
 import { Button } from "../ui/button";
 
@@ -8,7 +9,13 @@ const CTA = () => {
         <Section className="relative py-32 overflow-hidden">
             {/* Background Image / Gradient */}
             <div className="absolute inset-0 z-0 bg-green-900">
-                <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-overlay"></div>
+                <Image
+                    src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=2670&auto=format&fit=crop"
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    className="object-cover opacity-30 mix-blend-overlay"
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-green-900 via-transparent to-transparent"></div>
             </div>
 

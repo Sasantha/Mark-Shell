@@ -5,6 +5,9 @@ export interface IMaterial extends Document {
     description?: string;
 }
 
+/** Fields the admin material form may set. */
+export const MATERIAL_FIELDS = ['name', 'description'] as const;
+
 const MaterialSchema: Schema = new Schema(
     {
         name: { type: String, required: true, unique: true },

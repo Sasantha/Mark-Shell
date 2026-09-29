@@ -15,10 +15,12 @@ const Hero = () => {
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
                 <Image
-                    src="/hero-bg.jpg"
+                    src="/hero-bg.webp"
                     alt="Bamboo Forest"
                     fill
                     sizes="100vw"
+                    // The 40% dark overlay hides compression, so a lower quality roughly halves the download.
+                    quality={50}
                     priority
                     className="object-cover"
                 />

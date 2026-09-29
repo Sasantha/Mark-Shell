@@ -1,7 +1,10 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
-import AboutGalleryImage from '@/models/AboutGalleryImage';
+import AboutGalleryImage, { GALLERY_FIELDS } from '@/models/AboutGalleryImage';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
+import { revalidatePublicPages } from '@/lib/revalidate';
+import { pick } from '@/lib/pick';
 
 export async function GET() {
     try {
@@ -15,14 +18,13 @@ export async function GET() {
 
         return NextResponse.json(formatted);
     } catch (error) {
-        console.error("Error fetching about gallery images:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error fetching about gallery images");
     }
 }
 
 export async function POST(request: Request) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -35,12 +37,12 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json();
-        const image = await AboutGalleryImage.create(body);
+        const image = await AboutGalleryImage.create(pick(body, GALLERY_FIELDS));
 
         const obj = image.toObject();
+        revalidatePublicPages();
         return NextResponse.json({ ...obj, id: obj._id.toString() }, { status: 201 });
     } catch (error) {
-        console.error("Error creating about gallery image:", error);
-        return NextResponse.json({ error: error instanceof Error ? error.message : "Something went wrong" }, { status: 500 });
+        return apiError(error, "Error creating about gallery image");
     }
 }

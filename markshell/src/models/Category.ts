@@ -8,6 +8,9 @@ export interface ICategory extends Document {
     slug: string;
 }
 
+/** Fields the admin category form may set. */
+export const CATEGORY_FIELDS = ['name', 'description', 'image', 'itemCount', 'slug'] as const;
+
 const CategorySchema: Schema = new Schema(
     {
         name: { type: String, required: true },

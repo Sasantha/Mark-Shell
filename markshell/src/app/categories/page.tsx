@@ -1,35 +1,24 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
+import type { Metadata } from "next";
+import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CategoryCard from "@/components/ui/CategoryCard";
 import MessagePopup from "@/components/ui/MessagePopup";
 import Section from "@/components/ui/section";
-import { Loader2 } from "lucide-react";
-import type { Category } from "@/types";
+import { getCategories } from "@/lib/data";
 
-const CategoriesPage = () => {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+export const metadata: Metadata = {
+    title: "Product Categories",
+    description: "Browse MarkShell's sustainable cutlery and food-service disposables by category: wooden spoons, forks, knives, straws, kits and more, supplied in bulk across Sri Lanka.",
+};
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await fetch('/api/categories');
-                if (response.ok) {
-                    const data = await response.json();
-                    setCategories(data);
-                }
-            } catch (error) {
-                console.error("Failed to fetch categories:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+// Pre-rendered; refreshed on admin changes (lib/revalidate.ts) and hourly as a fallback.
+export const revalidate = 3600;
 
-        fetchCategories();
-    }, []);
+const CategoriesPage = async () => {
+    const categories = await getCategories();
+
     return (
         <main className="min-h-screen font-sans bg-[#f9fafb]">
             <Navbar />
@@ -37,10 +26,13 @@ const CategoriesPage = () => {
             {/* Hero Section */}
             <div className="relative h-[300px] flex items-center px-4 overflow-hidden">
                 <div className="absolute inset-0 bg-[#1a4a1a] z-0">
-                    <img
+                    <Image
                         src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=2613&auto=format&fit=crop"
                         alt="Wood Texture"
-                        className="w-full h-full object-cover opacity-20 mix-blend-overlay"
+                        fill
+                        sizes="100vw"
+                        priority
+                        className="object-cover opacity-20 mix-blend-overlay"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-green-900/90 to-transparent"></div>
                 </div>
@@ -56,11 +48,7 @@ const CategoriesPage = () => {
 
             {/* Categories Grid */}
             <Section className="py-16">
-                {isLoading ? (
-                    <div className="flex items-center justify-center min-h-[40vh]">
-                        <Loader2 className="h-10 w-10 animate-spin text-green-600" />
-                    </div>
-                ) : categories.length > 0 ? (
+                {categories.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {categories.map((category) => (
                             <CategoryCard

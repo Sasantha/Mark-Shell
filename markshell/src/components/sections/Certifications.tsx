@@ -1,28 +1,10 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import Section from "../ui/section";
 import type { Certification } from "@/types";
 
-const Certifications = () => {
-    const [certifications, setCertifications] = useState<Certification[]>([]);
-
-    useEffect(() => {
-        const fetchCertifications = async () => {
-            try {
-                const response = await fetch('/api/certifications');
-                if (response.ok) {
-                    setCertifications(await response.json());
-                }
-            } catch (error) {
-                console.error("Failed to fetch certifications:", error);
-            }
-        };
-
-        fetchCertifications();
-    }, []);
-
+/** Certifications, loaded on the server by the home page and passed in. */
+const Certifications = ({ certifications }: { certifications: Certification[] }) => {
     // Hide the section entirely until there's real content to show.
     if (certifications.length === 0) return null;
 

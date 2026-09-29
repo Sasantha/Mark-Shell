@@ -2,13 +2,15 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongoose';
 import Admin from '@/models/Admin';
-import { verifyAdmin } from '@/lib/auth';
+import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { setSessionCookie } from '@/lib/session';
+import { MIN_PASSWORD_LENGTH } from '@/lib/passwordPolicy';
 
 export async function PUT(request: Request) {
     try {
-        const adminId = verifyAdmin(request);
+        const adminId = await verifyAdmin(request);
         if (!adminId) {
-            return NextResponse.json({ message: 'Unauthorized / Invalid Token' }, { status: 401 });
+            return unauthorized();
         }
 
         await dbConnect();
@@ -16,12 +18,12 @@ export async function PUT(request: Request) {
         const body = await request.json();
         const { currentPassword, newPassword } = body;
 
-        if (!currentPassword || !newPassword) {
+        if (typeof currentPassword !== 'string' || typeof newPassword !== 'string' || !currentPassword || !newPassword) {
             return NextResponse.json({ message: 'Current password and new password are required' }, { status: 400 });
         }
 
-        if (newPassword.length < 6) {
-            return NextResponse.json({ message: 'New password must be at least 6 characters' }, { status: 400 });
+        if (newPassword.length < MIN_PASSWORD_LENGTH) {
+            return NextResponse.json({ message: `New password must be at least ${MIN_PASSWORD_LENGTH} characters` }, { status: 400 });
         }
 
         const admin = await Admin.findById(adminId);
@@ -35,14 +37,20 @@ export async function PUT(request: Request) {
             return NextResponse.json({ message: 'Incorrect current password' }, { status: 400 });
         }
 
-        // Hash and update new password
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        admin.password = hashedNewPassword;
-        await admin.save();
+        // Hash the new password and bump the token version, which signs out
+        // every existing session (e.g. one on a lost or shared device).
+        admin.password = await bcrypt.hash(newPassword, 10);
+        admin.tokenVersion = (admin.tokenVersion ?? 0) + 1;
+        // Validate only what changed: an email saved under an older, stricter rule
+        // (e.g. the 2-3 letter TLD pattern rejects .info) must not block a password change.
+        await admin.save({ validateModifiedOnly: true });
 
-        return NextResponse.json({ message: 'Password updated successfully' });
+        // Keep the admin who made the change signed in with a fresh token.
+        const response = NextResponse.json({ message: 'Password updated successfully' });
+        setSessionCookie(response, admin);
+        return response;
 
-    } catch (error: any) {
+    } catch (error) {
         console.error('Update password error:', error);
         return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
     }

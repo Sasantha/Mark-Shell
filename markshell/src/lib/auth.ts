@@ -1,39 +1,30 @@
 import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
-
-export function getJwtSecret(): string {
-    const secret = process.env.JWT_SECRET;
-    if (!secret) {
-        throw new Error(
-            'Please define the JWT_SECRET environment variable inside .env'
-        );
-    }
-    return secret;
-}
+import mongoose from 'mongoose';
+import dbConnect from '@/lib/mongoose';
+import Admin from '@/models/Admin';
+import { ADMIN_COOKIE, clearSessionCookie, decodeAdminToken, readCookie } from '@/lib/session';
 
 /**
- * Verifies the Bearer token on an incoming request.
+ * Verifies the admin session cookie on an incoming API request, including that
+ * the token was issued after the admin's last password change.
  * Returns the admin id if valid, otherwise null.
  */
-export function verifyAdmin(request: Request): string | null {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return null;
-    }
+export async function verifyAdmin(request: Request): Promise<string | null> {
+    const payload = decodeAdminToken(readCookie(request, ADMIN_COOKIE));
+    if (!payload || !mongoose.isValidObjectId(payload.id)) return null;
 
-    const token = authHeader.split(' ')[1];
+    await dbConnect();
+    const admin = await Admin.findById(payload.id).select('tokenVersion').lean<{ tokenVersion?: number }>();
+    if (!admin || (admin.tokenVersion ?? 0) !== payload.v) return null;
 
-    try {
-        const decoded = jwt.verify(token, getJwtSecret()) as { id: string, role: string };
-        if (decoded.role !== 'admin') return null;
-        return decoded.id;
-    } catch {
-        return null;
-    }
+    return payload.id;
 }
 
+/** 401 response that also clears the (invalid or missing) session cookie. */
 export function unauthorized() {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const response = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    clearSessionCookie(response);
+    return response;
 }
 
 /** Escapes regex metacharacters so user input can be used safely in $regex queries. */

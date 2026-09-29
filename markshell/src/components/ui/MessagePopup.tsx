@@ -5,6 +5,7 @@ import { MessageCircle, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useQuote } from "@/contexts/QuoteContext";
+import { INQUIRY_LIMITS } from "@/lib/inquiryLimits";
 import type { Product, Category } from "@/types";
 
 const MessagePopup = () => {
@@ -19,6 +20,7 @@ const MessagePopup = () => {
     const [contextValue, setContextValue] = useState("");
     const [messageType, setMessageType] = useState("inquiry");
     const [customMessage, setCustomMessage] = useState("");
+    const [website, setWebsite] = useState(""); // honeypot, see the hidden field below
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -94,11 +96,17 @@ const MessagePopup = () => {
                     contextValue: contextType !== 'general' ? contextValue : undefined,
                     source: 'popup',
                     message,
+                    website,
                 }),
             });
 
             if (!res.ok) {
-                throw new Error('Failed to send message');
+                // Rate-limit (429) and validation (400) messages are written for visitors; show them as-is.
+                const data = await res.json().catch(() => null);
+                setSubmitError((res.status === 429 || res.status === 400) && data?.error
+                    ? data.error
+                    : "Something went wrong. Please try again.");
+                return;
             }
 
             alert("Message sent! We'll get back to you soon.");
@@ -106,6 +114,7 @@ const MessagePopup = () => {
             setName("");
             setContactValue("");
             setCustomMessage("");
+            setWebsite("");
         } catch (err) {
             console.error("Failed to submit inquiry:", err);
             setSubmitError("Something went wrong. Please try again.");
@@ -140,6 +149,7 @@ const MessagePopup = () => {
                     <input
                         type="text"
                         required
+                        maxLength={INQUIRY_LIMITS.name}
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
@@ -167,6 +177,7 @@ const MessagePopup = () => {
                         <input
                             type={contactMethod === 'email' ? 'email' : 'tel'}
                             required
+                            maxLength={INQUIRY_LIMITS.contactValue}
                             value={contactValue}
                             onChange={(e) => setContactValue(e.target.value)}
                             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
@@ -224,12 +235,28 @@ const MessagePopup = () => {
                         <textarea
                             value={customMessage}
                             onChange={(e) => setCustomMessage(e.target.value)}
+                            maxLength={INQUIRY_LIMITS.message}
                             rows={3}
                             className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500"
                             placeholder="Type your message here..."
                             required={messageType === 'custom'}
                         />
                     </div>
+                </div>
+
+                {/* Honeypot: off-screen and skipped by keyboard and screen readers, so only bots fill it in */}
+                <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+                    <label>
+                        Website
+                        <input
+                            type="text"
+                            name="website"
+                            tabIndex={-1}
+                            autoComplete="off"
+                            value={website}
+                            onChange={(e) => setWebsite(e.target.value)}
+                        />
+                    </label>
                 </div>
 
                 {submitError && (

@@ -5,6 +5,9 @@ export interface IAboutGalleryImage extends Document {
     alt?: string;
 }
 
+/** Fields the admin gallery form may set. */
+export const GALLERY_FIELDS = ['image', 'alt'] as const;
+
 const AboutGalleryImageSchema: Schema = new Schema(
     {
         image: { type: String, required: true },

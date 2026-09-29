@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { adminFetch } from "@/lib/adminFetch";
+import { uploadImage } from "@/lib/uploadImage";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, Save, Upload, Plus, Loader2, Image as ImageIcon } from "lucide-react";
@@ -178,31 +179,6 @@ const AddProductPage = () => {
         }
     };
 
-    const uploadImageToCloudinary = async (file: File): Promise<string> => {
-        const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-        const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_PRESET_NAME;
-
-        if (!cloudName || !uploadPreset) {
-            throw new Error("Cloudinary configuration is missing.");
-        }
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("upload_preset", uploadPreset);
-
-        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-            method: "POST",
-            body: formData,
-        });
-
-        if (!response.ok) {
-            throw new Error("Failed to upload image to Cloudinary.");
-        }
-
-        const data = await response.json();
-        return data.secure_url;
-    };
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -227,7 +203,7 @@ const AddProductPage = () => {
 
         try {
             // 1. Upload all images to Cloudinary concurrently
-            const uploadPromises = validFiles.map(file => uploadImageToCloudinary(file));
+            const uploadPromises = validFiles.map(file => uploadImage(file));
             const uploadedUrls = await Promise.all(uploadPromises);
 
             // Re-map the urls back to their original slots to figure out which one is the main image

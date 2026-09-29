@@ -1,36 +1,18 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import type { AboutGalleryImage } from "@/types";
 
-const AboutGalleryGrid = () => {
-    const [images, setImages] = useState<AboutGalleryImage[]>([]);
+/** Gallery images are loaded on the server by the About page and passed in. */
+const AboutGalleryGrid = ({ images }: { images: AboutGalleryImage[] }) => {
     const [isRevealed, setIsRevealed] = useState(false);
-    const [skipAnimation, setSkipAnimation] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const fetchImages = async () => {
-            try {
-                const response = await fetch('/api/about-gallery');
-                if (!response.ok) throw new Error('Failed to fetch gallery images');
-                setImages(await response.json());
-            } catch (err) {
-                console.error("Error fetching about gallery images:", err);
-            }
-        };
-
-        fetchImages();
-    }, []);
-
-    useEffect(() => {
+        // Visitors who prefer reduced motion see the tiles immediately via the
+        // motion-reduce: classes below, so the observer only drives the animation.
         if (images.length === 0 || isRevealed) return;
-
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-            setSkipAnimation(true);
-            setIsRevealed(true);
-            return;
-        }
 
         const el = containerRef.current;
         if (!el) return;
@@ -62,19 +44,18 @@ const AboutGalleryGrid = () => {
             {images.slice(0, 6).map((image, index) => (
                 <div
                     key={image.id}
-                    className={`aspect-square rounded-2xl overflow-hidden group ${skipAnimation
-                        ? ""
-                        : `transition-[transform,opacity] duration-450 ease-out motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:scale-100 motion-reduce:translate-y-0 ${isRevealed
-                            ? "opacity-100 scale-100 translate-y-0"
-                            : "opacity-0 scale-[0.85] translate-y-4"
-                        }`
+                    className={`relative aspect-square rounded-2xl overflow-hidden group transition-[transform,opacity] duration-450 ease-out motion-reduce:transition-none motion-reduce:opacity-100 motion-reduce:scale-100 motion-reduce:translate-y-0 ${isRevealed
+                        ? "opacity-100 scale-100 translate-y-0"
+                        : "opacity-0 scale-[0.85] translate-y-4"
                         }`}
-                    style={skipAnimation ? undefined : { transitionDelay: `${index * 100}ms` }}
+                    style={{ transitionDelay: `${index * 100}ms` }}
                 >
-                    <img
+                    <Image
                         src={image.image}
                         alt={image.alt || "MarkShell craftsmanship"}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        fill
+                        sizes="(min-width: 1024px) 20vw, (min-width: 640px) 45vw, 90vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                 </div>
             ))}

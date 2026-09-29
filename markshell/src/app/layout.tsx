@@ -15,7 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MarkShell | Sustainable Cutlery & Disposables Supplier — Sri Lanka",
+  title: {
+    default: "MarkShell | Sustainable Cutlery & Disposables Supplier — Sri Lanka",
+    // Pages set just their own name, e.g. a product page's title becomes "Birch Spoon | MarkShell".
+    template: "%s | MarkShell",
+  },
   description: "MarkShell (by Mark-Shell Pvt Ltd) supplies internationally certified, sustainable wooden cutlery, straws, and food-service disposables in bulk to hotels, restaurants, catering services, and supermarkets across Sri Lanka.",
 };
 
@@ -25,7 +29,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-scroll-behavior="smooth">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

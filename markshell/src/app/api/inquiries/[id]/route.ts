@@ -2,10 +2,11 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
 import Inquiry from '@/models/Inquiry';
 import { verifyAdmin, unauthorized } from '@/lib/auth';
+import { apiError } from '@/lib/apiError';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -19,7 +20,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
             return NextResponse.json({ error: 'Invalid status' }, { status: 400 });
         }
 
-        const updated = await Inquiry.findByIdAndUpdate(id, { status }, { new: true, runValidators: true });
+        const updated = await Inquiry.findByIdAndUpdate(id, { status }, { returnDocument: 'after', runValidators: true });
 
         if (!updated) {
             return NextResponse.json({ error: 'Inquiry not found' }, { status: 404 });
@@ -27,15 +28,14 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
         const obj = updated.toObject();
         return NextResponse.json({ ...obj, id: obj._id.toString() });
-    } catch (error: any) {
-        console.error("Error updating inquiry:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error updating inquiry");
     }
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        if (!verifyAdmin(request)) {
+        if (!(await verifyAdmin(request))) {
             return unauthorized();
         }
 
@@ -49,8 +49,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ i
         }
 
         return NextResponse.json({ message: 'Inquiry deleted successfully' });
-    } catch (error: any) {
-        console.error("Error deleting inquiry:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error deleting inquiry");
     }
 }

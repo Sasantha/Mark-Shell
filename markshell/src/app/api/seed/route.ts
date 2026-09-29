@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongoose';
+import { apiError } from '@/lib/apiError';
 import Category from '@/models/Category';
 import Product from '@/models/Product';
 import { categories, products } from '@/lib/dummy-data';
@@ -29,8 +30,7 @@ export async function GET(request: Request) {
             categoriesInserted: insertedCategories.length,
             productsInserted: insertedProducts.length
         });
-    } catch (error: any) {
-        console.error("Error seeding database:", error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error) {
+        return apiError(error, "Error seeding database");
     }
 }

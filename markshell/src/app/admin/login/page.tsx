@@ -14,6 +14,9 @@ const AdminLoginPage = () => {
 
     useEffect(() => {
         if (typeof window !== "undefined") {
+            // Sessions now live in an httpOnly cookie; remove any token left by the old localStorage login.
+            localStorage.removeItem("admin_token");
+
             const params = new URLSearchParams(window.location.search);
             if (params.get("expired") === "true") {
                 setError("Your session has expired. Please log in again.");
@@ -38,8 +41,7 @@ const AdminLoginPage = () => {
             const data = await res.json();
 
             if (res.ok) {
-                localStorage.setItem("admin_token", data.token);
-                // Also store a marker that it's a real token we are using, maybe just the admin name if needed
+                // The server has set the httpOnly session cookie.
                 router.push("/admin/dashboard");
             } else {
                 setError(data.message || "Invalid credentials.");

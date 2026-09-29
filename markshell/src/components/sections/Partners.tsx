@@ -1,28 +1,10 @@
-"use client";
-
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Image from "next/image";
 import Section from "../ui/section";
 import type { Partner } from "@/types";
 
-const Partners = () => {
-    const [partners, setPartners] = useState<Partner[]>([]);
-
-    useEffect(() => {
-        const fetchPartners = async () => {
-            try {
-                const response = await fetch('/api/partners');
-                if (response.ok) {
-                    setPartners(await response.json());
-                }
-            } catch (error) {
-                console.error("Failed to fetch partners:", error);
-            }
-        };
-
-        fetchPartners();
-    }, []);
-
+/** Partner logos, loaded on the server by the home page and passed in. */
+const Partners = ({ partners }: { partners: Partner[] }) => {
     // Hide the section entirely until there's real content to show.
     if (partners.length === 0) return null;
 
